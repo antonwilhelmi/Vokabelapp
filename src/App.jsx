@@ -15,11 +15,16 @@ const deckModules = import.meta.glob("./data/*.json", {
   import: "default"
 });
 
+function getText(value, language) {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return value?.[language] || value?.en || value?.de || "";
+}
+
 function getFileNameFromPath(path) {
-  return path
-    .split("/")
-    .pop()
-    .replace(".json", "");
+  return path.split("/").pop().replace(".json", "");
 }
 
 function normalizeDeck(deck, path) {
@@ -38,22 +43,14 @@ function normalizeDeck(deck, path) {
 const decks = Object.entries(deckModules)
   .map(([path, deck]) => normalizeDeck(deck, path))
   .filter((deck) => deck.cards.length > 0)
-  .sort((a, b) => {
-    const titleA = getText(a.title, "en").toLowerCase();
-    const titleB = getText(b.title, "en").toLowerCase();
-    return titleA.localeCompare(titleB);
-  });
-
-function getText(value, language) {
-  if (typeof value === "string") {
-    return value;
-  }
-
-  return value?.[language] || value?.en || value?.de || "";
-}
+  .sort((a, b) =>
+    getText(a.title, "en").localeCompare(getText(b.title, "en"))
+  );
 
 function AnswerContent({ text }) {
-  const lines = String(text || "")
+  const rawText = String(text || "");
+
+  const lines = rawText
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
@@ -77,7 +74,37 @@ function AnswerContent({ text }) {
     );
   }
 
-  return <p>{text}</p>;
+  return <p>{rawText}</p>;
+}
+
+function getCardMastery(cardId, progress) {
+  const cardProgress = progress[cardId];
+
+  if (!cardProgress || cardProgress.ignored) {
+    return 0;
+  }
+
+  const ratingScore = {
+    bad: 20,
+    medium: 60,
+    good: 90
+  };
+
+  const baseScore = ratingScore[cardProgress.lastRating] || 0;
+  const reviewBonus = Math.min((cardProgress.reviewedCount || 0) * 3, 10);
+
+  return Math.min(100, Math.round(baseScore + reviewBonus));
+}
+
+function getMasteryColor(score) {
+  const safeScore = Math.max(0, Math.min(100, score));
+  const hue = Math.round((safeScore / 100) * 120);
+
+  return `hsl(${hue}, 78%, 42%)`;
+}
+
+function isIgnored(cardId, progress) {
+  return Boolean(progress[cardId]?.ignored);
 }
 
 export default function App() {
@@ -99,23 +126,44 @@ export default function App() {
   const selectedDeck =
     decks.find((deck) => deck.id === selectedDeckId) || decks[0] || null;
 
-  const cards = selectedDeck?.cards || [];
+  const allCards = selectedDeck?.cards || [];
+
+  const activeCards = useMemo(() => {
+    return allCards.filter((card) => !isIgnored(card.id, progress));
+  }, [allCards, progress]);
+
+  const ignoredCount = allCards.length - activeCards.length;
 
   const lectures = useMemo(() => {
-    return ["all", ...new Set(cards.map((card) => card.lecture).filter(Boolean))];
-  }, [cards]);
+    return [
+      "all",
+      ...new Set(activeCards.map((card) => card.lecture).filter(Boolean))
+    ];
+  }, [activeCards]);
 
   const categories = useMemo(() => {
     return [
       "all",
-      ...new Set(cards.map((card) => card.category).filter(Boolean))
+      ...new Set(activeCards.map((card) => card.category).filter(Boolean))
     ];
-  }, [cards]);
+  }, [activeCards]);
+
+  const setMastery = useMemo(() => {
+    if (activeCards.length === 0) {
+      return 0;
+    }
+
+    const totalScore = activeCards.reduce((sum, card) => {
+      return sum + getCardMastery(card.id, progress);
+    }, 0);
+
+    return Math.round(totalScore / activeCards.length);
+  }, [activeCards, progress]);
 
   const filteredCards = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return cards.filter((card) => {
+    return activeCards.filter((card) => {
       const matchesLecture =
         selectedLecture === "all" || card.lecture === selectedLecture;
 
@@ -149,7 +197,7 @@ export default function App() {
       );
     });
   }, [
-    cards,
+    activeCards,
     selectedLecture,
     selectedCategory,
     search,
@@ -164,11 +212,27 @@ export default function App() {
 
   const currentCard = filteredCards[safeCurrentIndex] || null;
 
-  const dueCount = cards.filter((card) => isCardDue(card.id, progress)).length;
+  const dueCount = activeCards.filter((card) =>
+    isCardDue(card.id, progress)
+  ).length;
 
-  const reviewedCount = cards.filter(
+  const reviewedCount = activeCards.filter(
     (card) => progress[card.id]?.reviewedCount > 0
   ).length;
+
+  const currentQuestion = currentCard
+    ? getText(currentCard.question, settings.language)
+    : "";
+
+  const currentAnswer = currentCard
+    ? getText(currentCard.answer, settings.language)
+    : "";
+
+  const currentProgress = currentCard ? progress[currentCard.id] : null;
+
+  const currentCardMastery = currentCard
+    ? getCardMastery(currentCard.id, progress)
+    : 0;
 
   function resetCardView() {
     setCurrentIndex(0);
@@ -183,18 +247,14 @@ export default function App() {
     resetCardView();
   }
 
-  function handleLectureChange(event) {
-    setSelectedLecture(event.target.value);
-    resetCardView();
-  }
+  function updateSetting(key, value) {
+    const updatedSettings = {
+      ...settings,
+      [key]: value
+    };
 
-  function handleCategoryChange(event) {
-    setSelectedCategory(event.target.value);
-    resetCardView();
-  }
-
-  function handleSearchChange(event) {
-    setSearch(event.target.value);
+    setSettings(updatedSettings);
+    saveSettings(updatedSettings);
     resetCardView();
   }
 
@@ -233,14 +293,38 @@ export default function App() {
     goNext();
   }
 
-  function updateSetting(key, value) {
-    const updatedSettings = {
-      ...settings,
-      [key]: value
+  function handleIgnoreCard() {
+    if (!currentCard) return;
+
+    const updatedProgress = {
+      ...progress,
+      [currentCard.id]: {
+        ...progress[currentCard.id],
+        ignored: true,
+        ignoredAt: Date.now()
+      }
     };
 
-    setSettings(updatedSettings);
-    saveSettings(updatedSettings);
+    setProgress(updatedProgress);
+    saveProgress(updatedProgress);
+    goNext();
+  }
+
+  function handleRestoreIgnoredCards() {
+    const updatedProgress = { ...progress };
+
+    allCards.forEach((card) => {
+      if (updatedProgress[card.id]?.ignored) {
+        updatedProgress[card.id] = {
+          ...updatedProgress[card.id],
+          ignored: false,
+          restoredAt: Date.now()
+        };
+      }
+    });
+
+    setProgress(updatedProgress);
+    saveProgress(updatedProgress);
     resetCardView();
   }
 
@@ -256,19 +340,9 @@ export default function App() {
     resetCardView();
   }
 
-  const currentQuestion = currentCard
-    ? getText(currentCard.question, settings.language)
-    : "";
-
-  const currentAnswer = currentCard
-    ? getText(currentCard.answer, settings.language)
-    : "";
-
-  const currentProgress = currentCard ? progress[currentCard.id] : null;
-
   if (decks.length === 0) {
     return (
-      <main className="app">
+      <main className="app compact-app">
         <section className="panel card-panel">
           <h1>No decks found</h1>
           <p>
@@ -280,35 +354,26 @@ export default function App() {
   }
 
   return (
-    <main className="app">
-      <header className="hero">
+    <main className="app compact-app">
+      <header className="compact-header">
         <div>
           <p className="eyebrow">Study Tool</p>
           <h1>{t.appTitle}</h1>
-          <p>{t.appSubtitle}</p>
         </div>
 
-        <div className="header-actions">
-          <label>
-            {t.language}
-            <select
-              value={settings.language}
-              onChange={(event) =>
-                updateSetting("language", event.target.value)
-              }
-            >
-              <option value="de">Deutsch</option>
-              <option value="en">English</option>
-            </select>
-          </label>
-
-          <button className="ghost-button" onClick={handleResetProgress}>
-            {t.resetProgress}
-          </button>
-        </div>
+        <label className="language-select">
+          {t.language}
+          <select
+            value={settings.language}
+            onChange={(event) => updateSetting("language", event.target.value)}
+          >
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+          </select>
+        </label>
       </header>
 
-      <section className="panel filters">
+      <section className="panel compact-controls">
         <label>
           {t.deck}
           <select value={selectedDeckId} onChange={handleDeckChange}>
@@ -322,7 +387,13 @@ export default function App() {
 
         <label>
           {t.lecture}
-          <select value={selectedLecture} onChange={handleLectureChange}>
+          <select
+            value={selectedLecture}
+            onChange={(event) => {
+              setSelectedLecture(event.target.value);
+              resetCardView();
+            }}
+          >
             {lectures.map((lecture) => (
               <option key={lecture} value={lecture}>
                 {lecture === "all" ? t.all : lecture}
@@ -333,7 +404,13 @@ export default function App() {
 
         <label>
           {t.category}
-          <select value={selectedCategory} onChange={handleCategoryChange}>
+          <select
+            value={selectedCategory}
+            onChange={(event) => {
+              setSelectedCategory(event.target.value);
+              resetCardView();
+            }}
+          >
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category === "all" ? t.all : category}
@@ -348,25 +425,75 @@ export default function App() {
             type="search"
             value={search}
             placeholder={t.searchPlaceholder}
-            onChange={handleSearchChange}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              resetCardView();
+            }}
           />
         </label>
       </section>
 
-      <section className="stats">
-        <Stat
-          label={t.currentCard}
-          value={`${
-            filteredCards.length === 0 ? 0 : safeCurrentIndex + 1
-          } / ${filteredCards.length}`}
-        />
-        <Stat label={t.dueCards} value={dueCount} />
-        <Stat label={t.reviewedCards} value={reviewedCount} />
+      <section className="panel set-progress-panel">
+        <div className="set-progress-text">
+          <strong>{t.mastery}</strong>
+          <span>{setMastery}%</span>
+        </div>
+
+        <div className="progress-track">
+          <div
+            className="progress-fill"
+            style={{
+              width: `${setMastery}%`,
+              backgroundColor: getMasteryColor(setMastery)
+            }}
+          />
+        </div>
+
+        <div className="compact-stats">
+          <span>
+            {t.currentCard}:{" "}
+            <strong>
+              {filteredCards.length === 0 ? 0 : safeCurrentIndex + 1}/
+              {filteredCards.length}
+            </strong>
+          </span>
+          <span>
+            {t.dueCards}: <strong>{dueCount}</strong>
+          </span>
+          <span>
+            {t.reviewedCards}: <strong>{reviewedCount}</strong>
+          </span>
+          <span>
+            {t.ignoredCards}: <strong>{ignoredCount}</strong>
+          </span>
+        </div>
       </section>
 
-      <section className="panel card-panel">
+      <section className="panel card-panel compact-card-panel">
         {currentCard ? (
           <>
+            <div className="card-top-actions">
+              <div className="card-strength">
+                <div
+                  className="card-strength-dot"
+                  style={{
+                    backgroundColor: getMasteryColor(currentCardMastery)
+                  }}
+                />
+                <span>{currentCardMastery}%</span>
+              </div>
+
+              <button
+                className="ignore-icon-button"
+                disabled={!currentCard}
+                onClick={handleIgnoreCard}
+                title={t.ignoreCard}
+                aria-label={t.ignoreCard}
+              >
+                ⊘
+              </button>
+            </div>
+
             <div className="card-meta">
               <span>{currentCard.id}</span>
               <span>{currentCard.lecture}</span>
@@ -391,7 +518,7 @@ export default function App() {
           <h2>{t.noCards}</h2>
         )}
 
-        <div className="navigation">
+        <div className="navigation compact-navigation">
           <button onClick={goPrevious}>{t.previous}</button>
 
           <button
@@ -405,7 +532,7 @@ export default function App() {
           <button onClick={goNext}>{t.next}</button>
         </div>
 
-        <div className="ratings">
+        <div className="ratings compact-ratings">
           <button
             className="bad"
             disabled={!isAnswerVisible || !currentCard}
@@ -429,16 +556,14 @@ export default function App() {
           >
             {t.good}
           </button>
+
         </div>
       </section>
 
-      <section className="panel settings">
-        <div className="settings-title">
-          <h2>{t.settings}</h2>
-          <p>{t.intervals}</p>
-        </div>
+      <details className="panel settings-menu">
+        <summary>{t.settings}</summary>
 
-        <div className="settings-grid">
+        <div className="settings-grid compact-settings-grid">
           <label>
             {t.badInterval}
             <input
@@ -486,16 +611,17 @@ export default function App() {
             {t.onlyDue}
           </label>
         </div>
-      </section>
-    </main>
-  );
-}
 
-function Stat({ label, value }) {
-  return (
-    <article className="stat-card">
-      <strong>{value}</strong>
-      <span>{label}</span>
-    </article>
+        <div className="settings-actions">
+          <button onClick={handleRestoreIgnoredCards}>
+            {t.restoreIgnored}
+          </button>
+
+          <button className="ghost-button" onClick={handleResetProgress}>
+            {t.resetProgress}
+          </button>
+        </div>
+      </details>
+    </main>
   );
 }
