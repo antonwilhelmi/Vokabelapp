@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import imlDeck from "./data/imlDeck.json";
+import "./App.css";
 import { translations } from "./i18n";
 import {
   clearProgress,
@@ -10,7 +10,39 @@ import {
 } from "./storage";
 import { isCardDue, rateCard } from "./scheduler";
 
-const decks = [imlDeck];
+const deckModules = import.meta.glob("./data/*.json", {
+  eager: true,
+  import: "default"
+});
+
+function getFileNameFromPath(path) {
+  return path
+    .split("/")
+    .pop()
+    .replace(".json", "");
+}
+
+function normalizeDeck(deck, path) {
+  const fallbackId = getFileNameFromPath(path);
+
+  return {
+    id: deck.id || fallbackId,
+    title: deck.title || {
+      de: fallbackId,
+      en: fallbackId
+    },
+    cards: Array.isArray(deck.cards) ? deck.cards : []
+  };
+}
+
+const decks = Object.entries(deckModules)
+  .map(([path, deck]) => normalizeDeck(deck, path))
+  .filter((deck) => deck.cards.length > 0)
+  .sort((a, b) => {
+    const titleA = getText(a.title, "en").toLowerCase();
+    const titleB = getText(b.title, "en").toLowerCase();
+    return titleA.localeCompare(titleB);
+  });
 
 function getText(value, language) {
   if (typeof value === "string") {
@@ -20,31 +52,70 @@ function getText(value, language) {
   return value?.[language] || value?.en || value?.de || "";
 }
 
+function AnswerContent({ text }) {
+  const lines = String(text || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const looksLikeBulletList =
+    lines.length > 1 &&
+    lines.every(
+      (line) =>
+        line.startsWith("•") ||
+        line.startsWith("-") ||
+        line.startsWith("*")
+    );
+
+  if (looksLikeBulletList) {
+    return (
+      <ul className="answer-list">
+        {lines.map((line, index) => (
+          <li key={index}>{line.replace(/^[•\-*]\s*/, "")}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  return <p>{text}</p>;
+}
+
 export default function App() {
   const [settings, setSettings] = useState(loadSettings);
   const [progress, setProgress] = useState(loadProgress);
-  const [selectedDeckId, setSelectedDeckId] = useState(decks[0].id);
+
+  const [selectedDeckId, setSelectedDeckId] = useState(
+    decks.length > 0 ? decks[0].id : ""
+  );
+
   const [selectedLecture, setSelectedLecture] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
 
-  const t = translations[settings.language];
-  const selectedDeck = decks.find((deck) => deck.id === selectedDeckId) || decks[0];
+  const t = translations[settings.language] || translations.en;
+
+  const selectedDeck =
+    decks.find((deck) => deck.id === selectedDeckId) || decks[0] || null;
+
+  const cards = selectedDeck?.cards || [];
 
   const lectures = useMemo(() => {
-    return ["all", ...new Set(selectedDeck.cards.map((card) => card.lecture))];
-  }, [selectedDeck]);
+    return ["all", ...new Set(cards.map((card) => card.lecture).filter(Boolean))];
+  }, [cards]);
 
   const categories = useMemo(() => {
-    return ["all", ...new Set(selectedDeck.cards.map((card) => card.category))];
-  }, [selectedDeck]);
+    return [
+      "all",
+      ...new Set(cards.map((card) => card.category).filter(Boolean))
+    ];
+  }, [cards]);
 
   const filteredCards = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return selectedDeck.cards.filter((card) => {
+    return cards.filter((card) => {
       const matchesLecture =
         selectedLecture === "all" || card.lecture === selectedLecture;
 
@@ -54,18 +125,14 @@ export default function App() {
       const matchesDueSetting =
         !settings.onlyDue || isCardDue(card.id, progress);
 
-      const questionText =
-        getText(card.question, "en") + " " + getText(card.question, "de");
-
-      const answerText =
-        getText(card.answer, "en") + " " + getText(card.answer, "de");
-
       const searchableText = [
-        questionText,
-        answerText,
+        card.id,
         card.lecture,
         card.category,
-        card.id
+        getText(card.question, "en"),
+        getText(card.question, "de"),
+        getText(card.answer, "en"),
+        getText(card.answer, "de")
       ]
         .join(" ")
         .toLowerCase();
@@ -82,7 +149,7 @@ export default function App() {
       );
     });
   }, [
-    selectedDeck,
+    cards,
     selectedLecture,
     selectedCategory,
     search,
@@ -90,13 +157,16 @@ export default function App() {
     progress
   ]);
 
-  const currentCard = filteredCards[currentIndex] || null;
+  const safeCurrentIndex =
+    filteredCards.length === 0
+      ? 0
+      : Math.min(currentIndex, filteredCards.length - 1);
 
-  const dueCount = selectedDeck.cards.filter((card) =>
-    isCardDue(card.id, progress)
-  ).length;
+  const currentCard = filteredCards[safeCurrentIndex] || null;
 
-  const reviewedCount = selectedDeck.cards.filter(
+  const dueCount = cards.filter((card) => isCardDue(card.id, progress)).length;
+
+  const reviewedCount = cards.filter(
     (card) => progress[card.id]?.reviewedCount > 0
   ).length;
 
@@ -134,6 +204,7 @@ export default function App() {
     setCurrentIndex((previousIndex) =>
       (previousIndex + 1) % filteredCards.length
     );
+
     setIsAnswerVisible(false);
   }
 
@@ -143,6 +214,7 @@ export default function App() {
     setCurrentIndex((previousIndex) =>
       (previousIndex - 1 + filteredCards.length) % filteredCards.length
     );
+
     setIsAnswerVisible(false);
   }
 
@@ -174,9 +246,7 @@ export default function App() {
 
   function handleResetProgress() {
     const confirmed = window.confirm(
-      settings.language === "de"
-        ? "Do you really want to reset all progress?"
-        : "Do you really want to reset all progress?"
+      "Do you really want to reset all progress?"
     );
 
     if (!confirmed) return;
@@ -196,11 +266,24 @@ export default function App() {
 
   const currentProgress = currentCard ? progress[currentCard.id] : null;
 
+  if (decks.length === 0) {
+    return (
+      <main className="app">
+        <section className="panel card-panel">
+          <h1>No decks found</h1>
+          <p>
+            Add at least one valid JSON deck file to <strong>src/data/</strong>.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="app">
       <header className="hero">
         <div>
-          <p className="eyebrow">IML Study Tool</p>
+          <p className="eyebrow">Study Tool</p>
           <h1>{t.appTitle}</h1>
           <p>{t.appSubtitle}</p>
         </div>
@@ -273,9 +356,9 @@ export default function App() {
       <section className="stats">
         <Stat
           label={t.currentCard}
-          value={`${filteredCards.length === 0 ? 0 : currentIndex + 1} / ${
-            filteredCards.length
-          }`}
+          value={`${
+            filteredCards.length === 0 ? 0 : safeCurrentIndex + 1
+          } / ${filteredCards.length}`}
         />
         <Stat label={t.dueCards} value={dueCount} />
         <Stat label={t.reviewedCards} value={reviewedCount} />
@@ -300,7 +383,7 @@ export default function App() {
             {isAnswerVisible && (
               <div className="answer">
                 <h3>{t.answer}</h3>
-                <p>{currentAnswer}</p>
+                <AnswerContent text={currentAnswer} />
               </div>
             )}
           </>

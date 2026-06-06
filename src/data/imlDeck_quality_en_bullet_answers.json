@@ -1,0 +1,1494 @@
+{
+  "id": "iml-quality-english-bullets",
+  "title": {
+    "de": "IML Quality Deck — Bullet Answers",
+    "en": "IML Quality Deck — Bullet Answers"
+  },
+  "cards": [
+    {
+      "id": "IMLB001",
+      "lecture": "L1",
+      "category": "ML Foundations",
+      "question": {
+        "de": "What is the main difference between traditional programming and machine learning?",
+        "en": "What is the main difference between traditional programming and machine learning?"
+      },
+      "answer": {
+        "de": "• Traditional programming uses explicit human-written rules: data plus rules produce an output\n• Machine learning uses examples: data plus target outputs are used to learn patterns or rules automatically\n• ML is useful when rules are hard to write manually, data is large or messy, or patterns change over time\n• Its disadvantages are that it needs representative data, can be hard to debug, and may behave like a black box",
+        "en": "• Traditional programming uses explicit human-written rules: data plus rules produce an output\n• Machine learning uses examples: data plus target outputs are used to learn patterns or rules automatically\n• ML is useful when rules are hard to write manually, data is large or messy, or patterns change over time\n• Its disadvantages are that it needs representative data, can be hard to debug, and may behave like a black box"
+      },
+      "focus": "exam",
+      "sourceId": "IML001"
+    },
+    {
+      "id": "IMLB002",
+      "lecture": "L1",
+      "category": "Learning Types",
+      "question": {
+        "de": "How do supervised and unsupervised learning differ?",
+        "en": "How do supervised and unsupervised learning differ?"
+      },
+      "answer": {
+        "de": "• Supervised learning uses labeled data: every training example has input features and a known target value\n• It is used for prediction tasks such as regression and classification\n• Unsupervised learning uses unlabeled data and searches for hidden structure, for example clusters, lower-dimensional representations, or unusual patterns\n• In an exam answer, always mention whether the target variable is known",
+        "en": "• Supervised learning uses labeled data: every training example has input features and a known target value\n• It is used for prediction tasks such as regression and classification\n• Unsupervised learning uses unlabeled data and searches for hidden structure, for example clusters, lower-dimensional representations, or unusual patterns\n• In an exam answer, always mention whether the target variable is known"
+      },
+      "focus": "exam",
+      "sourceId": "IML002"
+    },
+    {
+      "id": "IMLB003",
+      "lecture": "L1",
+      "category": "Regression vs Classification",
+      "question": {
+        "de": "How can you decide whether a problem is regression or classification?",
+        "en": "How can you decide whether a problem is regression or classification?"
+      },
+      "answer": {
+        "de": "• Look at the target variable\n• If the target is continuous, such as price, temperature, demand, or time to failure, it is regression\n• If the target is a discrete class, such as spam/not spam, disease/no disease, or product category, it is classification\n• The input features can be similar in both cases; the difference is mainly the output",
+        "en": "• Look at the target variable\n• If the target is continuous, such as price, temperature, demand, or time to failure, it is regression\n• If the target is a discrete class, such as spam/not spam, disease/no disease, or product category, it is classification\n• The input features can be similar in both cases; the difference is mainly the output"
+      },
+      "focus": "exam",
+      "sourceId": "IML003"
+    },
+    {
+      "id": "IMLB004",
+      "lecture": "L1",
+      "category": "Data Matrix",
+      "question": {
+        "de": "What does the data matrix X represent in a machine learning problem?",
+        "en": "What does the data matrix X represent in a machine learning problem?"
+      },
+      "answer": {
+        "de": "• The data matrix X stores the input features\n• Usually each row is one training example and each column is one feature\n• The target vector y stores the desired output for supervised learning\n• Understanding the shape of X is important because algorithms expect consistent feature representation, and preprocessing must be applied consistently to training, validation, and test data",
+        "en": "• The data matrix X stores the input features\n• Usually each row is one training example and each column is one feature\n• The target vector y stores the desired output for supervised learning\n• Understanding the shape of X is important because algorithms expect consistent feature representation, and preprocessing must be applied consistently to training, validation, and test data"
+      },
+      "focus": "concept",
+      "sourceId": "IML004"
+    },
+    {
+      "id": "IMLB005",
+      "lecture": "L1",
+      "category": "Preprocessing",
+      "question": {
+        "de": "What are typical preprocessing steps before training a model?",
+        "en": "What are typical preprocessing steps before training a model?"
+      },
+      "answer": {
+        "de": "• Typical preprocessing includes checking data types, handling missing values, removing or correcting impossible entries, detecting outliers and artifacts, encoding categorical variables, scaling or normalizing numerical variables when needed, selecting useful features, and splitting data into training, validation, and test sets\n• A critical point is to fit preprocessing only on training data to avoid data leakage",
+        "en": "• Typical preprocessing includes checking data types, handling missing values, removing or correcting impossible entries, detecting outliers and artifacts, encoding categorical variables, scaling or normalizing numerical variables when needed, selecting useful features, and splitting data into training, validation, and test sets\n• A critical point is to fit preprocessing only on training data to avoid data leakage"
+      },
+      "focus": "exam",
+      "sourceId": "IML005"
+    },
+    {
+      "id": "IMLB006",
+      "lecture": "L1",
+      "category": "Categorical Features",
+      "question": {
+        "de": "How should categorical features be represented for most machine learning algorithms?",
+        "en": "How should categorical features be represented for most machine learning algorithms?"
+      },
+      "answer": {
+        "de": "• Categorical features usually need numerical encoding\n• One-hot encoding transforms a categorical variable with k categories into k binary indicator variables\n• This avoids forcing an artificial order between categories\n• However, one-hot encoding can create many features when categories are numerous, so rare categories or alternative encodings may be considered",
+        "en": "• Categorical features usually need numerical encoding\n• One-hot encoding transforms a categorical variable with k categories into k binary indicator variables\n• This avoids forcing an artificial order between categories\n• However, one-hot encoding can create many features when categories are numerous, so rare categories or alternative encodings may be considered"
+      },
+      "focus": "concept",
+      "sourceId": "IML006"
+    },
+    {
+      "id": "IMLB007",
+      "lecture": "L1",
+      "category": "Feature Selection",
+      "question": {
+        "de": "Why should non-informative and redundant features sometimes be removed?",
+        "en": "Why should non-informative and redundant features sometimes be removed?"
+      },
+      "answer": {
+        "de": "• Non-informative features add noise and computation without helping prediction\n• Redundant features carry information already present in other features and can increase complexity, instability, or multicollinearity\n• Removing such features can improve generalization, reduce training time, and make the model easier to interpret\n• Feature selection must be done carefully inside the training process to avoid leakage",
+        "en": "• Non-informative features add noise and computation without helping prediction\n• Redundant features carry information already present in other features and can increase complexity, instability, or multicollinearity\n• Removing such features can improve generalization, reduce training time, and make the model easier to interpret\n• Feature selection must be done carefully inside the training process to avoid leakage"
+      },
+      "focus": "exam",
+      "sourceId": "IML007"
+    },
+    {
+      "id": "IMLB008",
+      "lecture": "L1",
+      "category": "Visualization",
+      "question": {
+        "de": "Which visualizations help during exploratory data analysis and what do they show?",
+        "en": "Which visualizations help during exploratory data analysis and what do they show?"
+      },
+      "answer": {
+        "de": "• Histograms show the distribution of a single numerical feature and can reveal skewness, unusual values, or binning effects\n• Box plots summarize median, spread, percentiles, and possible outliers\n• Scatter plots show relationships between two features and can reveal clusters, separation, correlations, or nonlinear patterns\n• Visualization helps detect data quality problems before modeling",
+        "en": "• Histograms show the distribution of a single numerical feature and can reveal skewness, unusual values, or binning effects\n• Box plots summarize median, spread, percentiles, and possible outliers\n• Scatter plots show relationships between two features and can reveal clusters, separation, correlations, or nonlinear patterns\n• Visualization helps detect data quality problems before modeling"
+      },
+      "focus": "concept",
+      "sourceId": "IML008"
+    },
+    {
+      "id": "IMLB009",
+      "lecture": "L1",
+      "category": "Pipeline",
+      "question": {
+        "de": "Describe a complete machine learning pipeline from raw data to monitoring.",
+        "en": "Describe a complete machine learning pipeline from raw data to monitoring."
+      },
+      "answer": {
+        "de": "• A complete pipeline starts with problem definition and target selection\n• Then data is collected, explored, cleaned, transformed, encoded, scaled if needed, and split into train, validation, and test sets\n• A baseline model is trained, candidate models are compared, hyperparameters are tuned using validation or cross-validation, and the final model is evaluated once on the test set\n• After deployment, performance, drift, fairness, and data quality should be monitored",
+        "en": "• A complete pipeline starts with problem definition and target selection\n• Then data is collected, explored, cleaned, transformed, encoded, scaled if needed, and split into train, validation, and test sets\n• A baseline model is trained, candidate models are compared, hyperparameters are tuned using validation or cross-validation, and the final model is evaluated once on the test set\n• After deployment, performance, drift, fairness, and data quality should be monitored"
+      },
+      "focus": "exam",
+      "sourceId": "IML009"
+    },
+    {
+      "id": "IMLB010",
+      "lecture": "L2",
+      "category": "K-means",
+      "question": {
+        "de": "How does K-means clustering work?",
+        "en": "How does K-means clustering work?"
+      },
+      "answer": {
+        "de": "• K-means chooses K centroids, assigns each point to the nearest centroid, then updates each centroid as the mean of the points assigned to it\n• These two steps repeat until assignments or centroids stop changing significantly\n• The objective is to minimize within-cluster distances\n• It is unsupervised because there are no class labels",
+        "en": "• K-means chooses K centroids, assigns each point to the nearest centroid, then updates each centroid as the mean of the points assigned to it\n• These two steps repeat until assignments or centroids stop changing significantly\n• The objective is to minimize within-cluster distances\n• It is unsupervised because there are no class labels"
+      },
+      "focus": "exam",
+      "sourceId": "IML010"
+    },
+    {
+      "id": "IMLB011",
+      "lecture": "L2",
+      "category": "K-means",
+      "question": {
+        "de": "When is K-means a good choice and when is it a poor choice?",
+        "en": "When is K-means a good choice and when is it a poor choice?"
+      },
+      "answer": {
+        "de": "• K-means is a good first choice for simple unsupervised segmentation when clusters are compact, roughly spherical, similarly sized, and features are scaled\n• It is poor when clusters are non-convex, have very different densities, contain strong outliers, or when the correct K is unknown and unstable\n• It is also sensitive to initialization",
+        "en": "• K-means is a good first choice for simple unsupervised segmentation when clusters are compact, roughly spherical, similarly sized, and features are scaled\n• It is poor when clusters are non-convex, have very different densities, contain strong outliers, or when the correct K is unknown and unstable\n• It is also sensitive to initialization"
+      },
+      "focus": "exam",
+      "sourceId": "IML011"
+    },
+    {
+      "id": "IMLB012",
+      "lecture": "L2",
+      "category": "K-means",
+      "question": {
+        "de": "Why is feature scaling important for K-means?",
+        "en": "Why is feature scaling important for K-means?"
+      },
+      "answer": {
+        "de": "• K-means uses distance calculations\n• If one feature has a much larger numerical range than another, it can dominate the distance and therefore dominate the clusters\n• Scaling places features on comparable ranges so that the distance reflects meaningful differences rather than measurement units",
+        "en": "• K-means uses distance calculations\n• If one feature has a much larger numerical range than another, it can dominate the distance and therefore dominate the clusters\n• Scaling places features on comparable ranges so that the distance reflects meaningful differences rather than measurement units"
+      },
+      "focus": "concept",
+      "sourceId": "IML012"
+    },
+    {
+      "id": "IMLB013",
+      "lecture": "L2",
+      "category": "K-means",
+      "question": {
+        "de": "How can you choose the number of clusters K in K-means?",
+        "en": "How can you choose the number of clusters K in K-means?"
+      },
+      "answer": {
+        "de": "• Common approaches include domain knowledge, the elbow method, silhouette score, or evaluating whether clusters are stable and interpretable\n• The elbow method looks for a point where adding more clusters gives diminishing improvement in within-cluster error\n• There is no universally correct K; the final choice should match the task purpose",
+        "en": "• Common approaches include domain knowledge, the elbow method, silhouette score, or evaluating whether clusters are stable and interpretable\n• The elbow method looks for a point where adding more clusters gives diminishing improvement in within-cluster error\n• There is no universally correct K; the final choice should match the task purpose"
+      },
+      "focus": "exam",
+      "sourceId": "IML013"
+    },
+    {
+      "id": "IMLB014",
+      "lecture": "L2",
+      "category": "PCA",
+      "question": {
+        "de": "What is the main idea of PCA?",
+        "en": "What is the main idea of PCA?"
+      },
+      "answer": {
+        "de": "• PCA transforms the original features into new orthogonal axes called principal components\n• The first component captures the largest possible variance, the second captures the largest remaining variance under orthogonality, and so on\n• A smaller number of components can then represent most of the information while reducing dimensionality",
+        "en": "• PCA transforms the original features into new orthogonal axes called principal components\n• The first component captures the largest possible variance, the second captures the largest remaining variance under orthogonality, and so on\n• A smaller number of components can then represent most of the information while reducing dimensionality"
+      },
+      "focus": "exam",
+      "sourceId": "IML014"
+    },
+    {
+      "id": "IMLB015",
+      "lecture": "L2",
+      "category": "PCA",
+      "question": {
+        "de": "What are the main steps of PCA in practice?",
+        "en": "What are the main steps of PCA in practice?"
+      },
+      "answer": {
+        "de": "• First standardize numerical features if their scales differ\n• Then compute the covariance matrix or use SVD\n• Next choose the top k principal components, project the original data into this lower-dimensional space, and optionally reconstruct an approximation of the original data\n• The value of k is chosen by retained variance or downstream performance",
+        "en": "• First standardize numerical features if their scales differ\n• Then compute the covariance matrix or use SVD\n• Next choose the top k principal components, project the original data into this lower-dimensional space, and optionally reconstruct an approximation of the original data\n• The value of k is chosen by retained variance or downstream performance"
+      },
+      "focus": "exam",
+      "sourceId": "IML015"
+    },
+    {
+      "id": "IMLB016",
+      "lecture": "L2",
+      "category": "PCA",
+      "question": {
+        "de": "How do you choose the number of principal components k?",
+        "en": "How do you choose the number of principal components k?"
+      },
+      "answer": {
+        "de": "• Choose k so that the retained variance is high enough for the task, often around 90 to 99 percent\n• A small k gives stronger compression and easier visualization, but may lose important information\n• A large k preserves more information but reduces dimensionality less\n• The choice should be justified by explained variance and task performance",
+        "en": "• Choose k so that the retained variance is high enough for the task, often around 90 to 99 percent\n• A small k gives stronger compression and easier visualization, but may lose important information\n• A large k preserves more information but reduces dimensionality less\n• The choice should be justified by explained variance and task performance"
+      },
+      "focus": "concept",
+      "sourceId": "IML016"
+    },
+    {
+      "id": "IMLB017",
+      "lecture": "L2",
+      "category": "PCA",
+      "question": {
+        "de": "What are the advantages and limitations of PCA?",
+        "en": "What are the advantages and limitations of PCA?"
+      },
+      "answer": {
+        "de": "• PCA can reduce dimensionality, remove correlation between transformed features, improve visualization, and reduce computation\n• Its limitations are that it is linear, sensitive to feature scaling, less interpretable than original features, and unsupervised: it preserves variance, not necessarily predictive information for a target variable",
+        "en": "• PCA can reduce dimensionality, remove correlation between transformed features, improve visualization, and reduce computation\n• Its limitations are that it is linear, sensitive to feature scaling, less interpretable than original features, and unsupervised: it preserves variance, not necessarily predictive information for a target variable"
+      },
+      "focus": "exam",
+      "sourceId": "IML017"
+    },
+    {
+      "id": "IMLB018",
+      "lecture": "L3",
+      "category": "Linear Regression",
+      "question": {
+        "de": "What does linear regression learn?",
+        "en": "What does linear regression learn?"
+      },
+      "answer": {
+        "de": "• Linear regression learns parameters for a linear function that predicts a continuous target from input features\n• In simple terms, it fits a line, plane, or hyperplane that minimizes prediction error\n• The usual cost function is mean squared error, which penalizes large errors strongly because errors are squared",
+        "en": "• Linear regression learns parameters for a linear function that predicts a continuous target from input features\n• In simple terms, it fits a line, plane, or hyperplane that minimizes prediction error\n• The usual cost function is mean squared error, which penalizes large errors strongly because errors are squared"
+      },
+      "focus": "concept",
+      "sourceId": "IML018"
+    },
+    {
+      "id": "IMLB019",
+      "lecture": "L3",
+      "category": "Cost Function",
+      "question": {
+        "de": "What does the mean squared error cost function measure?",
+        "en": "What does the mean squared error cost function measure?"
+      },
+      "answer": {
+        "de": "• Mean squared error measures the average squared difference between predicted and true target values\n• A smaller MSE means predictions are closer to the targets on average\n• Squaring makes all errors positive and gives larger errors more influence\n• It is appropriate for many regression tasks but can be sensitive to outliers",
+        "en": "• Mean squared error measures the average squared difference between predicted and true target values\n• A smaller MSE means predictions are closer to the targets on average\n• Squaring makes all errors positive and gives larger errors more influence\n• It is appropriate for many regression tasks but can be sensitive to outliers"
+      },
+      "focus": "exam",
+      "sourceId": "IML019"
+    },
+    {
+      "id": "IMLB020",
+      "lecture": "L3",
+      "category": "Gradient Descent",
+      "question": {
+        "de": "How does gradient descent train a regression model?",
+        "en": "How does gradient descent train a regression model?"
+      },
+      "answer": {
+        "de": "• Gradient descent starts with initial parameters, computes predictions, calculates the cost, computes gradients showing how each parameter affects the cost, and updates the parameters in the direction that reduces the cost\n• This repeats until the cost stops improving or another stopping criterion is reached",
+        "en": "• Gradient descent starts with initial parameters, computes predictions, calculates the cost, computes gradients showing how each parameter affects the cost, and updates the parameters in the direction that reduces the cost\n• This repeats until the cost stops improving or another stopping criterion is reached"
+      },
+      "focus": "exam",
+      "sourceId": "IML020"
+    },
+    {
+      "id": "IMLB021",
+      "lecture": "L3",
+      "category": "Learning Rate",
+      "question": {
+        "de": "What happens if the learning rate is too small or too large?",
+        "en": "What happens if the learning rate is too small or too large?"
+      },
+      "answer": {
+        "de": "• If the learning rate is too small, training is very slow and may appear stuck\n• If it is too large, updates may overshoot the minimum and the cost can oscillate or diverge\n• A useful diagnostic is the cost curve: it should decrease steadily during training",
+        "en": "• If the learning rate is too small, training is very slow and may appear stuck\n• If it is too large, updates may overshoot the minimum and the cost can oscillate or diverge\n• A useful diagnostic is the cost curve: it should decrease steadily during training"
+      },
+      "focus": "exam",
+      "sourceId": "IML021"
+    },
+    {
+      "id": "IMLB022",
+      "lecture": "L3",
+      "category": "Optimization",
+      "question": {
+        "de": "What is the difference between batch, mini-batch, and stochastic gradient descent?",
+        "en": "What is the difference between batch, mini-batch, and stochastic gradient descent?"
+      },
+      "answer": {
+        "de": "• Batch gradient descent updates parameters after processing the full training set, which is stable but expensive for large data\n• Stochastic gradient descent updates after one example, which is faster but noisy\n• Mini-batch gradient descent updates after small batches and is a practical compromise between computational efficiency and stable learning",
+        "en": "• Batch gradient descent updates parameters after processing the full training set, which is stable but expensive for large data\n• Stochastic gradient descent updates after one example, which is faster but noisy\n• Mini-batch gradient descent updates after small batches and is a practical compromise between computational efficiency and stable learning"
+      },
+      "focus": "concept",
+      "sourceId": "IML022"
+    },
+    {
+      "id": "IMLB023",
+      "lecture": "L3",
+      "category": "Polynomial Regression",
+      "question": {
+        "de": "Why is polynomial regression still considered a linear model in the parameters?",
+        "en": "Why is polynomial regression still considered a linear model in the parameters?"
+      },
+      "answer": {
+        "de": "• Polynomial regression creates new input features such as x squared or x cubed, but the model remains linear in the parameters because each transformed feature is multiplied by a coefficient and summed\n• This allows linear regression methods to fit nonlinear relationships in the original input space",
+        "en": "• Polynomial regression creates new input features such as x squared or x cubed, but the model remains linear in the parameters because each transformed feature is multiplied by a coefficient and summed\n• This allows linear regression methods to fit nonlinear relationships in the original input space"
+      },
+      "focus": "exam",
+      "sourceId": "IML023"
+    },
+    {
+      "id": "IMLB024",
+      "lecture": "L3",
+      "category": "Overfitting",
+      "question": {
+        "de": "How does model complexity relate to underfitting and overfitting in regression?",
+        "en": "How does model complexity relate to underfitting and overfitting in regression?"
+      },
+      "answer": {
+        "de": "• A model that is too simple, such as a line for a strongly curved relationship, has high bias and underfits\n• A model that is too complex, such as a very high-order polynomial, can fit noise in the training data and overfit\n• A good model captures the main pattern while generalizing to new data",
+        "en": "• A model that is too simple, such as a line for a strongly curved relationship, has high bias and underfits\n• A model that is too complex, such as a very high-order polynomial, can fit noise in the training data and overfit\n• A good model captures the main pattern while generalizing to new data"
+      },
+      "focus": "exam",
+      "sourceId": "IML024"
+    },
+    {
+      "id": "IMLB025",
+      "lecture": "L3",
+      "category": "Regularization",
+      "question": {
+        "de": "How do Ridge and Lasso regularization differ?",
+        "en": "How do Ridge and Lasso regularization differ?"
+      },
+      "answer": {
+        "de": "• Ridge regularization uses an L2 penalty and shrinks coefficients toward zero but usually keeps all features\n• Lasso regularization uses an L1 penalty and can shrink some coefficients exactly to zero, acting as feature selection\n• Ridge is useful when many features contribute a little; Lasso is useful when a simpler sparse model is desired",
+        "en": "• Ridge regularization uses an L2 penalty and shrinks coefficients toward zero but usually keeps all features\n• Lasso regularization uses an L1 penalty and can shrink some coefficients exactly to zero, acting as feature selection\n• Ridge is useful when many features contribute a little; Lasso is useful when a simpler sparse model is desired"
+      },
+      "focus": "exam",
+      "sourceId": "IML025"
+    },
+    {
+      "id": "IMLB026",
+      "lecture": "L3",
+      "category": "Regularization",
+      "question": {
+        "de": "Why should features usually be standardized before Ridge or Lasso regression?",
+        "en": "Why should features usually be standardized before Ridge or Lasso regression?"
+      },
+      "answer": {
+        "de": "• Ridge and Lasso penalize coefficient size\n• If features have different scales, coefficients are not comparable and the penalty can affect features unfairly\n• Standardization makes the penalty meaningful across features and prevents large-scale features from dominating the model",
+        "en": "• Ridge and Lasso penalize coefficient size\n• If features have different scales, coefficients are not comparable and the penalty can affect features unfairly\n• Standardization makes the penalty meaningful across features and prevents large-scale features from dominating the model"
+      },
+      "focus": "concept",
+      "sourceId": "IML026"
+    },
+    {
+      "id": "IMLB027",
+      "lecture": "L4",
+      "category": "Logistic Regression",
+      "question": {
+        "de": "Why is logistic regression used for classification rather than ordinary linear regression?",
+        "en": "Why is logistic regression used for classification rather than ordinary linear regression?"
+      },
+      "answer": {
+        "de": "• Linear regression can output values below 0 or above 1 and is not designed to model class probabilities\n• Logistic regression applies the sigmoid function to a linear score, producing a value between 0 and 1 that can be interpreted as the probability of the positive class\n• A threshold then converts probability into a class label",
+        "en": "• Linear regression can output values below 0 or above 1 and is not designed to model class probabilities\n• Logistic regression applies the sigmoid function to a linear score, producing a value between 0 and 1 that can be interpreted as the probability of the positive class\n• A threshold then converts probability into a class label"
+      },
+      "focus": "exam",
+      "sourceId": "IML027"
+    },
+    {
+      "id": "IMLB028",
+      "lecture": "L4",
+      "category": "Sigmoid",
+      "question": {
+        "de": "What role does the sigmoid function play in binary logistic regression?",
+        "en": "What role does the sigmoid function play in binary logistic regression?"
+      },
+      "answer": {
+        "de": "• The sigmoid function maps any real-valued score to a number between 0 and 1\n• This allows the model output to be interpreted as a probability for class 1\n• If the probability is above a chosen threshold, often 0.5, the model predicts class 1; otherwise it predicts class 0",
+        "en": "• The sigmoid function maps any real-valued score to a number between 0 and 1\n• This allows the model output to be interpreted as a probability for class 1\n• If the probability is above a chosen threshold, often 0.5, the model predicts class 1; otherwise it predicts class 0"
+      },
+      "focus": "concept",
+      "sourceId": "IML028"
+    },
+    {
+      "id": "IMLB029",
+      "lecture": "L4",
+      "category": "Loss Function",
+      "question": {
+        "de": "Why does logistic regression use log loss instead of mean squared error?",
+        "en": "Why does logistic regression use log loss instead of mean squared error?"
+      },
+      "answer": {
+        "de": "• With a sigmoid hypothesis, using mean squared error can create a non-convex optimization problem with many local minima\n• Log loss is better suited to probabilistic classification: it strongly penalizes confident wrong predictions and leads to efficient optimization for logistic regression",
+        "en": "• With a sigmoid hypothesis, using mean squared error can create a non-convex optimization problem with many local minima\n• Log loss is better suited to probabilistic classification: it strongly penalizes confident wrong predictions and leads to efficient optimization for logistic regression"
+      },
+      "focus": "exam",
+      "sourceId": "IML029"
+    },
+    {
+      "id": "IMLB030",
+      "lecture": "L4",
+      "category": "Decision Boundary",
+      "question": {
+        "de": "What is a decision boundary in logistic regression?",
+        "en": "What is a decision boundary in logistic regression?"
+      },
+      "answer": {
+        "de": "• A decision boundary is the set of input points where the model is exactly indifferent between classes, typically where the predicted probability is 0.5\n• For basic logistic regression with original features, this boundary is linear\n• By adding polynomial features, the boundary can become nonlinear in the original input space",
+        "en": "• A decision boundary is the set of input points where the model is exactly indifferent between classes, typically where the predicted probability is 0.5\n• For basic logistic regression with original features, this boundary is linear\n• By adding polynomial features, the boundary can become nonlinear in the original input space"
+      },
+      "focus": "concept",
+      "sourceId": "IML030"
+    },
+    {
+      "id": "IMLB031",
+      "lecture": "L4",
+      "category": "Regularized Logistic Regression",
+      "question": {
+        "de": "How does regularization help logistic regression with nonlinear features?",
+        "en": "How does regularization help logistic regression with nonlinear features?"
+      },
+      "answer": {
+        "de": "• Adding many polynomial features can make logistic regression flexible but prone to overfitting\n• Regularization shrinks coefficients toward zero, reducing model complexity and improving generalization\n• A very large regularization strength can cause underfitting, so the value must be tuned with validation data",
+        "en": "• Adding many polynomial features can make logistic regression flexible but prone to overfitting\n• Regularization shrinks coefficients toward zero, reducing model complexity and improving generalization\n• A very large regularization strength can cause underfitting, so the value must be tuned with validation data"
+      },
+      "focus": "exam",
+      "sourceId": "IML031"
+    },
+    {
+      "id": "IMLB032",
+      "lecture": "L4",
+      "category": "Multiclass Classification",
+      "question": {
+        "de": "How can logistic regression be extended to multiclass classification?",
+        "en": "How can logistic regression be extended to multiclass classification?"
+      },
+      "answer": {
+        "de": "• Two common approaches are one-vs-all and softmax regression\n• In one-vs-all, one binary classifier is trained per class and the class with the highest score wins\n• Softmax regression directly outputs a probability distribution over all classes\n• Softmax is a generalization of logistic regression to multiple classes",
+        "en": "• Two common approaches are one-vs-all and softmax regression\n• In one-vs-all, one binary classifier is trained per class and the class with the highest score wins\n• Softmax regression directly outputs a probability distribution over all classes\n• Softmax is a generalization of logistic regression to multiple classes"
+      },
+      "focus": "exam",
+      "sourceId": "IML032"
+    },
+    {
+      "id": "IMLB033",
+      "lecture": "L4",
+      "category": "Model Choice",
+      "question": {
+        "de": "When is logistic regression a strong baseline, and when may it be insufficient?",
+        "en": "When is logistic regression a strong baseline, and when may it be insufficient?"
+      },
+      "answer": {
+        "de": "• Logistic regression is a strong baseline for binary or multiclass classification when interpretability, speed, and probability outputs are important\n• It may be insufficient when the decision boundary is highly nonlinear, feature interactions are complex, or the linearity assumption is too restrictive\n• Feature engineering or more flexible models may then help",
+        "en": "• Logistic regression is a strong baseline for binary or multiclass classification when interpretability, speed, and probability outputs are important\n• It may be insufficient when the decision boundary is highly nonlinear, feature interactions are complex, or the linearity assumption is too restrictive\n• Feature engineering or more flexible models may then help"
+      },
+      "focus": "exam",
+      "sourceId": "IML033"
+    },
+    {
+      "id": "IMLB034",
+      "lecture": "L5",
+      "category": "Naive Bayes",
+      "question": {
+        "de": "What is the core idea of Naive Bayes?",
+        "en": "What is the core idea of Naive Bayes?"
+      },
+      "answer": {
+        "de": "• Naive Bayes is a probabilistic classifier that computes which class is most likely given the observed features\n• It combines the prior probability of each class with the likelihood of observing the features under that class\n• It predicts the class with the highest posterior probability",
+        "en": "• Naive Bayes is a probabilistic classifier that computes which class is most likely given the observed features\n• It combines the prior probability of each class with the likelihood of observing the features under that class\n• It predicts the class with the highest posterior probability"
+      },
+      "focus": "concept",
+      "sourceId": "IML034"
+    },
+    {
+      "id": "IMLB035",
+      "lecture": "L5",
+      "category": "Naive Bayes",
+      "question": {
+        "de": "Why is Naive Bayes called naive, and why can it still work well?",
+        "en": "Why is Naive Bayes called naive, and why can it still work well?"
+      },
+      "answer": {
+        "de": "• It is called naive because it assumes features are conditionally independent given the class\n• This assumption is often false, especially in text, where words are related\n• However, it can still work well because many individual features provide useful evidence, and the model is fast and robust for high-dimensional sparse data",
+        "en": "• It is called naive because it assumes features are conditionally independent given the class\n• This assumption is often false, especially in text, where words are related\n• However, it can still work well because many individual features provide useful evidence, and the model is fast and robust for high-dimensional sparse data"
+      },
+      "focus": "exam",
+      "sourceId": "IML035"
+    },
+    {
+      "id": "IMLB036",
+      "lecture": "L5",
+      "category": "Naive Bayes",
+      "question": {
+        "de": "When would you choose Naive Bayes over more complex classifiers?",
+        "en": "When would you choose Naive Bayes over more complex classifiers?"
+      },
+      "answer": {
+        "de": "• Choose Naive Bayes when you need a fast, simple baseline, especially for text classification, spam detection, sentiment analysis, or other high-dimensional sparse features\n• Useful with limited data and many features\n• Avoid relying on it when interactions between features are essential",
+        "en": "• Choose Naive Bayes when you need a fast, simple baseline, especially for text classification, spam detection, sentiment analysis, or other high-dimensional sparse features\n• Useful with limited data and many features\n• Avoid relying on it when interactions between features are essential"
+      },
+      "focus": "exam",
+      "sourceId": "IML036"
+    },
+    {
+      "id": "IMLB037",
+      "lecture": "L5",
+      "category": "Decision Trees",
+      "question": {
+        "de": "How does a decision tree make predictions?",
+        "en": "How does a decision tree make predictions?"
+      },
+      "answer": {
+        "de": "• A decision tree asks a sequence of feature-based questions\n• Each split sends an example down a branch, and the final leaf contains a prediction\n• For classification, the leaf often predicts the majority class or class probabilities\n• For regression, it predicts a numerical value such as an average",
+        "en": "• A decision tree asks a sequence of feature-based questions\n• Each split sends an example down a branch, and the final leaf contains a prediction\n• For classification, the leaf often predicts the majority class or class probabilities\n• For regression, it predicts a numerical value such as an average"
+      },
+      "focus": "concept",
+      "sourceId": "IML037"
+    },
+    {
+      "id": "IMLB038",
+      "lecture": "L5",
+      "category": "Decision Trees",
+      "question": {
+        "de": "What are the main advantages and disadvantages of decision trees?",
+        "en": "What are the main advantages and disadvantages of decision trees?"
+      },
+      "answer": {
+        "de": "• Advantages: they are interpretable, can model nonlinear relationships, handle mixed feature types, and provide feature importance\n• Disadvantages: they easily overfit, can be unstable when data changes slightly, may be biased toward dominant classes, and usually have weaker predictive performance than tree ensembles",
+        "en": "• Advantages: they are interpretable, can model nonlinear relationships, handle mixed feature types, and provide feature importance\n• Disadvantages: they easily overfit, can be unstable when data changes slightly, may be biased toward dominant classes, and usually have weaker predictive performance than tree ensembles"
+      },
+      "focus": "exam",
+      "sourceId": "IML038"
+    },
+    {
+      "id": "IMLB039",
+      "lecture": "L5",
+      "category": "Decision Trees",
+      "question": {
+        "de": "Which parameters can control overfitting in a decision tree?",
+        "en": "Which parameters can control overfitting in a decision tree?"
+      },
+      "answer": {
+        "de": "• Important parameters include max depth, minimum samples required to split a node, minimum samples required in a leaf, and the split criterion such as Gini impurity or entropy\n• Limiting tree growth reduces variance and improves generalization, but too much restriction can cause underfitting",
+        "en": "• Important parameters include max depth, minimum samples required to split a node, minimum samples required in a leaf, and the split criterion such as Gini impurity or entropy\n• Limiting tree growth reduces variance and improves generalization, but too much restriction can cause underfitting"
+      },
+      "focus": "exam",
+      "sourceId": "IML039"
+    },
+    {
+      "id": "IMLB040",
+      "lecture": "L5",
+      "category": "kNN",
+      "question": {
+        "de": "How does the k-nearest neighbors algorithm classify a new example?",
+        "en": "How does the k-nearest neighbors algorithm classify a new example?"
+      },
+      "answer": {
+        "de": "• kNN stores the training data\n• For a new example, it computes distances to training examples, selects the k closest neighbors, and predicts the class by majority vote or weighted vote\n• For regression, it averages neighbor target values\n• It is a lazy learner because most computation happens at prediction time",
+        "en": "• kNN stores the training data\n• For a new example, it computes distances to training examples, selects the k closest neighbors, and predicts the class by majority vote or weighted vote\n• For regression, it averages neighbor target values\n• It is a lazy learner because most computation happens at prediction time"
+      },
+      "focus": "concept",
+      "sourceId": "IML040"
+    },
+    {
+      "id": "IMLB041",
+      "lecture": "L5",
+      "category": "kNN",
+      "question": {
+        "de": "When is kNN useful and what are its limitations?",
+        "en": "When is kNN useful and what are its limitations?"
+      },
+      "answer": {
+        "de": "• kNN is useful for small datasets, simple classification or regression tasks, nonlinear patterns, and cases where interpretability through neighbors is helpful\n• Limitations include slow prediction on large datasets, high memory use, sensitivity to feature scaling and irrelevant features, and poor performance in very high-dimensional spaces",
+        "en": "• kNN is useful for small datasets, simple classification or regression tasks, nonlinear patterns, and cases where interpretability through neighbors is helpful\n• Limitations include slow prediction on large datasets, high memory use, sensitivity to feature scaling and irrelevant features, and poor performance in very high-dimensional spaces"
+      },
+      "focus": "exam",
+      "sourceId": "IML041"
+    },
+    {
+      "id": "IMLB042",
+      "lecture": "L5",
+      "category": "Model Choice",
+      "question": {
+        "de": "Compare Naive Bayes, decision trees, and kNN for a small classification problem.",
+        "en": "Compare Naive Bayes, decision trees, and kNN for a small classification problem."
+      },
+      "answer": {
+        "de": "• Naive Bayes is fastest and works well for sparse text-like features but assumes independence\n• A decision tree is interpretable and captures nonlinear rules but can overfit. kNN is simple and flexible but needs scaling and becomes slow at prediction time\n• The best choice depends on data type, interpretability needs, feature scale, and expected interactions",
+        "en": "• Naive Bayes is fastest and works well for sparse text-like features but assumes independence\n• A decision tree is interpretable and captures nonlinear rules but can overfit. kNN is simple and flexible but needs scaling and becomes slow at prediction time\n• The best choice depends on data type, interpretability needs, feature scale, and expected interactions"
+      },
+      "focus": "exam",
+      "sourceId": "IML042"
+    },
+    {
+      "id": "IMLB043",
+      "lecture": "L6",
+      "category": "SVM",
+      "question": {
+        "de": "What is the main idea of a linear Support Vector Machine?",
+        "en": "What is the main idea of a linear Support Vector Machine?"
+      },
+      "answer": {
+        "de": "• A linear SVM searches for a separating hyperplane that maximizes the margin between classes\n• The margin is determined by the closest training points, called support vectors\n• Maximizing the margin usually improves generalization, especially in high-dimensional spaces",
+        "en": "• A linear SVM searches for a separating hyperplane that maximizes the margin between classes\n• The margin is determined by the closest training points, called support vectors\n• Maximizing the margin usually improves generalization, especially in high-dimensional spaces"
+      },
+      "focus": "concept",
+      "sourceId": "IML043"
+    },
+    {
+      "id": "IMLB044",
+      "lecture": "L6",
+      "category": "SVM",
+      "question": {
+        "de": "Why are support vectors important?",
+        "en": "Why are support vectors important?"
+      },
+      "answer": {
+        "de": "• Support vectors are the training examples closest to the decision boundary\n• They determine the position and orientation of the SVM boundary\n• Points far away from the margin have little or no direct influence on the final boundary, which is why support vectors are central to the model",
+        "en": "• Support vectors are the training examples closest to the decision boundary\n• They determine the position and orientation of the SVM boundary\n• Points far away from the margin have little or no direct influence on the final boundary, which is why support vectors are central to the model"
+      },
+      "focus": "exam",
+      "sourceId": "IML044"
+    },
+    {
+      "id": "IMLB045",
+      "lecture": "L6",
+      "category": "SVM Kernels",
+      "question": {
+        "de": "What is the kernel trick in SVMs?",
+        "en": "What is the kernel trick in SVMs?"
+      },
+      "answer": {
+        "de": "• The kernel trick lets an SVM learn nonlinear decision boundaries without explicitly computing coordinates in a high-dimensional feature space\n• A kernel function computes similarity between examples as if they had been mapped to that space\n• Common kernels include polynomial and Gaussian RBF kernels",
+        "en": "• The kernel trick lets an SVM learn nonlinear decision boundaries without explicitly computing coordinates in a high-dimensional feature space\n• A kernel function computes similarity between examples as if they had been mapped to that space\n• Common kernels include polynomial and Gaussian RBF kernels"
+      },
+      "focus": "exam",
+      "sourceId": "IML045"
+    },
+    {
+      "id": "IMLB046",
+      "lecture": "L6",
+      "category": "SVM Hyperparameters",
+      "question": {
+        "de": "How do C and the RBF kernel width affect an SVM?",
+        "en": "How do C and the RBF kernel width affect an SVM?"
+      },
+      "answer": {
+        "de": "• A large C penalizes misclassification strongly, leading to lower bias but higher variance\n• A small C allows more margin violations, leading to higher bias but lower variance\n• For the RBF kernel, a small sigma or high gamma makes similarity decay quickly, producing more flexible boundaries and higher variance\n• A large sigma or low gamma gives smoother boundaries and higher bias",
+        "en": "• A large C penalizes misclassification strongly, leading to lower bias but higher variance\n• A small C allows more margin violations, leading to higher bias but lower variance\n• For the RBF kernel, a small sigma or high gamma makes similarity decay quickly, producing more flexible boundaries and higher variance\n• A large sigma or low gamma gives smoother boundaries and higher bias"
+      },
+      "focus": "exam",
+      "sourceId": "IML046"
+    },
+    {
+      "id": "IMLB047",
+      "lecture": "L6",
+      "category": "Metrics",
+      "question": {
+        "de": "Why can accuracy be misleading for imbalanced classification?",
+        "en": "Why can accuracy be misleading for imbalanced classification?"
+      },
+      "answer": {
+        "de": "• If one class dominates, a model can achieve high accuracy by predicting only the majority class\n• For example, if 90 percent of patients are healthy, a model that always predicts healthy has 90 percent accuracy but detects zero diseased patients\n• Always inspect the confusion matrix and class-sensitive metrics",
+        "en": "• If one class dominates, a model can achieve high accuracy by predicting only the majority class\n• For example, if 90 percent of patients are healthy, a model that always predicts healthy has 90 percent accuracy but detects zero diseased patients\n• Always inspect the confusion matrix and class-sensitive metrics"
+      },
+      "focus": "exam",
+      "sourceId": "IML047"
+    },
+    {
+      "id": "IMLB048",
+      "lecture": "L6",
+      "category": "Metrics",
+      "question": {
+        "de": "Define precision, recall, specificity, and F1-score in words.",
+        "en": "Define precision, recall, specificity, and F1-score in words."
+      },
+      "answer": {
+        "de": "• Precision asks: of all predicted positives, how many were truly positive?\n• Recall or sensitivity asks: of all actual positives, how many were detected?\n• Specificity asks: of all actual negatives, how many were correctly rejected?\n• F1-score is the harmonic mean of precision and recall and is useful when both false positives and false negatives matter",
+        "en": "• Precision asks: of all predicted positives, how many were truly positive?\n• Recall or sensitivity asks: of all actual positives, how many were detected?\n• Specificity asks: of all actual negatives, how many were correctly rejected?\n• F1-score is the harmonic mean of precision and recall and is useful when both false positives and false negatives matter"
+      },
+      "focus": "exam",
+      "sourceId": "IML048"
+    },
+    {
+      "id": "IMLB049",
+      "lecture": "L6",
+      "category": "Metrics",
+      "question": {
+        "de": "When should you prioritize recall over precision?",
+        "en": "When should you prioritize recall over precision?"
+      },
+      "answer": {
+        "de": "• Prioritize recall when missing a positive case is very costly\n• Examples include disease screening, fraud detection alerts that should not miss fraud, or safety-critical fault detection\n• High recall reduces false negatives, but it may increase false positives, so the decision threshold and practical costs must be considered",
+        "en": "• Prioritize recall when missing a positive case is very costly\n• Examples include disease screening, fraud detection alerts that should not miss fraud, or safety-critical fault detection\n• High recall reduces false negatives, but it may increase false positives, so the decision threshold and practical costs must be considered"
+      },
+      "focus": "exam",
+      "sourceId": "IML049"
+    },
+    {
+      "id": "IMLB050",
+      "lecture": "L6",
+      "category": "Metrics",
+      "question": {
+        "de": "When should you prioritize precision over recall?",
+        "en": "When should you prioritize precision over recall?"
+      },
+      "answer": {
+        "de": "• Prioritize precision when false positives are expensive or harmful\n• Examples include blocking legitimate emails as spam, accusing a customer of fraud, or sending costly manual inspections\n• High precision means positive predictions are trustworthy, but it may miss some true positives",
+        "en": "• Prioritize precision when false positives are expensive or harmful\n• Examples include blocking legitimate emails as spam, accusing a customer of fraud, or sending costly manual inspections\n• High precision means positive predictions are trustworthy, but it may miss some true positives"
+      },
+      "focus": "exam",
+      "sourceId": "IML050"
+    },
+    {
+      "id": "IMLB051",
+      "lecture": "L6",
+      "category": "Metrics",
+      "question": {
+        "de": "What does ROC-AUC measure?",
+        "en": "What does ROC-AUC measure?"
+      },
+      "answer": {
+        "de": "• ROC-AUC measures how well a model ranks positive examples above negative examples across different classification thresholds\n• A value near 1 indicates strong separability, 0.5 is close to random ranking, and below 0.5 indicates worse-than-random ranking\n• AUC is threshold-independent, but it should be interpreted carefully with strong class imbalance",
+        "en": "• ROC-AUC measures how well a model ranks positive examples above negative examples across different classification thresholds\n• A value near 1 indicates strong separability, 0.5 is close to random ranking, and below 0.5 indicates worse-than-random ranking\n• AUC is threshold-independent, but it should be interpreted carefully with strong class imbalance"
+      },
+      "focus": "concept",
+      "sourceId": "IML051"
+    },
+    {
+      "id": "IMLB052",
+      "lecture": "L7",
+      "category": "Data Splitting",
+      "question": {
+        "de": "Why do we need separate training, validation, and test data?",
+        "en": "Why do we need separate training, validation, and test data?"
+      },
+      "answer": {
+        "de": "• Training data are used to fit model parameters\n• Validation data or cross-validation are used to tune hyperparameters and choose models\n• The test set should be used only once at the end to estimate final performance\n• Reusing the test set for tuning produces overly optimistic results",
+        "en": "• Training data are used to fit model parameters\n• Validation data or cross-validation are used to tune hyperparameters and choose models\n• The test set should be used only once at the end to estimate final performance\n• Reusing the test set for tuning produces overly optimistic results"
+      },
+      "focus": "exam",
+      "sourceId": "IML052"
+    },
+    {
+      "id": "IMLB053",
+      "lecture": "L7",
+      "category": "Cross Validation",
+      "question": {
+        "de": "How does k-fold cross-validation work?",
+        "en": "How does k-fold cross-validation work?"
+      },
+      "answer": {
+        "de": "• The dataset is split into k folds\n• The model is trained k times: each time, k-1 folds are used for training and the remaining fold is used for validation\n• The validation errors are averaged\n• This gives a more stable performance estimate than a single split, especially when data are limited",
+        "en": "• The dataset is split into k folds\n• The model is trained k times: each time, k-1 folds are used for training and the remaining fold is used for validation\n• The validation errors are averaged\n• This gives a more stable performance estimate than a single split, especially when data are limited"
+      },
+      "focus": "concept",
+      "sourceId": "IML053"
+    },
+    {
+      "id": "IMLB054",
+      "lecture": "L7",
+      "category": "Splitting Methods",
+      "question": {
+        "de": "When is stratified splitting useful?",
+        "en": "When is stratified splitting useful?"
+      },
+      "answer": {
+        "de": "• Stratified splitting is useful for classification, especially with imbalanced classes\n• It preserves class proportions in train, validation, and test sets, reducing the risk that one split lacks enough minority-class examples\n• This makes performance estimates more reliable",
+        "en": "• Stratified splitting is useful for classification, especially with imbalanced classes\n• It preserves class proportions in train, validation, and test sets, reducing the risk that one split lacks enough minority-class examples\n• This makes performance estimates more reliable"
+      },
+      "focus": "exam",
+      "sourceId": "IML054"
+    },
+    {
+      "id": "IMLB055",
+      "lecture": "L7",
+      "category": "Model Selection",
+      "question": {
+        "de": "Describe a safe model selection workflow.",
+        "en": "Describe a safe model selection workflow."
+      },
+      "answer": {
+        "de": "• Fit candidate models on the training set\n• Compare them using validation data or cross-validation\n• Choose the model and hyperparameters with good validation performance, preferably favoring simpler models when performance is similar\n• Retrain the selected model on training plus validation data if appropriate, then evaluate once on the untouched test set",
+        "en": "• Fit candidate models on the training set\n• Compare them using validation data or cross-validation\n• Choose the model and hyperparameters with good validation performance, preferably favoring simpler models when performance is similar\n• Retrain the selected model on training plus validation data if appropriate, then evaluate once on the untouched test set"
+      },
+      "focus": "exam",
+      "sourceId": "IML055"
+    },
+    {
+      "id": "IMLB056",
+      "lecture": "L7",
+      "category": "Bias Variance",
+      "question": {
+        "de": "How can you diagnose high bias and high variance using train and validation error?",
+        "en": "How can you diagnose high bias and high variance using train and validation error?"
+      },
+      "answer": {
+        "de": "• High bias or underfitting occurs when both training and validation errors are high\n• The model is too simple or too constrained\n• High variance or overfitting occurs when training error is low but validation error is much higher\n• The model fits training data too closely and generalizes poorly",
+        "en": "• High bias or underfitting occurs when both training and validation errors are high\n• The model is too simple or too constrained\n• High variance or overfitting occurs when training error is low but validation error is much higher\n• The model fits training data too closely and generalizes poorly"
+      },
+      "focus": "exam",
+      "sourceId": "IML056"
+    },
+    {
+      "id": "IMLB057",
+      "lecture": "L7",
+      "category": "Bias Variance",
+      "question": {
+        "de": "What actions can reduce high bias?",
+        "en": "What actions can reduce high bias?"
+      },
+      "answer": {
+        "de": "• To reduce high bias, increase model complexity, add relevant features, reduce overly strong regularization, improve feature representation, or use boosting methods\n• Adding more training data alone usually does not help much when the model is too simple",
+        "en": "• To reduce high bias, increase model complexity, add relevant features, reduce overly strong regularization, improve feature representation, or use boosting methods\n• Adding more training data alone usually does not help much when the model is too simple"
+      },
+      "focus": "exam",
+      "sourceId": "IML057"
+    },
+    {
+      "id": "IMLB058",
+      "lecture": "L7",
+      "category": "Bias Variance",
+      "question": {
+        "de": "What actions can reduce high variance?",
+        "en": "What actions can reduce high variance?"
+      },
+      "answer": {
+        "de": "• To reduce high variance, collect more representative training data, increase regularization, reduce model complexity, remove noisy features, use dropout for neural networks, or apply bagging methods such as Random Forest\n• Data leakage should also be checked if validation performance behaves unexpectedly",
+        "en": "• To reduce high variance, collect more representative training data, increase regularization, reduce model complexity, remove noisy features, use dropout for neural networks, or apply bagging methods such as Random Forest\n• Data leakage should also be checked if validation performance behaves unexpectedly"
+      },
+      "focus": "exam",
+      "sourceId": "IML058"
+    },
+    {
+      "id": "IMLB059",
+      "lecture": "L7",
+      "category": "Learning Curves",
+      "question": {
+        "de": "What can learning curves tell you?",
+        "en": "What can learning curves tell you?"
+      },
+      "answer": {
+        "de": "• Learning curves plot performance or error as the training set size increases\n• They help diagnose whether a model underfits, overfits, or is well balanced\n• If train and validation errors are both high, the model likely has high bias\n• If training error is low and validation error is high, more data or stronger regularization may help",
+        "en": "• Learning curves plot performance or error as the training set size increases\n• They help diagnose whether a model underfits, overfits, or is well balanced\n• If train and validation errors are both high, the model likely has high bias\n• If training error is low and validation error is high, more data or stronger regularization may help"
+      },
+      "focus": "exam",
+      "sourceId": "IML059"
+    },
+    {
+      "id": "IMLB060",
+      "lecture": "L8",
+      "category": "Ensembles",
+      "question": {
+        "de": "What is bagging and why does it reduce variance?",
+        "en": "What is bagging and why does it reduce variance?"
+      },
+      "answer": {
+        "de": "• Bagging trains multiple models on bootstrap samples of the training data and aggregates their predictions by averaging or voting\n• Because each model sees a different sample, their errors are partly independent\n• Averaging reduces variance and makes the final model more stable than a single high-variance model",
+        "en": "• Bagging trains multiple models on bootstrap samples of the training data and aggregates their predictions by averaging or voting\n• Because each model sees a different sample, their errors are partly independent\n• Averaging reduces variance and makes the final model more stable than a single high-variance model"
+      },
+      "focus": "exam",
+      "sourceId": "IML060"
+    },
+    {
+      "id": "IMLB061",
+      "lecture": "L8",
+      "category": "Random Forest",
+      "question": {
+        "de": "How does a Random Forest improve over a single decision tree?",
+        "en": "How does a Random Forest improve over a single decision tree?"
+      },
+      "answer": {
+        "de": "• A Random Forest combines many decision trees trained on bootstrap samples and random subsets of features\n• This reduces overfitting and instability compared with a single tree\n• It usually performs better and is robust, but it is less interpretable and computationally larger than one tree",
+        "en": "• A Random Forest combines many decision trees trained on bootstrap samples and random subsets of features\n• This reduces overfitting and instability compared with a single tree\n• It usually performs better and is robust, but it is less interpretable and computationally larger than one tree"
+      },
+      "focus": "exam",
+      "sourceId": "IML061"
+    },
+    {
+      "id": "IMLB062",
+      "lecture": "L8",
+      "category": "Boosting",
+      "question": {
+        "de": "What is boosting and when is it useful?",
+        "en": "What is boosting and when is it useful?"
+      },
+      "answer": {
+        "de": "• Boosting trains models sequentially so that later models focus more on errors made by earlier models\n• Useful for reducing bias and building strong predictors from weak learners\n• It can achieve high accuracy, but it is more sensitive to noise, mislabeled data, and overfitting if not tuned carefully",
+        "en": "• Boosting trains models sequentially so that later models focus more on errors made by earlier models\n• Useful for reducing bias and building strong predictors from weak learners\n• It can achieve high accuracy, but it is more sensitive to noise, mislabeled data, and overfitting if not tuned carefully"
+      },
+      "focus": "exam",
+      "sourceId": "IML062"
+    },
+    {
+      "id": "IMLB063",
+      "lecture": "L8",
+      "category": "Stacking",
+      "question": {
+        "de": "What is stacking and what is the main risk when using it?",
+        "en": "What is stacking and what is the main risk when using it?"
+      },
+      "answer": {
+        "de": "• Stacking combines several base models by training a meta-model on their predictions\n• It can exploit complementary strengths of different algorithms\n• The main risk is data leakage: the meta-model must be trained on out-of-fold predictions, not predictions from models evaluated on the same data they were trained on",
+        "en": "• Stacking combines several base models by training a meta-model on their predictions\n• It can exploit complementary strengths of different algorithms\n• The main risk is data leakage: the meta-model must be trained on out-of-fold predictions, not predictions from models evaluated on the same data they were trained on"
+      },
+      "focus": "exam",
+      "sourceId": "IML063"
+    },
+    {
+      "id": "IMLB064",
+      "lecture": "L8",
+      "category": "Model vs Data Centric",
+      "question": {
+        "de": "What is the difference between model-centric and data-centric machine learning?",
+        "en": "What is the difference between model-centric and data-centric machine learning?"
+      },
+      "answer": {
+        "de": "• Model-centric ML keeps the dataset mostly fixed and improves algorithms, architectures, hyperparameters, or regularization\n• Data-centric ML keeps the model more fixed and systematically improves labels, coverage, consistency, representativeness, and data quality\n• Many real projects benefit more from data improvements than from changing models",
+        "en": "• Model-centric ML keeps the dataset mostly fixed and improves algorithms, architectures, hyperparameters, or regularization\n• Data-centric ML keeps the model more fixed and systematically improves labels, coverage, consistency, representativeness, and data quality\n• Many real projects benefit more from data improvements than from changing models"
+      },
+      "focus": "exam",
+      "sourceId": "IML064"
+    },
+    {
+      "id": "IMLB065",
+      "lecture": "L8",
+      "category": "Data Quality",
+      "question": {
+        "de": "Why can noisy labels be more damaging than a weak model?",
+        "en": "Why can noisy labels be more damaging than a weak model?"
+      },
+      "answer": {
+        "de": "• Noisy labels teach the model inconsistent or wrong relationships\n• Even a strong algorithm may learn label errors instead of true patterns\n• Improving label consistency, annotator guidelines, and coverage can increase performance more reliably than simply using a more complex model",
+        "en": "• Noisy labels teach the model inconsistent or wrong relationships\n• Even a strong algorithm may learn label errors instead of true patterns\n• Improving label consistency, annotator guidelines, and coverage can increase performance more reliably than simply using a more complex model"
+      },
+      "focus": "exam",
+      "sourceId": "IML065"
+    },
+    {
+      "id": "IMLB066",
+      "lecture": "L8",
+      "category": "Drift",
+      "question": {
+        "de": "What is the difference between data drift and concept drift?",
+        "en": "What is the difference between data drift and concept drift?"
+      },
+      "answer": {
+        "de": "• Data drift means the input feature distribution changes, for example new customer demographics or different sensor ranges\n• Concept drift means the relationship between inputs and target changes, even if input distributions look similar\n• Both can degrade model performance and require monitoring, diagnosis, and possibly retraining",
+        "en": "• Data drift means the input feature distribution changes, for example new customer demographics or different sensor ranges\n• Concept drift means the relationship between inputs and target changes, even if input distributions look similar\n• Both can degrade model performance and require monitoring, diagnosis, and possibly retraining"
+      },
+      "focus": "exam",
+      "sourceId": "IML066"
+    },
+    {
+      "id": "IMLB067",
+      "lecture": "L8",
+      "category": "Monitoring",
+      "question": {
+        "de": "What should be monitored after deploying an ML model?",
+        "en": "What should be monitored after deploying an ML model?"
+      },
+      "answer": {
+        "de": "• Monitor prediction quality, input data distributions, missing values, feature ranges, class balance, calibration, fairness across groups, latency, pipeline failures, and signs of data or concept drift\n• Monitoring should trigger investigation, not automatic blind retraining, because performance drops can have many causes",
+        "en": "• Monitor prediction quality, input data distributions, missing values, feature ranges, class balance, calibration, fairness across groups, latency, pipeline failures, and signs of data or concept drift\n• Monitoring should trigger investigation, not automatic blind retraining, because performance drops can have many causes"
+      },
+      "focus": "exam",
+      "sourceId": "IML067"
+    },
+    {
+      "id": "IMLB068",
+      "lecture": "L9",
+      "category": "Neural Networks",
+      "question": {
+        "de": "What is the basic operation of an artificial neuron?",
+        "en": "What is the basic operation of an artificial neuron?"
+      },
+      "answer": {
+        "de": "• A neuron takes input values, multiplies them by weights, adds a bias, and applies an activation function\n• The activation function determines the output signal passed to the next layer\n• By combining many neurons in layers, neural networks can learn complex nonlinear mappings",
+        "en": "• A neuron takes input values, multiplies them by weights, adds a bias, and applies an activation function\n• The activation function determines the output signal passed to the next layer\n• By combining many neurons in layers, neural networks can learn complex nonlinear mappings"
+      },
+      "focus": "concept",
+      "sourceId": "IML068"
+    },
+    {
+      "id": "IMLB069",
+      "lecture": "L9",
+      "category": "Forward Pass",
+      "question": {
+        "de": "What happens during the forward pass of a feedforward neural network?",
+        "en": "What happens during the forward pass of a feedforward neural network?"
+      },
+      "answer": {
+        "de": "• Inputs move layer by layer from the input layer through hidden layers to the output layer\n• Each layer computes weighted sums, adds biases, and applies activation functions\n• The final output is the model prediction, which is then compared with the true target using a loss function",
+        "en": "• Inputs move layer by layer from the input layer through hidden layers to the output layer\n• Each layer computes weighted sums, adds biases, and applies activation functions\n• The final output is the model prediction, which is then compared with the true target using a loss function"
+      },
+      "focus": "exam",
+      "sourceId": "IML069"
+    },
+    {
+      "id": "IMLB070",
+      "lecture": "L9",
+      "category": "Activation Functions",
+      "question": {
+        "de": "Why do neural networks need nonlinear activation functions?",
+        "en": "Why do neural networks need nonlinear activation functions?"
+      },
+      "answer": {
+        "de": "• Without nonlinear activations, stacked layers collapse into a single linear transformation, no matter how many layers are used\n• Nonlinear activations allow the network to learn complex decision boundaries and nonlinear relationships\n• Good activation functions should be computationally feasible and support gradient-based training",
+        "en": "• Without nonlinear activations, stacked layers collapse into a single linear transformation, no matter how many layers are used\n• Nonlinear activations allow the network to learn complex decision boundaries and nonlinear relationships\n• Good activation functions should be computationally feasible and support gradient-based training"
+      },
+      "focus": "exam",
+      "sourceId": "IML070"
+    },
+    {
+      "id": "IMLB071",
+      "lecture": "L9",
+      "category": "Activation Functions",
+      "question": {
+        "de": "Compare sigmoid, ReLU, leaky ReLU, and softmax.",
+        "en": "Compare sigmoid, ReLU, leaky ReLU, and softmax."
+      },
+      "answer": {
+        "de": "• Sigmoid maps values to 0-1 and is useful for binary probability outputs, but can saturate and cause vanishing gradients\n• ReLU is efficient and often trains faster, but can suffer from dying ReLU when gradients become zero for negative inputs\n• Leaky ReLU keeps a small negative slope to reduce this problem\n• Softmax converts class scores into probabilities that sum to 1 for multiclass classification",
+        "en": "• Sigmoid maps values to 0-1 and is useful for binary probability outputs, but can saturate and cause vanishing gradients\n• ReLU is efficient and often trains faster, but can suffer from dying ReLU when gradients become zero for negative inputs\n• Leaky ReLU keeps a small negative slope to reduce this problem\n• Softmax converts class scores into probabilities that sum to 1 for multiclass classification"
+      },
+      "focus": "exam",
+      "sourceId": "IML071"
+    },
+    {
+      "id": "IMLB072",
+      "lecture": "L9",
+      "category": "Backpropagation",
+      "question": {
+        "de": "How does backpropagation help a neural network learn?",
+        "en": "How does backpropagation help a neural network learn?"
+      },
+      "answer": {
+        "de": "• Backpropagation computes how much each weight contributed to the output error using the chain rule\n• Gradients are propagated backward from the output layer through hidden layers\n• An optimizer then updates weights and biases to reduce the loss in future predictions",
+        "en": "• Backpropagation computes how much each weight contributed to the output error using the chain rule\n• Gradients are propagated backward from the output layer through hidden layers\n• An optimizer then updates weights and biases to reduce the loss in future predictions"
+      },
+      "focus": "exam",
+      "sourceId": "IML072"
+    },
+    {
+      "id": "IMLB073",
+      "lecture": "L9",
+      "category": "Loss Functions",
+      "question": {
+        "de": "Which output and loss combinations fit binary classification, multiclass classification, and regression?",
+        "en": "Which output and loss combinations fit binary classification, multiclass classification, and regression?"
+      },
+      "answer": {
+        "de": "• For binary classification, use one sigmoid output with binary cross-entropy\n• For multiclass classification, use K outputs with softmax and multiclass cross-entropy\n• For regression, use a linear output neuron with a regression loss such as mean squared error\n• The output layer should match the target type",
+        "en": "• For binary classification, use one sigmoid output with binary cross-entropy\n• For multiclass classification, use K outputs with softmax and multiclass cross-entropy\n• For regression, use a linear output neuron with a regression loss such as mean squared error\n• The output layer should match the target type"
+      },
+      "focus": "exam",
+      "sourceId": "IML073"
+    },
+    {
+      "id": "IMLB074",
+      "lecture": "L9",
+      "category": "Neural Networks",
+      "question": {
+        "de": "What are the advantages and limitations of neural networks?",
+        "en": "What are the advantages and limitations of neural networks?"
+      },
+      "answer": {
+        "de": "• Advantages include learning complex nonlinear patterns, automatic feature learning, adaptability, and strong performance on high-dimensional or unstructured data\n• Limitations include data hunger, high computational cost, overfitting risk, sensitivity to hyperparameters, and low interpretability compared with simpler models",
+        "en": "• Advantages include learning complex nonlinear patterns, automatic feature learning, adaptability, and strong performance on high-dimensional or unstructured data\n• Limitations include data hunger, high computational cost, overfitting risk, sensitivity to hyperparameters, and low interpretability compared with simpler models"
+      },
+      "focus": "exam",
+      "sourceId": "IML074"
+    },
+    {
+      "id": "IMLB075",
+      "lecture": "L10",
+      "category": "CNN",
+      "question": {
+        "de": "Why are fully connected networks inefficient for raw images?",
+        "en": "Why are fully connected networks inefficient for raw images?"
+      },
+      "answer": {
+        "de": "• Raw images can contain millions of pixel values\n• A fully connected layer connects every pixel to every neuron, creating an enormous number of parameters, high memory cost, slow training, and high overfitting risk\n• It also ignores spatial structure\n• CNNs solve this by using local connections and shared filters",
+        "en": "• Raw images can contain millions of pixel values\n• A fully connected layer connects every pixel to every neuron, creating an enormous number of parameters, high memory cost, slow training, and high overfitting risk\n• It also ignores spatial structure\n• CNNs solve this by using local connections and shared filters"
+      },
+      "focus": "exam",
+      "sourceId": "IML075"
+    },
+    {
+      "id": "IMLB076",
+      "lecture": "L10",
+      "category": "CNN",
+      "question": {
+        "de": "What is a convolutional filter in a CNN?",
+        "en": "What is a convolutional filter in a CNN?"
+      },
+      "answer": {
+        "de": "• A convolutional filter is a small matrix of trainable weights that scans across an image or feature map\n• At each location it computes a weighted sum and produces an activation\n• Different filters learn to detect different patterns such as edges, textures, corners, or object parts",
+        "en": "• A convolutional filter is a small matrix of trainable weights that scans across an image or feature map\n• At each location it computes a weighted sum and produces an activation\n• Different filters learn to detect different patterns such as edges, textures, corners, or object parts"
+      },
+      "focus": "concept",
+      "sourceId": "IML076"
+    },
+    {
+      "id": "IMLB077",
+      "lecture": "L10",
+      "category": "CNN",
+      "question": {
+        "de": "What is a feature map?",
+        "en": "What is a feature map?"
+      },
+      "answer": {
+        "de": "• A feature map is the output produced when a filter is applied across the input\n• It shows where the learned pattern was detected and how strongly it activated\n• Multiple filters produce multiple feature maps, allowing the network to represent different visual patterns at the same layer",
+        "en": "• A feature map is the output produced when a filter is applied across the input\n• It shows where the learned pattern was detected and how strongly it activated\n• Multiple filters produce multiple feature maps, allowing the network to represent different visual patterns at the same layer"
+      },
+      "focus": "concept",
+      "sourceId": "IML077"
+    },
+    {
+      "id": "IMLB078",
+      "lecture": "L10",
+      "category": "CNN",
+      "question": {
+        "de": "What do stride and padding control in a convolutional layer?",
+        "en": "What do stride and padding control in a convolutional layer?"
+      },
+      "answer": {
+        "de": "• Stride controls how many pixels the filter moves at each step\n• Larger stride reduces spatial size and computation but may lose detail\n• Padding adds values, often zeros, around the input border\n• Padding can preserve spatial dimensions and keep border information from disappearing too quickly",
+        "en": "• Stride controls how many pixels the filter moves at each step\n• Larger stride reduces spatial size and computation but may lose detail\n• Padding adds values, often zeros, around the input border\n• Padding can preserve spatial dimensions and keep border information from disappearing too quickly"
+      },
+      "focus": "exam",
+      "sourceId": "IML078"
+    },
+    {
+      "id": "IMLB079",
+      "lecture": "L10",
+      "category": "Pooling",
+      "question": {
+        "de": "What is pooling and why is it used in CNNs?",
+        "en": "What is pooling and why is it used in CNNs?"
+      },
+      "answer": {
+        "de": "• Pooling downsamples feature maps while preserving important information\n• Max pooling keeps the strongest activation in a local region; average pooling keeps the average\n• Pooling reduces computation, controls overfitting, and gives some robustness to small translations or local shifts in the input",
+        "en": "• Pooling downsamples feature maps while preserving important information\n• Max pooling keeps the strongest activation in a local region; average pooling keeps the average\n• Pooling reduces computation, controls overfitting, and gives some robustness to small translations or local shifts in the input"
+      },
+      "focus": "exam",
+      "sourceId": "IML079"
+    },
+    {
+      "id": "IMLB080",
+      "lecture": "L10",
+      "category": "CNN",
+      "question": {
+        "de": "Why do convolutional layers generalize better than fully connected layers for images?",
+        "en": "Why do convolutional layers generalize better than fully connected layers for images?"
+      },
+      "answer": {
+        "de": "• Convolutional layers encode useful assumptions about images: nearby pixels are related, and visual features can appear anywhere\n• Parameter sharing means the same filter is used across locations\n• Sparse local connections reduce parameters\n• These properties improve learning speed, generalization, and data efficiency",
+        "en": "• Convolutional layers encode useful assumptions about images: nearby pixels are related, and visual features can appear anywhere\n• Parameter sharing means the same filter is used across locations\n• Sparse local connections reduce parameters\n• These properties improve learning speed, generalization, and data efficiency"
+      },
+      "focus": "exam",
+      "sourceId": "IML080"
+    },
+    {
+      "id": "IMLB081",
+      "lecture": "L10",
+      "category": "Transfer Learning",
+      "question": {
+        "de": "How should transfer learning be used for a small image dataset?",
+        "en": "How should transfer learning be used for a small image dataset?"
+      },
+      "answer": {
+        "de": "• Start with a CNN pre-trained on a large related dataset\n• Replace the final classifier with a new output layer for the target classes\n• Freeze early layers at first because they contain general features such as edges and textures\n• Train the new head, then optionally fine-tune deeper layers if enough data are available\n• Transfer can fail if source and target domains are very different",
+        "en": "• Start with a CNN pre-trained on a large related dataset\n• Replace the final classifier with a new output layer for the target classes\n• Freeze early layers at first because they contain general features such as edges and textures\n• Train the new head, then optionally fine-tune deeper layers if enough data are available\n• Transfer can fail if source and target domains are very different"
+      },
+      "focus": "exam",
+      "sourceId": "IML081"
+    },
+    {
+      "id": "IMLB082",
+      "lecture": "L10",
+      "category": "Image Augmentation",
+      "question": {
+        "de": "Why can image data augmentation help CNN training?",
+        "en": "Why can image data augmentation help CNN training?"
+      },
+      "answer": {
+        "de": "• Data augmentation creates realistic variations of training images, such as flips, rotations, crops, brightness changes, or small shifts\n• It increases effective data diversity, reduces overfitting, and helps the model become robust to transformations that should not change the label\n• Augmentations must preserve the true class",
+        "en": "• Data augmentation creates realistic variations of training images, such as flips, rotations, crops, brightness changes, or small shifts\n• It increases effective data diversity, reduces overfitting, and helps the model become robust to transformations that should not change the label\n• Augmentations must preserve the true class"
+      },
+      "focus": "concept",
+      "sourceId": "IML082"
+    },
+    {
+      "id": "IMLB083",
+      "lecture": "L11",
+      "category": "Sequence Data",
+      "question": {
+        "de": "What makes sequence data different from ordinary tabular data?",
+        "en": "What makes sequence data different from ordinary tabular data?"
+      },
+      "answer": {
+        "de": "• In sequence data, order matters\n• The meaning of an element depends on previous or future elements, and examples may have different lengths\n• Text, speech, DNA, video, and time series are typical sequence data\n• A model must capture temporal or positional dependencies rather than treating inputs as independent features",
+        "en": "• In sequence data, order matters\n• The meaning of an element depends on previous or future elements, and examples may have different lengths\n• Text, speech, DNA, video, and time series are typical sequence data\n• A model must capture temporal or positional dependencies rather than treating inputs as independent features"
+      },
+      "focus": "concept",
+      "sourceId": "IML083"
+    },
+    {
+      "id": "IMLB084",
+      "lecture": "L11",
+      "category": "RNN",
+      "question": {
+        "de": "How does an RNN process a sequence?",
+        "en": "How does an RNN process a sequence?"
+      },
+      "answer": {
+        "de": "• An RNN reads a sequence step by step\n• At each time step it combines the current input with a hidden state from the previous step\n• The hidden state acts as memory of earlier inputs\n• This makes RNNs suitable for sequential patterns, but standard RNNs struggle with long-range dependencies",
+        "en": "• An RNN reads a sequence step by step\n• At each time step it combines the current input with a hidden state from the previous step\n• The hidden state acts as memory of earlier inputs\n• This makes RNNs suitable for sequential patterns, but standard RNNs struggle with long-range dependencies"
+      },
+      "focus": "exam",
+      "sourceId": "IML084"
+    },
+    {
+      "id": "IMLB085",
+      "lecture": "L11",
+      "category": "RNN Limitations",
+      "question": {
+        "de": "What is the vanishing gradient problem in standard RNNs?",
+        "en": "What is the vanishing gradient problem in standard RNNs?"
+      },
+      "answer": {
+        "de": "• During backpropagation through time, gradients can become very small as they pass through many time steps\n• Then early inputs receive almost no learning signal, so the model struggles to learn long-term dependencies\n• This is one reason LSTMs and GRUs were developed",
+        "en": "• During backpropagation through time, gradients can become very small as they pass through many time steps\n• Then early inputs receive almost no learning signal, so the model struggles to learn long-term dependencies\n• This is one reason LSTMs and GRUs were developed"
+      },
+      "focus": "exam",
+      "sourceId": "IML085"
+    },
+    {
+      "id": "IMLB086",
+      "lecture": "L11",
+      "category": "LSTM",
+      "question": {
+        "de": "How does an LSTM improve over a standard RNN?",
+        "en": "How does an LSTM improve over a standard RNN?"
+      },
+      "answer": {
+        "de": "• An LSTM adds a cell state as long-term memory and gates that control information flow\n• The forget gate decides what old information to remove, the input gate decides what new information to store, and the output gate decides what to expose as the hidden state\n• This helps preserve useful information over longer sequences",
+        "en": "• An LSTM adds a cell state as long-term memory and gates that control information flow\n• The forget gate decides what old information to remove, the input gate decides what new information to store, and the output gate decides what to expose as the hidden state\n• This helps preserve useful information over longer sequences"
+      },
+      "focus": "exam",
+      "sourceId": "IML086"
+    },
+    {
+      "id": "IMLB087",
+      "lecture": "L11",
+      "category": "GRU",
+      "question": {
+        "de": "How does a GRU differ from an LSTM?",
+        "en": "How does a GRU differ from an LSTM?"
+      },
+      "answer": {
+        "de": "• A GRU is a simpler gated recurrent unit\n• It usually has update and reset gates and merges memory and output into one hidden state instead of using a separate cell state\n• GRUs have fewer parameters, train faster, and can work well for shorter or medium-length sequences\n• LSTMs offer more explicit memory control for very long dependencies",
+        "en": "• A GRU is a simpler gated recurrent unit\n• It usually has update and reset gates and merges memory and output into one hidden state instead of using a separate cell state\n• GRUs have fewer parameters, train faster, and can work well for shorter or medium-length sequences\n• LSTMs offer more explicit memory control for very long dependencies"
+      },
+      "focus": "exam",
+      "sourceId": "IML087"
+    },
+    {
+      "id": "IMLB088",
+      "lecture": "L11",
+      "category": "Time Series",
+      "question": {
+        "de": "What are trend, seasonality, and residuals in time series decomposition?",
+        "en": "What are trend, seasonality, and residuals in time series decomposition?"
+      },
+      "answer": {
+        "de": "• Trend is the long-term direction of the series, such as growth, decline, or stability\n• Seasonality is a regular repeating pattern, such as daily, weekly, monthly, or yearly behavior\n• Residuals are the remaining unexplained fluctuations after trend and seasonality are removed\n• Residual structure can indicate that the model is missing important patterns",
+        "en": "• Trend is the long-term direction of the series, such as growth, decline, or stability\n• Seasonality is a regular repeating pattern, such as daily, weekly, monthly, or yearly behavior\n• Residuals are the remaining unexplained fluctuations after trend and seasonality are removed\n• Residual structure can indicate that the model is missing important patterns"
+      },
+      "focus": "exam",
+      "sourceId": "IML088"
+    },
+    {
+      "id": "IMLB089",
+      "lecture": "L11",
+      "category": "Forecasting Models",
+      "question": {
+        "de": "How would you choose between naive, seasonal naive, exponential smoothing, ARIMA/SARIMA, ML models, and LSTM/GRU for forecasting?",
+        "en": "How would you choose between naive, seasonal naive, exponential smoothing, ARIMA/SARIMA, ML models, and LSTM/GRU for forecasting?"
+      },
+      "answer": {
+        "de": "• Start with simple baselines such as naive or seasonal naive\n• Use exponential smoothing when recent observations should get more weight\n• Consider ARIMA for autoregressive and moving-average structure, and SARIMA when seasonality is important\n• Use ML models with lag and external features for nonlinear tabular patterns\n• Use LSTM/GRU only when enough data and complex temporal dependencies justify the extra complexity",
+        "en": "• Start with simple baselines such as naive or seasonal naive\n• Use exponential smoothing when recent observations should get more weight\n• Consider ARIMA for autoregressive and moving-average structure, and SARIMA when seasonality is important\n• Use ML models with lag and external features for nonlinear tabular patterns\n• Use LSTM/GRU only when enough data and complex temporal dependencies justify the extra complexity"
+      },
+      "focus": "exam",
+      "sourceId": "IML089"
+    },
+    {
+      "id": "IMLB090",
+      "lecture": "L11",
+      "category": "Forecasting Evaluation",
+      "question": {
+        "de": "Which metrics are common for time series forecasting and what should validation respect?",
+        "en": "Which metrics are common for time series forecasting and what should validation respect?"
+      },
+      "answer": {
+        "de": "• Common metrics include MAE, RMSE, and MAPE\n• Validation must respect time order: train on the past and validate on later periods\n• Random splitting can leak future information into training and produce unrealistic performance\n• Domain knowledge and seasonality should guide the evaluation window",
+        "en": "• Common metrics include MAE, RMSE, and MAPE\n• Validation must respect time order: train on the past and validate on later periods\n• Random splitting can leak future information into training and produce unrealistic performance\n• Domain knowledge and seasonality should guide the evaluation window"
+      },
+      "focus": "exam",
+      "sourceId": "IML090"
+    },
+    {
+      "id": "IMLB091",
+      "lecture": "L12",
+      "category": "Anomaly Detection",
+      "question": {
+        "de": "What are the three main steps in an anomaly detection project?",
+        "en": "What are the three main steps in an anomaly detection project?"
+      },
+      "answer": {
+        "de": "• The three main steps are data preprocessing, anomaly identification, and anomaly analysis\n• Preprocessing cleans, transforms, aligns, and standardizes the data\n• Identification applies statistical, machine learning, or domain-based methods\n• Analysis interprets the anomalies, checks root causes, and decides appropriate actions",
+        "en": "• The three main steps are data preprocessing, anomaly identification, and anomaly analysis\n• Preprocessing cleans, transforms, aligns, and standardizes the data\n• Identification applies statistical, machine learning, or domain-based methods\n• Analysis interprets the anomalies, checks root causes, and decides appropriate actions"
+      },
+      "focus": "exam",
+      "sourceId": "IML091"
+    },
+    {
+      "id": "IMLB092",
+      "lecture": "L12",
+      "category": "Anomaly Types",
+      "question": {
+        "de": "What is the difference between point, contextual, and collective anomalies?",
+        "en": "What is the difference between point, contextual, and collective anomalies?"
+      },
+      "answer": {
+        "de": "• A point anomaly is one data point that deviates from the rest\n• A contextual anomaly is unusual only in a specific context, such as high electricity use at night but not during the day\n• A collective anomaly is a group pattern that is abnormal even if individual points may not be abnormal alone",
+        "en": "• A point anomaly is one data point that deviates from the rest\n• A contextual anomaly is unusual only in a specific context, such as high electricity use at night but not during the day\n• A collective anomaly is a group pattern that is abnormal even if individual points may not be abnormal alone"
+      },
+      "focus": "exam",
+      "sourceId": "IML092"
+    },
+    {
+      "id": "IMLB093",
+      "lecture": "L12",
+      "category": "Anomaly Detection",
+      "question": {
+        "de": "How can statistical tests detect anomalies?",
+        "en": "How can statistical tests detect anomalies?"
+      },
+      "answer": {
+        "de": "• Statistical tests compare observed values with an expected distribution or pattern\n• For a Gaussian distribution, values far from the mean relative to the standard deviation can be flagged as unlikely\n• This approach is simple and interpretable but depends strongly on distributional assumptions and appropriate thresholds",
+        "en": "• Statistical tests compare observed values with an expected distribution or pattern\n• For a Gaussian distribution, values far from the mean relative to the standard deviation can be flagged as unlikely\n• This approach is simple and interpretable but depends strongly on distributional assumptions and appropriate thresholds"
+      },
+      "focus": "concept",
+      "sourceId": "IML093"
+    },
+    {
+      "id": "IMLB094",
+      "lecture": "L12",
+      "category": "Anomaly Detection",
+      "question": {
+        "de": "Which machine learning methods can be used for anomaly detection?",
+        "en": "Which machine learning methods can be used for anomaly detection?"
+      },
+      "answer": {
+        "de": "• Common methods include Isolation Forest, One-Class SVM, kNN-based anomaly scoring, Local Outlier Factor, k-means based distances, Naive Bayes, and autoencoders\n• The choice depends on labels, dimensionality, data size, expected anomaly type, interpretability needs, and false-alarm costs",
+        "en": "• Common methods include Isolation Forest, One-Class SVM, kNN-based anomaly scoring, Local Outlier Factor, k-means based distances, Naive Bayes, and autoencoders\n• The choice depends on labels, dimensionality, data size, expected anomaly type, interpretability needs, and false-alarm costs"
+      },
+      "focus": "exam",
+      "sourceId": "IML094"
+    },
+    {
+      "id": "IMLB095",
+      "lecture": "L12",
+      "category": "Anomaly Detection",
+      "question": {
+        "de": "How do supervised and unsupervised anomaly detection differ?",
+        "en": "How do supervised and unsupervised anomaly detection differ?"
+      },
+      "answer": {
+        "de": "• Supervised anomaly detection uses labeled normal and anomalous examples to train a classifier\n• It can work well when representative labels exist\n• Unsupervised anomaly detection has no anomaly labels and learns normal structure or density, then flags deviations\n• It is more common when anomalies are rare or unknown",
+        "en": "• Supervised anomaly detection uses labeled normal and anomalous examples to train a classifier\n• It can work well when representative labels exist\n• Unsupervised anomaly detection has no anomaly labels and learns normal structure or density, then flags deviations\n• It is more common when anomalies are rare or unknown"
+      },
+      "focus": "exam",
+      "sourceId": "IML095"
+    },
+    {
+      "id": "IMLB096",
+      "lecture": "L12",
+      "category": "Anomaly Detection",
+      "question": {
+        "de": "How should anomaly detection results be evaluated?",
+        "en": "How should anomaly detection results be evaluated?"
+      },
+      "answer": {
+        "de": "• If labels exist, use metrics such as precision, recall, F1-score, and confusion matrix\n• If labels are scarce, use expert review, known events, false-alarm cost, and qualitative analysis\n• Evaluation should consider whether alerts are actionable, how many false alarms users can tolerate, and whether anomalies reflect real problems or data quality issues",
+        "en": "• If labels exist, use metrics such as precision, recall, F1-score, and confusion matrix\n• If labels are scarce, use expert review, known events, false-alarm cost, and qualitative analysis\n• Evaluation should consider whether alerts are actionable, how many false alarms users can tolerate, and whether anomalies reflect real problems or data quality issues"
+      },
+      "focus": "exam",
+      "sourceId": "IML096"
+    },
+    {
+      "id": "IMLB097",
+      "lecture": "L12",
+      "category": "Responsible AI",
+      "question": {
+        "de": "Why are AI systems not automatically neutral?",
+        "en": "Why are AI systems not automatically neutral?"
+      },
+      "answer": {
+        "de": "• AI systems reflect data collection choices, historical inequalities, labeling decisions, optimization metrics, and deployment context\n• If data or objectives encode bias, the model can reproduce or amplify it\n• Neutrality cannot be assumed; representativeness, fairness, transparency, accountability, and monitoring must be actively designed",
+        "en": "• AI systems reflect data collection choices, historical inequalities, labeling decisions, optimization metrics, and deployment context\n• If data or objectives encode bias, the model can reproduce or amplify it\n• Neutrality cannot be assumed; representativeness, fairness, transparency, accountability, and monitoring must be actively designed"
+      },
+      "focus": "exam",
+      "sourceId": "IML097"
+    },
+    {
+      "id": "IMLB098",
+      "lecture": "L12",
+      "category": "Responsible AI",
+      "question": {
+        "de": "Where can bias enter an AI system?",
+        "en": "Where can bias enter an AI system?"
+      },
+      "answer": {
+        "de": "• Bias can enter through problem framing, data collection, missing groups, measurement processes, labels, annotator assumptions, feature representation, optimization metrics, deployment context, and feedback loops\n• Bias is not only a technical issue; it is also a governance and accountability issue",
+        "en": "• Bias can enter through problem framing, data collection, missing groups, measurement processes, labels, annotator assumptions, feature representation, optimization metrics, deployment context, and feedback loops\n• Bias is not only a technical issue; it is also a governance and accountability issue"
+      },
+      "focus": "exam",
+      "sourceId": "IML098"
+    },
+    {
+      "id": "IMLB099",
+      "lecture": "L12",
+      "category": "Responsible AI",
+      "question": {
+        "de": "What do representativeness, fairness, transparency, and accountability mean in an ML project?",
+        "en": "What do representativeness, fairness, transparency, and accountability mean in an ML project?"
+      },
+      "answer": {
+        "de": "• Representativeness means the data adequately covers the populations and situations affected by the model\n• Fairness means evaluating errors and impacts across relevant groups, not only overall accuracy\n• Transparency means decisions and limitations can be inspected and explained\n• Accountability means humans remain responsible, documentation exists, and the system is monitored after deployment",
+        "en": "• Representativeness means the data adequately covers the populations and situations affected by the model\n• Fairness means evaluating errors and impacts across relevant groups, not only overall accuracy\n• Transparency means decisions and limitations can be inspected and explained\n• Accountability means humans remain responsible, documentation exists, and the system is monitored after deployment"
+      },
+      "focus": "exam",
+      "sourceId": "IML099"
+    }
+  ]
+}
