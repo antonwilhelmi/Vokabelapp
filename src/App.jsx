@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { translations } from "./i18n";
 import {
@@ -107,6 +107,22 @@ function isIgnored(cardId, progress) {
   return Boolean(progress[cardId]?.ignored);
 }
 
+function formatInterval(minutes) {
+  if (!minutes) {
+    return null;
+  }
+
+  if (minutes < 60) {
+    return `${minutes} min`;
+  }
+
+  if (minutes < 60 * 24) {
+    return `${Math.round(minutes / 60)} h`;
+  }
+
+  return `${Math.round(minutes / (60 * 24))} d`;
+}
+
 export default function App() {
   const [settings, setSettings] = useState(loadSettings);
   const [progress, setProgress] = useState(loadProgress);
@@ -118,7 +134,7 @@ export default function App() {
   const [selectedLecture, setSelectedLecture] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [search, setSearch] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentCardId, setCurrentCardId] = useState(null);
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
 
   const t = translations[settings.language] || translations.en;
@@ -148,19 +164,7 @@ export default function App() {
     ];
   }, [activeCards]);
 
-  const setMastery = useMemo(() => {
-    if (activeCards.length === 0) {
-      return 0;
-    }
-
-    const totalScore = activeCards.reduce((sum, card) => {
-      return sum + getCardMastery(card.id, progress);
-    }, 0);
-
-    return Math.round(totalScore / activeCards.length);
-  }, [activeCards, progress]);
-
-  const filteredCards = useMemo(() => {
+  const candidateCards = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
     return activeCards.filter((card) => {
@@ -169,9 +173,6 @@ export default function App() {
 
       const matchesCategory =
         selectedCategory === "all" || card.category === selectedCategory;
-
-      const matchesDueSetting =
-        !settings.onlyDue || isCardDue(card.id, progress);
 
       const searchableText = [
         card.id,
@@ -189,28 +190,32 @@ export default function App() {
         normalizedSearch.length === 0 ||
         searchableText.includes(normalizedSearch);
 
-      return (
-        matchesLecture &&
-        matchesCategory &&
-        matchesDueSetting &&
-        matchesSearch
-      );
+      return matchesLecture && matchesCategory && matchesSearch;
     });
-  }, [
-    activeCards,
-    selectedLecture,
-    selectedCategory,
-    search,
-    settings.onlyDue,
-    progress
-  ]);
+  }, [activeCards, selectedLecture, selectedCategory, search]);
 
-  const safeCurrentIndex =
-    filteredCards.length === 0
-      ? 0
-      : Math.min(currentIndex, filteredCards.length - 1);
+  const navigationCards = useMemo(() => {
+    if (!settings.onlyDue) {
+      return candidateCards;
+    }
 
-  const currentCard = filteredCards[safeCurrentIndex] || null;
+    return candidateCards.filter((card) => isCardDue(card.id, progress));
+  }, [candidateCards, settings.onlyDue, progress]);
+
+  const currentCard =
+    candidateCards.find((card) => card.id === currentCardId) ||
+    navigationCards[0] ||
+    candidateCards[0] ||
+    null;
+
+  const displayCards =
+    currentCard && navigationCards.some((card) => card.id === currentCard.id)
+      ? navigationCards
+      : candidateCards;
+
+  const safeCurrentIndex = currentCard
+    ? displayCards.findIndex((card) => card.id === currentCard.id)
+    : -1;
 
   const dueCount = activeCards.filter((card) =>
     isCardDue(card.id, progress)
@@ -219,6 +224,18 @@ export default function App() {
   const reviewedCount = activeCards.filter(
     (card) => progress[card.id]?.reviewedCount > 0
   ).length;
+
+  const setMastery = useMemo(() => {
+    if (activeCards.length === 0) {
+      return 0;
+    }
+
+    const totalScore = activeCards.reduce((sum, card) => {
+      return sum + getCardMastery(card.id, progress);
+    }, 0);
+
+    return Math.round(totalScore / activeCards.length);
+  }, [activeCards, progress]);
 
   const currentQuestion = currentCard
     ? getText(currentCard.question, settings.language)
@@ -234,20 +251,28 @@ export default function App() {
     ? getCardMastery(currentCard.id, progress)
     : 0;
 
-  function resetCardView() {
-    setCurrentIndex(0);
-    setIsAnswerVisible(false);
-  }
+  const currentIntervalText = formatInterval(currentProgress?.intervalMinutes);
 
-  function handleDeckChange(event) {
-    setSelectedDeckId(event.target.value);
-    setSelectedLecture("all");
-    setSelectedCategory("all");
-    setSearch("");
-    resetCardView();
-  }
+  useEffect(() => {
+    if (candidateCards.length === 0) {
+      if (currentCardId !== null) {
+        setCurrentCardId(null);
+      }
 
-    function updateSetting(key, value) {
+      return;
+    }
+
+    const currentCardStillExists = candidateCards.some(
+      (card) => card.id === currentCardId
+    );
+
+    if (!currentCardId || !currentCardStillExists) {
+      setCurrentCardId(candidateCards[0].id);
+      setIsAnswerVisible(false);
+    }
+  }, [candidateCards, currentCardId]);
+
+  function updateSetting(key, value) {
     const updatedSettings = {
       ...settings,
       [key]: value
@@ -255,30 +280,124 @@ export default function App() {
 
     setSettings(updatedSettings);
     saveSettings(updatedSettings);
+  }
+
+  function handleDeckChange(event) {
+    setSelectedDeckId(event.target.value);
+    setSelectedLecture("all");
+    setSelectedCategory("all");
+    setSearch("");
+    setCurrentCardId(null);
+    setIsAnswerVisible(false);
+  }
+
+  function handleLectureChange(event) {
+    setSelectedLecture(event.target.value);
+    setCurrentCardId(null);
+    setIsAnswerVisible(false);
+  }
+
+  function handleCategoryChange(event) {
+    setSelectedCategory(event.target.value);
+    setCurrentCardId(null);
+    setIsAnswerVisible(false);
+  }
+
+  function handleSearchChange(event) {
+    setSearch(event.target.value);
+    setCurrentCardId(null);
+    setIsAnswerVisible(false);
+  }
+
+  function getBestNavigationList() {
+    if (navigationCards.length > 0) {
+      return navigationCards;
     }
 
-  function goNext() {
-    if (filteredCards.length === 0) return;
+    return candidateCards;
+  }
 
-    setCurrentIndex((previousIndex) =>
-      (previousIndex + 1) % filteredCards.length
-    );
+  function moveToNext(cards = getBestNavigationList()) {
+    if (cards.length === 0 || !currentCard) {
+      return;
+    }
 
+    const currentPosition = cards.findIndex((card) => card.id === currentCard.id);
+
+    const nextIndex =
+      currentPosition === -1 ? 0 : (currentPosition + 1) % cards.length;
+
+    setCurrentCardId(cards[nextIndex].id);
     setIsAnswerVisible(false);
   }
 
-  function goPrevious() {
-    if (filteredCards.length === 0) return;
+  function moveToPrevious(cards = getBestNavigationList()) {
+    if (cards.length === 0 || !currentCard) {
+      return;
+    }
 
-    setCurrentIndex((previousIndex) =>
-      (previousIndex - 1 + filteredCards.length) % filteredCards.length
-    );
+    const currentPosition = cards.findIndex((card) => card.id === currentCard.id);
 
+    const previousIndex =
+      currentPosition === -1
+        ? 0
+        : (currentPosition - 1 + cards.length) % cards.length;
+
+    setCurrentCardId(cards[previousIndex].id);
     setIsAnswerVisible(false);
   }
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      const activeElement = document.activeElement;
+
+      const isTyping =
+        activeElement?.tagName === "INPUT" ||
+        activeElement?.tagName === "TEXTAREA" ||
+        activeElement?.tagName === "SELECT" ||
+        activeElement?.isContentEditable;
+
+      if (isTyping) {
+        return;
+      }
+
+      if (event.repeat) {
+        return;
+      }
+
+      if (event.code === "Space" || event.key === " ") {
+        event.preventDefault();
+
+        if (currentCard) {
+          setIsAnswerVisible((visible) => !visible);
+        }
+
+        return;
+      }
+
+      if (event.code === "ArrowRight") {
+        event.preventDefault();
+        moveToNext();
+        return;
+      }
+
+      if (event.code === "ArrowLeft") {
+        event.preventDefault();
+        moveToPrevious();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentCard, candidateCards, navigationCards]);
 
   function handleRating(rating) {
-    if (!currentCard) return;
+    if (!currentCard) {
+      return;
+    }
 
     const updatedProgress = rateCard(
       currentCard.id,
@@ -289,11 +408,17 @@ export default function App() {
 
     setProgress(updatedProgress);
     saveProgress(updatedProgress);
-    goNext();
+
+    const nextCards =
+      navigationCards.length > 1 ? navigationCards : candidateCards;
+
+    moveToNext(nextCards);
   }
 
   function handleIgnoreCard() {
-    if (!currentCard) return;
+    if (!currentCard) {
+      return;
+    }
 
     const updatedProgress = {
       ...progress,
@@ -304,9 +429,25 @@ export default function App() {
       }
     };
 
+    const remainingCards = candidateCards.filter(
+      (card) => card.id !== currentCard.id
+    );
+
     setProgress(updatedProgress);
     saveProgress(updatedProgress);
-    goNext();
+
+    if (remainingCards.length > 0) {
+      const currentPosition = candidateCards.findIndex(
+        (card) => card.id === currentCard.id
+      );
+
+      const nextIndex = Math.min(currentPosition, remainingCards.length - 1);
+      setCurrentCardId(remainingCards[nextIndex].id);
+    } else {
+      setCurrentCardId(null);
+    }
+
+    setIsAnswerVisible(false);
   }
 
   function handleRestoreIgnoredCards() {
@@ -324,7 +465,7 @@ export default function App() {
 
     setProgress(updatedProgress);
     saveProgress(updatedProgress);
-    resetCardView();
+    setIsAnswerVisible(false);
   }
 
   function handleResetProgress() {
@@ -332,11 +473,13 @@ export default function App() {
       "Do you really want to reset all progress?"
     );
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      return;
+    }
 
     clearProgress();
     setProgress({});
-    resetCardView();
+    setIsAnswerVisible(false);
   }
 
   if (decks.length === 0) {
@@ -386,13 +529,7 @@ export default function App() {
 
         <label>
           {t.lecture}
-          <select
-            value={selectedLecture}
-            onChange={(event) => {
-              setSelectedLecture(event.target.value);
-              resetCardView();
-            }}
-          >
+          <select value={selectedLecture} onChange={handleLectureChange}>
             {lectures.map((lecture) => (
               <option key={lecture} value={lecture}>
                 {lecture === "all" ? t.all : lecture}
@@ -403,13 +540,7 @@ export default function App() {
 
         <label>
           {t.category}
-          <select
-            value={selectedCategory}
-            onChange={(event) => {
-              setSelectedCategory(event.target.value);
-              resetCardView();
-            }}
-          >
+          <select value={selectedCategory} onChange={handleCategoryChange}>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category === "all" ? t.all : category}
@@ -424,10 +555,7 @@ export default function App() {
             type="search"
             value={search}
             placeholder={t.searchPlaceholder}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              resetCardView();
-            }}
+            onChange={handleSearchChange}
           />
         </label>
       </section>
@@ -452,16 +580,19 @@ export default function App() {
           <span>
             {t.currentCard}:{" "}
             <strong>
-              {filteredCards.length === 0 ? 0 : safeCurrentIndex + 1}/
-              {filteredCards.length}
+              {safeCurrentIndex === -1 ? 0 : safeCurrentIndex + 1}/
+              {displayCards.length}
             </strong>
           </span>
+
           <span>
             {t.dueCards}: <strong>{dueCount}</strong>
           </span>
+
           <span>
             {t.reviewedCards}: <strong>{reviewedCount}</strong>
           </span>
+
           <span>
             {t.ignoredCards}: <strong>{ignoredCount}</strong>
           </span>
@@ -502,6 +633,8 @@ export default function App() {
                   ? currentProgress.lastRating
                   : t.newCard}
               </span>
+
+              {currentIntervalText && <span>{currentIntervalText}</span>}
             </div>
 
             <h2>{currentQuestion}</h2>
@@ -518,7 +651,7 @@ export default function App() {
         )}
 
         <div className="navigation compact-navigation">
-          <button onClick={goPrevious}>{t.previous}</button>
+          <button onClick={() => moveToPrevious()}>{t.previous}</button>
 
           <button
             className="primary"
@@ -528,7 +661,7 @@ export default function App() {
             {isAnswerVisible ? t.hideAnswer : t.showAnswer}
           </button>
 
-          <button onClick={goNext}>{t.next}</button>
+          <button onClick={() => moveToNext()}>{t.next}</button>
         </div>
 
         <div className="ratings compact-ratings">
@@ -555,7 +688,6 @@ export default function App() {
           >
             {t.good}
           </button>
-
         </div>
       </section>
 
