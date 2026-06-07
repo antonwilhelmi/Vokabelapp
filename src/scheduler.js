@@ -6,19 +6,19 @@ function clampInterval(minutes) {
 
 function getBaseIntervalMinutes(rating, settings) {
   if (rating === "bad") {
-    return settings.badMinutes;
+    return Number(settings.badMinutes) || 5;
   }
 
   if (rating === "medium") {
-    return settings.mediumHours * 60;
+    return (Number(settings.mediumHours) || 6) * 60;
   }
 
-  return settings.goodHours * 60;
+  return (Number(settings.goodHours) || 24) * 60;
 }
 
 function getPreviousIntervalMinutes(cardProgress, settings) {
   if (!cardProgress?.intervalMinutes) {
-    return settings.goodHours * 60;
+    return (Number(settings.goodHours) || 24) * 60;
   }
 
   return cardProgress.intervalMinutes;

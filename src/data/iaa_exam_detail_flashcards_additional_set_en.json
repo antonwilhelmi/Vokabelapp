@@ -1,0 +1,999 @@
+{
+  "id": "iaa-exam-deep-detail-nonduplicate",
+  "title": {
+    "de": "IAA Exam Deep Detail Flashcards — Non-Duplicate Set",
+    "en": "IAA Exam Deep Detail Flashcards — Non-Duplicate Set"
+  },
+  "cards": [
+    {
+      "id": "IMLD001",
+      "lecture": "L1",
+      "category": "Data Quality",
+      "question": {
+        "de": "Why can an impossible but numeric value be more dangerous than a missing value?",
+        "en": "Why can an impossible but numeric value be more dangerous than a missing value?"
+      },
+      "answer": {
+        "de": "• A missing value is usually visible during preprocessing\n• An impossible numeric value may pass type checks and look usable to the model\n• Examples include negative blood pressure, purchase amount = -999, or impossible age values\n• The model may interpret the value as a real signal instead of an error\n• Domain knowledge is needed to detect and correct such entries",
+        "en": "• A missing value is usually visible during preprocessing\n• An impossible numeric value may pass type checks and look usable to the model\n• Examples include negative blood pressure, purchase amount = -999, or impossible age values\n• The model may interpret the value as a real signal instead of an error\n• Domain knowledge is needed to detect and correct such entries"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD001"
+    },
+    {
+      "id": "IMLD002",
+      "lecture": "L1",
+      "category": "Inconsistency Detection",
+      "question": {
+        "de": "How can information from different data sources reveal incorrect entries?",
+        "en": "How can information from different data sources reveal incorrect entries?"
+      },
+      "answer": {
+        "de": "• Measurements of the same phenomenon can be compared across sources\n• Inconsistencies may indicate sensor errors, pipeline problems, or annotation mistakes\n• Example: heart rate estimated from ECG should be compatible with heart rate estimated from plethysmography\n• The goal is not only to delete inconsistent rows but to understand which source is unreliable\n• This is a data-cleaning task that depends strongly on domain knowledge",
+        "en": "• Measurements of the same phenomenon can be compared across sources\n• Inconsistencies may indicate sensor errors, pipeline problems, or annotation mistakes\n• Example: heart rate estimated from ECG should be compatible with heart rate estimated from plethysmography\n• The goal is not only to delete inconsistent rows but to understand which source is unreliable\n• This is a data-cleaning task that depends strongly on domain knowledge"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD002"
+    },
+    {
+      "id": "IMLD003",
+      "lecture": "L1",
+      "category": "Feature Selection",
+      "question": {
+        "de": "Why can wrapper feature selection overfit more easily than filter feature selection?",
+        "en": "Why can wrapper feature selection overfit more easily than filter feature selection?"
+      },
+      "answer": {
+        "de": "• Wrapper methods evaluate feature subsets using model performance\n• They repeatedly search many possible feature combinations\n• This can adapt too closely to the validation data or cross-validation splits\n• The selected subset may look optimal only for the sampled data\n• Filter methods are less model-specific and cheaper, but may miss feature interactions",
+        "en": "• Wrapper methods evaluate feature subsets using model performance\n• They repeatedly search many possible feature combinations\n• This can adapt too closely to the validation data or cross-validation splits\n• The selected subset may look optimal only for the sampled data\n• Filter methods are less model-specific and cheaper, but may miss feature interactions"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD003"
+    },
+    {
+      "id": "IMLD004",
+      "lecture": "L1",
+      "category": "Feature Selection",
+      "question": {
+        "de": "Why can univariate filter methods miss important predictors?",
+        "en": "Why can univariate filter methods miss important predictors?"
+      },
+      "answer": {
+        "de": "• Univariate filters evaluate each feature separately\n• A feature may look weak alone but become useful together with another feature\n• Interactions between predictors are ignored\n• Correlated predictors can also appear individually important even if they carry redundant information\n• This is why filter scores should be combined with domain knowledge and validation",
+        "en": "• Univariate filters evaluate each feature separately\n• A feature may look weak alone but become useful together with another feature\n• Interactions between predictors are ignored\n• Correlated predictors can also appear individually important even if they carry redundant information\n• This is why filter scores should be combined with domain knowledge and validation"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD004"
+    },
+    {
+      "id": "IMLD005",
+      "lecture": "L1",
+      "category": "Sampling",
+      "question": {
+        "de": "Why can biased sampling sometimes be intentional rather than a mistake?",
+        "en": "Why can biased sampling sometimes be intentional rather than a mistake?"
+      },
+      "answer": {
+        "de": "• Some regions of the data may be more relevant to the scientific or business question\n• Rare events may need to be oversampled to be represented sufficiently\n• In anomaly or failure detection, the rare cases can be more important than normal cases\n• Intentional biased sampling must be documented because it changes the training distribution\n• Evaluation should still reflect the real deployment distribution when possible",
+        "en": "• Some regions of the data may be more relevant to the scientific or business question\n• Rare events may need to be oversampled to be represented sufficiently\n• In anomaly or failure detection, the rare cases can be more important than normal cases\n• Intentional biased sampling must be documented because it changes the training distribution\n• Evaluation should still reflect the real deployment distribution when possible"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD005"
+    },
+    {
+      "id": "IMLD006",
+      "lecture": "L1",
+      "category": "Visualization",
+      "question": {
+        "de": "Why can the number of histogram bins change the interpretation of a feature distribution?",
+        "en": "Why can the number of histogram bins change the interpretation of a feature distribution?"
+      },
+      "answer": {
+        "de": "• Too few bins can hide multimodality, skewness, or local structure\n• Too many bins can make random noise look like meaningful structure\n• Different bin choices can change whether outliers or gaps appear obvious\n• A histogram is therefore exploratory, not definitive evidence\n• It should be combined with summary statistics and other plots such as box plots",
+        "en": "• Too few bins can hide multimodality, skewness, or local structure\n• Too many bins can make random noise look like meaningful structure\n• Different bin choices can change whether outliers or gaps appear obvious\n• A histogram is therefore exploratory, not definitive evidence\n• It should be combined with summary statistics and other plots such as box plots"
+      },
+      "focus": "concept",
+      "sourceId": "IMLD006"
+    },
+    {
+      "id": "IMLD007",
+      "lecture": "L2",
+      "category": "K-means Optimization",
+      "question": {
+        "de": "Which stopping criteria can be used for K-means and what do they mean?",
+        "en": "Which stopping criteria can be used for K-means and what do they mean?"
+      },
+      "answer": {
+        "de": "• Stop after reaching a maximum number of iterations\n• Stop when the objective J becomes smaller than a predefined threshold\n• Stop when J no longer improves meaningfully between iterations\n• Stop when assignments or centroids stop changing\n• The criterion should prevent unnecessary computation while avoiding premature stopping",
+        "en": "• Stop after reaching a maximum number of iterations\n• Stop when the objective J becomes smaller than a predefined threshold\n• Stop when J no longer improves meaningfully between iterations\n• Stop when assignments or centroids stop changing\n• The criterion should prevent unnecessary computation while avoiding premature stopping"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD007"
+    },
+    {
+      "id": "IMLD008",
+      "lecture": "L2",
+      "category": "Clustering Distances",
+      "question": {
+        "de": "How do Euclidean, Manhattan, and Chebyshev distance differ conceptually?",
+        "en": "How do Euclidean, Manhattan, and Chebyshev distance differ conceptually?"
+      },
+      "answer": {
+        "de": "• Euclidean distance measures straight-line distance in feature space\n• Manhattan distance sums absolute coordinate-wise differences\n• Chebyshev distance uses the largest single coordinate-wise difference\n• The chosen distance changes what counts as similar\n• Distance choice should match the data geometry and feature meaning",
+        "en": "• Euclidean distance measures straight-line distance in feature space\n• Manhattan distance sums absolute coordinate-wise differences\n• Chebyshev distance uses the largest single coordinate-wise difference\n• The chosen distance changes what counts as similar\n• Distance choice should match the data geometry and feature meaning"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD008"
+    },
+    {
+      "id": "IMLD009",
+      "lecture": "L2",
+      "category": "K-means Objective",
+      "question": {
+        "de": "Why does the centroid update step use the mean of assigned points?",
+        "en": "Why does the centroid update step use the mean of assigned points?"
+      },
+      "answer": {
+        "de": "• K-means minimizes squared distances within each cluster\n• For squared Euclidean distance, the mean is the point that minimizes the sum of squared deviations\n• Updating to the mean therefore reduces or keeps the objective J unchanged\n• This is why the algorithm alternates assignment and mean-update steps\n• If another distance is used, the mean may no longer be the optimal representative",
+        "en": "• K-means minimizes squared distances within each cluster\n• For squared Euclidean distance, the mean is the point that minimizes the sum of squared deviations\n• Updating to the mean therefore reduces or keeps the objective J unchanged\n• This is why the algorithm alternates assignment and mean-update steps\n• If another distance is used, the mean may no longer be the optimal representative"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD009"
+    },
+    {
+      "id": "IMLD010",
+      "lecture": "L2",
+      "category": "PCA Computation",
+      "question": {
+        "de": "What are the matrix dimensions in the PCA covariance and SVD step for X with m examples and n features?",
+        "en": "What are the matrix dimensions in the PCA covariance and SVD step for X with m examples and n features?"
+      },
+      "answer": {
+        "de": "• After mean normalization, X has shape m × n\n• The covariance matrix XᵀX / m has shape n × n\n• SVD decomposes this covariance matrix into U, S, and V\n• U has shape n × n and contains eigenvectors or principal directions\n• The first k columns of U form U_reduce with shape n × k",
+        "en": "• After mean normalization, X has shape m × n\n• The covariance matrix XᵀX / m has shape n × n\n• SVD decomposes this covariance matrix into U, S, and V\n• U has shape n × n and contains eigenvectors or principal directions\n• The first k columns of U form U_reduce with shape n × k"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD010"
+    },
+    {
+      "id": "IMLD011",
+      "lecture": "L2",
+      "category": "PCA Projection",
+      "question": {
+        "de": "How are projection and reconstruction computed in PCA?",
+        "en": "How are projection and reconstruction computed in PCA?"
+      },
+      "answer": {
+        "de": "• Select U_reduce as the first k columns of U\n• Project the data by computing Z = X · U_reduce\n• Z has shape m × k and contains the reduced representation\n• Reconstruct approximately by computing X_approx = Z · U_reduceᵀ\n• Reconstruction is lossy when k is smaller than the original number of features",
+        "en": "• Select U_reduce as the first k columns of U\n• Project the data by computing Z = X · U_reduce\n• Z has shape m × k and contains the reduced representation\n• Reconstruct approximately by computing X_approx = Z · U_reduceᵀ\n• Reconstruction is lossy when k is smaller than the original number of features"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD011"
+    },
+    {
+      "id": "IMLD012",
+      "lecture": "L2",
+      "category": "PCA K Choice",
+      "question": {
+        "de": "What does the average squared approximation error measure in PCA?",
+        "en": "What does the average squared approximation error measure in PCA?"
+      },
+      "answer": {
+        "de": "• It measures how far the reconstructed data X_approx is from the original data X\n• A smaller error means the selected components preserve more information\n• It is compared with total data variation to estimate retained variance\n• A typical target is to retain about 90–99% of variance\n• The final choice of k should also consider interpretability and downstream performance",
+        "en": "• It measures how far the reconstructed data X_approx is from the original data X\n• A smaller error means the selected components preserve more information\n• It is compared with total data variation to estimate retained variance\n• A typical target is to retain about 90–99% of variance\n• The final choice of k should also consider interpretability and downstream performance"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD012"
+    },
+    {
+      "id": "IMLD013",
+      "lecture": "L3",
+      "category": "Regression Assumptions",
+      "question": {
+        "de": "Why is homoscedasticity important in linear regression?",
+        "en": "Why is homoscedasticity important in linear regression?"
+      },
+      "answer": {
+        "de": "• Homoscedasticity means the error spread is roughly constant across input values\n• If error variance grows or shrinks systematically, uncertainty estimates become unreliable\n• A fan-shaped residual plot suggests heteroscedasticity\n• The model may still produce predictions, but inference and confidence in coefficients can be problematic\n• Transformations or different models may be needed",
+        "en": "• Homoscedasticity means the error spread is roughly constant across input values\n• If error variance grows or shrinks systematically, uncertainty estimates become unreliable\n• A fan-shaped residual plot suggests heteroscedasticity\n• The model may still produce predictions, but inference and confidence in coefficients can be problematic\n• Transformations or different models may be needed"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD013"
+    },
+    {
+      "id": "IMLD014",
+      "lecture": "L3",
+      "category": "Regression Assumptions",
+      "question": {
+        "de": "Why is autocorrelation of errors especially problematic in time-based regression data?",
+        "en": "Why is autocorrelation of errors especially problematic in time-based regression data?"
+      },
+      "answer": {
+        "de": "• Autocorrelation means errors are correlated across time or sequence order\n• It violates the assumption that residuals are independent\n• The model may systematically miss temporal structure\n• Evaluation can become overly optimistic if nearby points are split randomly\n• Time-aware models or time-respecting validation may be required",
+        "en": "• Autocorrelation means errors are correlated across time or sequence order\n• It violates the assumption that residuals are independent\n• The model may systematically miss temporal structure\n• Evaluation can become overly optimistic if nearby points are split randomly\n• Time-aware models or time-respecting validation may be required"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD014"
+    },
+    {
+      "id": "IMLD015",
+      "lecture": "L3",
+      "category": "Outliers",
+      "question": {
+        "de": "How can outliers distort a linear regression line?",
+        "en": "How can outliers distort a linear regression line?"
+      },
+      "answer": {
+        "de": "• Squared-error loss gives large residuals disproportionately high influence\n• A single extreme point can pull the slope or intercept toward itself\n• This can worsen predictions for the majority of normal observations\n• Outliers should be checked to decide whether they are errors, rare valid cases, or important anomalies\n• Robust methods or transformations may be considered",
+        "en": "• Squared-error loss gives large residuals disproportionately high influence\n• A single extreme point can pull the slope or intercept toward itself\n• This can worsen predictions for the majority of normal observations\n• Outliers should be checked to decide whether they are errors, rare valid cases, or important anomalies\n• Robust methods or transformations may be considered"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD015"
+    },
+    {
+      "id": "IMLD016",
+      "lecture": "L3",
+      "category": "Gradient Descent",
+      "question": {
+        "de": "What happens in gradient descent if the parameters are exactly at a local minimum?",
+        "en": "What happens in gradient descent if the parameters are exactly at a local minimum?"
+      },
+      "answer": {
+        "de": "• The gradient is zero or approximately zero\n• The update step becomes zero or very small\n• The parameters stay unchanged unless noise or another optimization mechanism moves them\n• For convex linear regression cost, local and global minimum coincide\n• For non-convex models, a local minimum may not be the best possible solution",
+        "en": "• The gradient is zero or approximately zero\n• The update step becomes zero or very small\n• The parameters stay unchanged unless noise or another optimization mechanism moves them\n• For convex linear regression cost, local and global minimum coincide\n• For non-convex models, a local minimum may not be the best possible solution"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD016"
+    },
+    {
+      "id": "IMLD017",
+      "lecture": "L3",
+      "category": "Regularization",
+      "question": {
+        "de": "Why is the intercept term usually not regularized?",
+        "en": "Why is the intercept term usually not regularized?"
+      },
+      "answer": {
+        "de": "• The intercept controls the baseline prediction when features are zero or centered\n• Penalizing it does not reduce feature-driven model complexity in the same way\n• Regularizing the intercept can unnecessarily shift all predictions\n• Ridge and Lasso usually penalize feature coefficients but exclude θ₀\n• This keeps shrinkage focused on predictor effects",
+        "en": "• The intercept controls the baseline prediction when features are zero or centered\n• Penalizing it does not reduce feature-driven model complexity in the same way\n• Regularizing the intercept can unnecessarily shift all predictions\n• Ridge and Lasso usually penalize feature coefficients but exclude θ₀\n• This keeps shrinkage focused on predictor effects"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD017"
+    },
+    {
+      "id": "IMLD018",
+      "lecture": "L3",
+      "category": "Elastic Net",
+      "question": {
+        "de": "Why can Elastic Net be preferred when predictors are correlated?",
+        "en": "Why can Elastic Net be preferred when predictors are correlated?"
+      },
+      "answer": {
+        "de": "• Elastic Net combines L1 and L2 penalties\n• The L1 part can produce sparsity and feature selection\n• The L2 part stabilizes coefficient estimates when predictors are correlated\n• Pure Lasso may arbitrarily select one variable from a correlated group\n• Elastic Net can keep groups of related predictors more reliably",
+        "en": "• Elastic Net combines L1 and L2 penalties\n• The L1 part can produce sparsity and feature selection\n• The L2 part stabilizes coefficient estimates when predictors are correlated\n• Pure Lasso may arbitrarily select one variable from a correlated group\n• Elastic Net can keep groups of related predictors more reliably"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD018"
+    },
+    {
+      "id": "IMLD019",
+      "lecture": "L4",
+      "category": "Log Loss",
+      "question": {
+        "de": "How does log loss penalize confident wrong predictions?",
+        "en": "How does log loss penalize confident wrong predictions?"
+      },
+      "answer": {
+        "de": "• For y = 1, the loss contains −log(hθ(x))\n• If the model predicts a probability close to 0 for a true positive, the loss becomes very large\n• For y = 0, the loss contains −log(1 − hθ(x))\n• If the model predicts a probability close to 1 for a true negative, the loss becomes very large\n• This encourages calibrated probabilities and strongly discourages confident mistakes",
+        "en": "• For y = 1, the loss contains −log(hθ(x))\n• If the model predicts a probability close to 0 for a true positive, the loss becomes very large\n• For y = 0, the loss contains −log(1 − hθ(x))\n• If the model predicts a probability close to 1 for a true negative, the loss becomes very large\n• This encourages calibrated probabilities and strongly discourages confident mistakes"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD019"
+    },
+    {
+      "id": "IMLD020",
+      "lecture": "L4",
+      "category": "Nonlinear Features",
+      "question": {
+        "de": "Why can adding polynomial features make logistic regression nonlinear in the original input space but still linear in parameters?",
+        "en": "Why can adding polynomial features make logistic regression nonlinear in the original input space but still linear in parameters?"
+      },
+      "answer": {
+        "de": "• The model remains a weighted sum of features and coefficients\n• New features such as x₁², x₂², or x₁x₂ are transformations of the original inputs\n• The decision boundary is linear in the transformed feature space\n• In the original feature space, this can appear as a curve or more complex boundary\n• Regularization becomes important because many polynomial features increase variance",
+        "en": "• The model remains a weighted sum of features and coefficients\n• New features such as x₁², x₂², or x₁x₂ are transformations of the original inputs\n• The decision boundary is linear in the transformed feature space\n• In the original feature space, this can appear as a curve or more complex boundary\n• Regularization becomes important because many polynomial features increase variance"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD020"
+    },
+    {
+      "id": "IMLD021",
+      "lecture": "L4",
+      "category": "Thresholds",
+      "question": {
+        "de": "Why is 0.5 not always the best classification threshold in logistic regression?",
+        "en": "Why is 0.5 not always the best classification threshold in logistic regression?"
+      },
+      "answer": {
+        "de": "• The 0.5 threshold assumes equal costs and balanced priorities between classes\n• In imbalanced or high-stakes problems, false positives and false negatives may have different costs\n• Lowering the threshold can increase recall but may reduce precision\n• Raising the threshold can increase precision but may reduce recall\n• The threshold should be chosen using validation data and task-specific costs",
+        "en": "• The 0.5 threshold assumes equal costs and balanced priorities between classes\n• In imbalanced or high-stakes problems, false positives and false negatives may have different costs\n• Lowering the threshold can increase recall but may reduce precision\n• Raising the threshold can increase precision but may reduce recall\n• The threshold should be chosen using validation data and task-specific costs"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD021"
+    },
+    {
+      "id": "IMLD022",
+      "lecture": "L4",
+      "category": "Softmax",
+      "question": {
+        "de": "Why should softmax be preferred over independent sigmoid outputs for mutually exclusive classes?",
+        "en": "Why should softmax be preferred over independent sigmoid outputs for mutually exclusive classes?"
+      },
+      "answer": {
+        "de": "• Softmax produces a single probability distribution over all classes\n• The probabilities sum to 1, so classes compete with each other\n• This matches problems where exactly one class is correct\n• Independent sigmoids can assign high probability to multiple classes at the same time\n• Independent sigmoids are more appropriate for multi-label classification, not mutually exclusive multiclass classification",
+        "en": "• Softmax produces a single probability distribution over all classes\n• The probabilities sum to 1, so classes compete with each other\n• This matches problems where exactly one class is correct\n• Independent sigmoids can assign high probability to multiple classes at the same time\n• Independent sigmoids are more appropriate for multi-label classification, not mutually exclusive multiclass classification"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD022"
+    },
+    {
+      "id": "IMLD023",
+      "lecture": "L5",
+      "category": "Naive Bayes Distributions",
+      "question": {
+        "de": "Why does Naive Bayes use different probability models for continuous and discrete features?",
+        "en": "Why does Naive Bayes use different probability models for continuous and discrete features?"
+      },
+      "answer": {
+        "de": "• Continuous numerical features cannot be counted directly for every possible value\n• Gaussian Naive Bayes assumes continuous features follow a normal distribution within each class\n• Discrete or count-based features can be modeled with multinomial probabilities\n• The probability model must match the feature type\n• A wrong distributional assumption can reduce probability estimates and classification quality",
+        "en": "• Continuous numerical features cannot be counted directly for every possible value\n• Gaussian Naive Bayes assumes continuous features follow a normal distribution within each class\n• Discrete or count-based features can be modeled with multinomial probabilities\n• The probability model must match the feature type\n• A wrong distributional assumption can reduce probability estimates and classification quality"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD023"
+    },
+    {
+      "id": "IMLD024",
+      "lecture": "L5",
+      "category": "Naive Bayes Assumptions",
+      "question": {
+        "de": "Why is the equal-importance assumption of Naive Bayes potentially unrealistic?",
+        "en": "Why is the equal-importance assumption of Naive Bayes potentially unrealistic?"
+      },
+      "answer": {
+        "de": "• Naive Bayes does not learn flexible feature weights like logistic regression\n• Each feature contributes through its estimated class-conditional probability\n• Highly informative and weak features are not explicitly reweighted by a discriminative objective\n• Correlated features may effectively be counted more than once\n• This can distort posterior probabilities even when class predictions are sometimes still correct",
+        "en": "• Naive Bayes does not learn flexible feature weights like logistic regression\n• Each feature contributes through its estimated class-conditional probability\n• Highly informative and weak features are not explicitly reweighted by a discriminative objective\n• Correlated features may effectively be counted more than once\n• This can distort posterior probabilities even when class predictions are sometimes still correct"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD024"
+    },
+    {
+      "id": "IMLD025",
+      "lecture": "L5",
+      "category": "Decision Tree Splits",
+      "question": {
+        "de": "What is the difference between a binary split and a multi-way split in a decision tree?",
+        "en": "What is the difference between a binary split and a multi-way split in a decision tree?"
+      },
+      "answer": {
+        "de": "• A binary split divides data into exactly two child nodes\n• A multi-way split creates one branch for each category or interval group\n• Multi-way splits can fit categorical data naturally but may create many small branches\n• Many branches can increase overfitting risk\n• Gain ratio was introduced partly to reduce preference for splits with many branches",
+        "en": "• A binary split divides data into exactly two child nodes\n• A multi-way split creates one branch for each category or interval group\n• Multi-way splits can fit categorical data naturally but may create many small branches\n• Many branches can increase overfitting risk\n• Gain ratio was introduced partly to reduce preference for splits with many branches"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD025"
+    },
+    {
+      "id": "IMLD026",
+      "lecture": "L5",
+      "category": "Gain Ratio",
+      "question": {
+        "de": "Why can information gain favor attributes with many distinct values, and how does gain ratio address this?",
+        "en": "Why can information gain favor attributes with many distinct values, and how does gain ratio address this?"
+      },
+      "answer": {
+        "de": "• Information gain may prefer features that create many small or pure partitions\n• A feature like an ID can appear highly informative but generalize poorly\n• Gain ratio divides information gain by split entropy\n• This penalizes splits that fragment the data excessively\n• It helps reduce overfitting caused by overly specific branches",
+        "en": "• Information gain may prefer features that create many small or pure partitions\n• A feature like an ID can appear highly informative but generalize poorly\n• Gain ratio divides information gain by split entropy\n• This penalizes splits that fragment the data excessively\n• It helps reduce overfitting caused by overly specific branches"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD026"
+    },
+    {
+      "id": "IMLD027",
+      "lecture": "L5",
+      "category": "Decision Tree Geometry",
+      "question": {
+        "de": "Why can single decision trees perform poorly when the true class boundary is not rectangular?",
+        "en": "Why can single decision trees perform poorly when the true class boundary is not rectangular?"
+      },
+      "answer": {
+        "de": "• Decision trees split one feature at a time\n• This partitions the feature space into axis-aligned rectangular regions\n• If the real boundary is diagonal, circular, or smooth, many splits may be required\n• A deep tree can approximate the boundary but may overfit\n• Ensembles often improve performance by combining many such partitions",
+        "en": "• Decision trees split one feature at a time\n• This partitions the feature space into axis-aligned rectangular regions\n• If the real boundary is diagonal, circular, or smooth, many splits may be required\n• A deep tree can approximate the boundary but may overfit\n• Ensembles often improve performance by combining many such partitions"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD027"
+    },
+    {
+      "id": "IMLD028",
+      "lecture": "L5",
+      "category": "SVM Objective",
+      "question": {
+        "de": "What two objectives are balanced in a soft-margin SVM?",
+        "en": "What two objectives are balanced in a soft-margin SVM?"
+      },
+      "answer": {
+        "de": "• The SVM tries to maximize the margin between classes\n• It also tries to minimize classification or margin violations\n• The C parameter controls the penalty for misclassified or violating examples\n• Large C emphasizes fitting training data more strictly\n• Small C allows more violations to favor a wider margin and generalization",
+        "en": "• The SVM tries to maximize the margin between classes\n• It also tries to minimize classification or margin violations\n• The C parameter controls the penalty for misclassified or violating examples\n• Large C emphasizes fitting training data more strictly\n• Small C allows more violations to favor a wider margin and generalization"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD028"
+    },
+    {
+      "id": "IMLD029",
+      "lecture": "L6",
+      "category": "RBF Kernel",
+      "question": {
+        "de": "Why does a very small sigma in the RBF kernel increase overfitting risk?",
+        "en": "Why does a very small sigma in the RBF kernel increase overfitting risk?"
+      },
+      "answer": {
+        "de": "• Small sigma makes similarity decrease very quickly with distance\n• Each training point affects only a very local region\n• The decision boundary can become highly irregular\n• This reduces bias but increases variance\n• Validation performance should be used to tune sigma or gamma",
+        "en": "• Small sigma makes similarity decrease very quickly with distance\n• Each training point affects only a very local region\n• The decision boundary can become highly irregular\n• This reduces bias but increases variance\n• Validation performance should be used to tune sigma or gamma"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD029"
+    },
+    {
+      "id": "IMLD030",
+      "lecture": "L6",
+      "category": "SVM Practice",
+      "question": {
+        "de": "What failure can occur if RBF SVM hyperparameters are tuned on unscaled features?",
+        "en": "What failure can occur if RBF SVM hyperparameters are tuned on unscaled features?"
+      },
+      "answer": {
+        "de": "• The RBF kernel computes similarity from distances between examples\n• An unscaled high-range feature can dominate those distances\n• Gamma or sigma may be tuned to compensate for measurement units instead of real structure\n• The resulting boundary may ignore smaller-scale but important features\n• Scaling should be fitted on the training data and then applied consistently to validation and test data",
+        "en": "• The RBF kernel computes similarity from distances between examples\n• An unscaled high-range feature can dominate those distances\n• Gamma or sigma may be tuned to compensate for measurement units instead of real structure\n• The resulting boundary may ignore smaller-scale but important features\n• Scaling should be fitted on the training data and then applied consistently to validation and test data"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD030"
+    },
+    {
+      "id": "IMLD031",
+      "lecture": "L6",
+      "category": "Confusion Matrix",
+      "question": {
+        "de": "How can the same confusion matrix reveal different priorities depending on the application?",
+        "en": "How can the same confusion matrix reveal different priorities depending on the application?"
+      },
+      "answer": {
+        "de": "• In medical screening, false negatives may be most dangerous because sick patients are missed\n• In spam filtering, false positives may be costly because legitimate emails are blocked\n• Precision focuses on reliability of positive predictions\n• Recall focuses on detecting actual positives\n• The same model can be acceptable in one domain and unacceptable in another",
+        "en": "• In medical screening, false negatives may be most dangerous because sick patients are missed\n• In spam filtering, false positives may be costly because legitimate emails are blocked\n• Precision focuses on reliability of positive predictions\n• Recall focuses on detecting actual positives\n• The same model can be acceptable in one domain and unacceptable in another"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD031"
+    },
+    {
+      "id": "IMLD032",
+      "lecture": "L6",
+      "category": "Balanced Accuracy",
+      "question": {
+        "de": "Why is balanced accuracy useful when classes are imbalanced?",
+        "en": "Why is balanced accuracy useful when classes are imbalanced?"
+      },
+      "answer": {
+        "de": "• It averages recall across classes instead of counting all examples equally\n• Majority-class performance does not dominate the metric as strongly as in accuracy\n• It reveals whether the minority class is being ignored\n• It is useful when both classes should contribute equally to evaluation\n• It should still be interpreted together with the confusion matrix",
+        "en": "• It averages recall across classes instead of counting all examples equally\n• Majority-class performance does not dominate the metric as strongly as in accuracy\n• It reveals whether the minority class is being ignored\n• It is useful when both classes should contribute equally to evaluation\n• It should still be interpreted together with the confusion matrix"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD032"
+    },
+    {
+      "id": "IMLD033",
+      "lecture": "L6",
+      "category": "Resampling",
+      "question": {
+        "de": "What are the risks of random undersampling and random oversampling?",
+        "en": "What are the risks of random undersampling and random oversampling?"
+      },
+      "answer": {
+        "de": "• Random undersampling can remove useful majority-class information\n• This may make the decision boundary less reliable\n• Random oversampling duplicates minority examples\n• Duplicates can cause the model to memorize minority cases and overfit\n• More careful methods can preserve information or create more diverse synthetic samples",
+        "en": "• Random undersampling can remove useful majority-class information\n• This may make the decision boundary less reliable\n• Random oversampling duplicates minority examples\n• Duplicates can cause the model to memorize minority cases and overfit\n• More careful methods can preserve information or create more diverse synthetic samples"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD033"
+    },
+    {
+      "id": "IMLD034",
+      "lecture": "L7",
+      "category": "Bootstrap",
+      "question": {
+        "de": "What makes bootstrap sampling different from ordinary random splitting?",
+        "en": "What makes bootstrap sampling different from ordinary random splitting?"
+      },
+      "answer": {
+        "de": "• Bootstrap samples are drawn with replacement\n• The bootstrap training sample has the same size as the original dataset\n• Some examples appear multiple times\n• Some examples are not selected and become out-of-bag cases\n• Small training sets can suffer from bias because repeated examples reduce effective diversity",
+        "en": "• Bootstrap samples are drawn with replacement\n• The bootstrap training sample has the same size as the original dataset\n• Some examples appear multiple times\n• Some examples are not selected and become out-of-bag cases\n• Small training sets can suffer from bias because repeated examples reduce effective diversity"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD034"
+    },
+    {
+      "id": "IMLD035",
+      "lecture": "L7",
+      "category": "Leave-One-Out",
+      "question": {
+        "de": "When is leave-one-out cross-validation attractive, and what is its drawback?",
+        "en": "When is leave-one-out cross-validation attractive, and what is its drawback?"
+      },
+      "answer": {
+        "de": "• It is attractive when the dataset is very small\n• Each training run uses N−1 examples, so almost all available data is used for training\n• Every example is tested once\n• It can be computationally expensive because N models must be trained\n• It can also have high variance in some settings",
+        "en": "• It is attractive when the dataset is very small\n• Each training run uses N−1 examples, so almost all available data is used for training\n• Every example is tested once\n• It can be computationally expensive because N models must be trained\n• It can also have high variance in some settings"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD035"
+    },
+    {
+      "id": "IMLD036",
+      "lecture": "L7",
+      "category": "Model Selection",
+      "question": {
+        "de": "Why can choosing the numerically best validation score lead to an overly complex model?",
+        "en": "Why can choosing the numerically best validation score lead to an overly complex model?"
+      },
+      "answer": {
+        "de": "• Validation scores contain noise from the particular data split\n• A complex model may win by chance on the validation set\n• Small differences in score may not be practically meaningful\n• Simpler models are often preferred when performance is similar\n• This reduces overfitting risk and improves interpretability",
+        "en": "• Validation scores contain noise from the particular data split\n• A complex model may win by chance on the validation set\n• Small differences in score may not be practically meaningful\n• Simpler models are often preferred when performance is similar\n• This reduces overfitting risk and improves interpretability"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD036"
+    },
+    {
+      "id": "IMLD037",
+      "lecture": "L7",
+      "category": "Learning Curves",
+      "question": {
+        "de": "How can learning curves show that the validation set is not representative?",
+        "en": "How can learning curves show that the validation set is not representative?"
+      },
+      "answer": {
+        "de": "• Training and validation curves may show unstable or unusual gaps\n• Validation error may fluctuate strongly as more data is added\n• Validation performance may be much better or worse than expected from training behavior\n• This can happen if validation data has a different distribution\n• The split strategy, stratification, or data collection process should be checked",
+        "en": "• Training and validation curves may show unstable or unusual gaps\n• Validation error may fluctuate strongly as more data is added\n• Validation performance may be much better or worse than expected from training behavior\n• This can happen if validation data has a different distribution\n• The split strategy, stratification, or data collection process should be checked"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD037"
+    },
+    {
+      "id": "IMLD038",
+      "lecture": "L7",
+      "category": "No Free Lunch",
+      "question": {
+        "de": "What does the No-Free-Lunch theorem imply for exam-style model choice questions?",
+        "en": "What does the No-Free-Lunch theorem imply for exam-style model choice questions?"
+      },
+      "answer": {
+        "de": "• There is no universally best learning algorithm\n• A method that works well on one data distribution may fail on another\n• Model choice must depend on the task, data, metric, constraints, and assumptions\n• Empirical comparison using validation or cross-validation is necessary\n• Strong exam answers should justify why the chosen model matches the problem",
+        "en": "• There is no universally best learning algorithm\n• A method that works well on one data distribution may fail on another\n• Model choice must depend on the task, data, metric, constraints, and assumptions\n• Empirical comparison using validation or cross-validation is necessary\n• Strong exam answers should justify why the chosen model matches the problem"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD038"
+    },
+    {
+      "id": "IMLD039",
+      "lecture": "L8",
+      "category": "Bagging",
+      "question": {
+        "de": "Why are bagging models easy to parallelize but boosting models are not?",
+        "en": "Why are bagging models easy to parallelize but boosting models are not?"
+      },
+      "answer": {
+        "de": "• In bagging, base models are trained independently on different bootstrap samples\n• Each model does not need the previous model’s errors\n• Therefore, many models can be trained at the same time\n• In boosting, each model depends on reweighted errors from earlier models\n• This sequential dependency makes boosting harder to parallelize",
+        "en": "• In bagging, base models are trained independently on different bootstrap samples\n• Each model does not need the previous model’s errors\n• Therefore, many models can be trained at the same time\n• In boosting, each model depends on reweighted errors from earlier models\n• This sequential dependency makes boosting harder to parallelize"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD039"
+    },
+    {
+      "id": "IMLD040",
+      "lecture": "L8",
+      "category": "Weighted Voting",
+      "question": {
+        "de": "How does weighted voting in boosting differ from majority voting in bagging?",
+        "en": "How does weighted voting in boosting differ from majority voting in bagging?"
+      },
+      "answer": {
+        "de": "• Bagging typically gives each base model an equal vote\n• Boosting weights model predictions according to model performance or error\n• More accurate weak learners can contribute more to the final decision\n• Misclassified samples influence later models during training\n• The final ensemble is therefore both sequential and weighted",
+        "en": "• Bagging typically gives each base model an equal vote\n• Boosting weights model predictions according to model performance or error\n• More accurate weak learners can contribute more to the final decision\n• Misclassified samples influence later models during training\n• The final ensemble is therefore both sequential and weighted"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD040"
+    },
+    {
+      "id": "IMLD041",
+      "lecture": "L8",
+      "category": "Label Consistency",
+      "question": {
+        "de": "Why should two independent labelers be used in a data-centric workflow?",
+        "en": "Why should two independent labelers be used in a data-centric workflow?"
+      },
+      "answer": {
+        "de": "• Independent labels allow measurement of annotation consistency\n• Disagreements reveal ambiguous definitions or unclear instructions\n• The goal is to improve the labeling guideline, not only to blame labelers\n• Consistent labels make the learning target clearer\n• This can improve model performance without changing the algorithm",
+        "en": "• Independent labels allow measurement of annotation consistency\n• Disagreements reveal ambiguous definitions or unclear instructions\n• The goal is to improve the labeling guideline, not only to blame labelers\n• Consistent labels make the learning target clearer\n• This can improve model performance without changing the algorithm"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD041"
+    },
+    {
+      "id": "IMLD042",
+      "lecture": "L8",
+      "category": "Good Data",
+      "question": {
+        "de": "What does “good data” mean in the data-centric AI view?",
+        "en": "What does “good data” mean in the data-centric AI view?"
+      },
+      "answer": {
+        "de": "• Labels are defined consistently and unambiguously\n• Important input cases are covered sufficiently\n• The dataset contains representative examples for relevant conditions\n• Feedback from production data is available over time\n• The data distribution is monitored for drift and changing conditions",
+        "en": "• Labels are defined consistently and unambiguously\n• Important input cases are covered sufficiently\n• The dataset contains representative examples for relevant conditions\n• Feedback from production data is available over time\n• The data distribution is monitored for drift and changing conditions"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD042"
+    },
+    {
+      "id": "IMLD043",
+      "lecture": "L8",
+      "category": "Drift Monitoring",
+      "question": {
+        "de": "Why should model monitoring separate data-quality bugs from true drift?",
+        "en": "Why should model monitoring separate data-quality bugs from true drift?"
+      },
+      "answer": {
+        "de": "• Performance drops can be caused by broken pipelines, missing features, or corrupted inputs\n• Such failures require engineering fixes, not necessarily retraining\n• True data drift means the input distribution has changed\n• True concept drift means the input-output relationship has changed\n• Diagnosing the cause prevents inappropriate or harmful updates",
+        "en": "• Performance drops can be caused by broken pipelines, missing features, or corrupted inputs\n• Such failures require engineering fixes, not necessarily retraining\n• True data drift means the input distribution has changed\n• True concept drift means the input-output relationship has changed\n• Diagnosing the cause prevents inappropriate or harmful updates"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD043"
+    },
+    {
+      "id": "IMLD044",
+      "lecture": "L9",
+      "category": "NN Architecture",
+      "question": {
+        "de": "How do you determine the number and size of weight matrices in a fully connected neural network?",
+        "en": "How do you determine the number and size of weight matrices in a fully connected neural network?"
+      },
+      "answer": {
+        "de": "• There is one weight matrix between each pair of consecutive layers\n• Rows usually correspond to units in the next layer\n• Columns correspond to units in the previous layer plus a bias input\n• Example: 3 inputs plus bias to 4 hidden units gives a 4 × 4 matrix\n• The exact convention can vary, but bias units must be included when counting parameters",
+        "en": "• There is one weight matrix between each pair of consecutive layers\n• Rows usually correspond to units in the next layer\n• Columns correspond to units in the previous layer plus a bias input\n• Example: 3 inputs plus bias to 4 hidden units gives a 4 × 4 matrix\n• The exact convention can vary, but bias units must be included when counting parameters"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD044"
+    },
+    {
+      "id": "IMLD045",
+      "lecture": "L9",
+      "category": "Forward Pass",
+      "question": {
+        "de": "Why is the bias unit added separately from ordinary input features?",
+        "en": "Why is the bias unit added separately from ordinary input features?"
+      },
+      "answer": {
+        "de": "• The bias lets a neuron shift its activation threshold\n• Without bias, the neuron’s boundary may be forced through the origin in transformed space\n• Bias behaves like a constant input equal to 1\n• It has a trainable weight like other inputs\n• Bias improves flexibility even when all actual feature values are zero",
+        "en": "• The bias lets a neuron shift its activation threshold\n• Without bias, the neuron’s boundary may be forced through the origin in transformed space\n• Bias behaves like a constant input equal to 1\n• It has a trainable weight like other inputs\n• Bias improves flexibility even when all actual feature values are zero"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD045"
+    },
+    {
+      "id": "IMLD046",
+      "lecture": "L9",
+      "category": "Initialization",
+      "question": {
+        "de": "Why can random Gaussian initialization with large variance cause training problems?",
+        "en": "Why can random Gaussian initialization with large variance cause training problems?"
+      },
+      "answer": {
+        "de": "• Large random weights can push activations into saturated regions\n• Saturated sigmoid or tanh units produce very small gradients\n• Gradients may vanish during backpropagation\n• Training becomes slow or unstable\n• Xavier, Glorot, or LeCun-style initializations aim to keep activation and gradient scales controlled",
+        "en": "• Large random weights can push activations into saturated regions\n• Saturated sigmoid or tanh units produce very small gradients\n• Gradients may vanish during backpropagation\n• Training becomes slow or unstable\n• Xavier, Glorot, or LeCun-style initializations aim to keep activation and gradient scales controlled"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD046"
+    },
+    {
+      "id": "IMLD047",
+      "lecture": "L9",
+      "category": "Momentum",
+      "question": {
+        "de": "What is the intuition behind gradient descent with momentum?",
+        "en": "What is the intuition behind gradient descent with momentum?"
+      },
+      "answer": {
+        "de": "• Momentum adds part of the previous update direction to the current update\n• It can accelerate movement along consistent downhill directions\n• It can smooth noisy updates from mini-batches\n• It may slow oscillations near narrow valleys\n• The analogy is a ball gaining speed on slopes and slowing near minima",
+        "en": "• Momentum adds part of the previous update direction to the current update\n• It can accelerate movement along consistent downhill directions\n• It can smooth noisy updates from mini-batches\n• It may slow oscillations near narrow valleys\n• The analogy is a ball gaining speed on slopes and slowing near minima"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD047"
+    },
+    {
+      "id": "IMLD048",
+      "lecture": "L9",
+      "category": "Output Layer",
+      "question": {
+        "de": "Why must the neural-network output layer match the prediction task?",
+        "en": "Why must the neural-network output layer match the prediction task?"
+      },
+      "answer": {
+        "de": "• Binary classification usually needs one sigmoid output\n• Multiclass classification usually needs K outputs with softmax\n• Regression usually needs a linear output without probability normalization\n• A mismatch between output activation and target type makes the loss interpretation wrong\n• The output design determines how predictions are decoded",
+        "en": "• Binary classification usually needs one sigmoid output\n• Multiclass classification usually needs K outputs with softmax\n• Regression usually needs a linear output without probability normalization\n• A mismatch between output activation and target type makes the loss interpretation wrong\n• The output design determines how predictions are decoded"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD048"
+    },
+    {
+      "id": "IMLD049",
+      "lecture": "L10",
+      "category": "CNN Output Size",
+      "question": {
+        "de": "How do you compute the spatial output size of a convolution or pooling operation?",
+        "en": "How do you compute the spatial output size of a convolution or pooling operation?"
+      },
+      "answer": {
+        "de": "• For input size n, filter size f, padding p, and stride s, output size is floor((n + 2p − f) / s + 1)\n• If the result is not an integer, the lower integer is used\n• Larger padding increases output size\n• Larger stride decreases output size\n• The same logic is used for convolution and pooling spatial dimensions",
+        "en": "• For input size n, filter size f, padding p, and stride s, output size is floor((n + 2p − f) / s + 1)\n• If the result is not an integer, the lower integer is used\n• Larger padding increases output size\n• Larger stride decreases output size\n• The same logic is used for convolution and pooling spatial dimensions"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD049"
+    },
+    {
+      "id": "IMLD050",
+      "lecture": "L10",
+      "category": "CNN Parameters",
+      "question": {
+        "de": "How many trainable parameters are in a convolutional layer with 10 filters of size 3 × 3 × 3?",
+        "en": "How many trainable parameters are in a convolutional layer with 10 filters of size 3 × 3 × 3?"
+      },
+      "answer": {
+        "de": "• Each filter has 3 × 3 × 3 = 27 weights\n• Each filter also has one bias parameter\n• One filter therefore has 28 parameters\n• With 10 filters, the layer has 28 × 10 = 280 parameters\n• The number of spatial positions does not increase the number of filter parameters because weights are shared",
+        "en": "• Each filter has 3 × 3 × 3 = 27 weights\n• Each filter also has one bias parameter\n• One filter therefore has 28 parameters\n• With 10 filters, the layer has 28 × 10 = 280 parameters\n• The number of spatial positions does not increase the number of filter parameters because weights are shared"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD050"
+    },
+    {
+      "id": "IMLD051",
+      "lecture": "L10",
+      "category": "Convolution Borders",
+      "question": {
+        "de": "Why does convolution without padding lose border information?",
+        "en": "Why does convolution without padding lose border information?"
+      },
+      "answer": {
+        "de": "• A filter can only be centered where it fully fits inside the input\n• Corner pixels are used fewer times than central pixels\n• Repeated convolution layers shrink the feature map\n• Information near the image boundary may disappear quickly\n• Padding reduces shrinkage and makes border pixels participate more often",
+        "en": "• A filter can only be centered where it fully fits inside the input\n• Corner pixels are used fewer times than central pixels\n• Repeated convolution layers shrink the feature map\n• Information near the image boundary may disappear quickly\n• Padding reduces shrinkage and makes border pixels participate more often"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD051"
+    },
+    {
+      "id": "IMLD052",
+      "lecture": "L10",
+      "category": "3D Convolution",
+      "question": {
+        "de": "Why must a convolutional filter for an RGB image have depth 3?",
+        "en": "Why must a convolutional filter for an RGB image have depth 3?"
+      },
+      "answer": {
+        "de": "• RGB images have three channels: red, green, and blue\n• The filter must span the full depth of the input volume\n• A 3 × 3 filter on an RGB image is therefore 3 × 3 × 3\n• The convolution combines spatial and channel information\n• Multiple filters produce multiple output feature maps",
+        "en": "• RGB images have three channels: red, green, and blue\n• The filter must span the full depth of the input volume\n• A 3 × 3 filter on an RGB image is therefore 3 × 3 × 3\n• The convolution combines spatial and channel information\n• Multiple filters produce multiple output feature maps"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD052"
+    },
+    {
+      "id": "IMLD053",
+      "lecture": "L10",
+      "category": "Classical CNNs",
+      "question": {
+        "de": "What architectural trend is common in classical CNNs such as LeNet, AlexNet, and VGG?",
+        "en": "What architectural trend is common in classical CNNs such as LeNet, AlexNet, and VGG?"
+      },
+      "answer": {
+        "de": "• Early layers process large spatial maps with relatively few channels\n• Deeper layers usually have smaller height and width\n• The number of channels often increases with depth\n• Early layers detect simple features such as edges\n• Deeper layers detect more complex object parts or semantic patterns",
+        "en": "• Early layers process large spatial maps with relatively few channels\n• Deeper layers usually have smaller height and width\n• The number of channels often increases with depth\n• Early layers detect simple features such as edges\n• Deeper layers detect more complex object parts or semantic patterns"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD053"
+    },
+    {
+      "id": "IMLD054",
+      "lecture": "L10",
+      "category": "Transfer Learning Failures",
+      "question": {
+        "de": "What is negative transfer in transfer learning?",
+        "en": "What is negative transfer in transfer learning?"
+      },
+      "answer": {
+        "de": "• Negative transfer occurs when reused representations hurt performance on the target task\n• It can happen when source and target domains are too different\n• The pretrained model may transfer irrelevant biases or features\n• Over-freezing can prevent adaptation, while over-fine-tuning can destroy useful pretrained features\n• Transfer learning works best when source and target distributions are similar enough",
+        "en": "• Negative transfer occurs when reused representations hurt performance on the target task\n• It can happen when source and target domains are too different\n• The pretrained model may transfer irrelevant biases or features\n• Over-freezing can prevent adaptation, while over-fine-tuning can destroy useful pretrained features\n• Transfer learning works best when source and target distributions are similar enough"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD054"
+    },
+    {
+      "id": "IMLD055",
+      "lecture": "L11",
+      "category": "Time Series Sampling",
+      "question": {
+        "de": "Why must the sampling interval be sufficiently small in time series data?",
+        "en": "Why must the sampling interval be sufficiently small in time series data?"
+      },
+      "answer": {
+        "de": "• A large sampling interval can miss important changes between observations\n• Interpolation becomes less reliable if the signal changes faster than the sampling rate\n• Key peaks, cycles, or anomalies may disappear\n• Forecasting models then learn an incomplete representation of the process\n• The sampling interval should match the dynamics of the phenomenon",
+        "en": "• A large sampling interval can miss important changes between observations\n• Interpolation becomes less reliable if the signal changes faster than the sampling rate\n• Key peaks, cycles, or anomalies may disappear\n• Forecasting models then learn an incomplete representation of the process\n• The sampling interval should match the dynamics of the phenomenon"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD055"
+    },
+    {
+      "id": "IMLD056",
+      "lecture": "L11",
+      "category": "Stationarity",
+      "question": {
+        "de": "Why is stationarity important for classical time series forecasting?",
+        "en": "Why is stationarity important for classical time series forecasting?"
+      },
+      "answer": {
+        "de": "• Stationarity means statistical properties such as mean, variance, and autocorrelation remain stable over time\n• Many classical models assume stable structure\n• Non-stationary trend or seasonality can make forecasts unreliable\n• Differencing in ARIMA is used to help handle non-stationarity\n• Stationarity simplifies analysis and improves reliability of assumptions",
+        "en": "• Stationarity means statistical properties such as mean, variance, and autocorrelation remain stable over time\n• Many classical models assume stable structure\n• Non-stationary trend or seasonality can make forecasts unreliable\n• Differencing in ARIMA is used to help handle non-stationarity\n• Stationarity simplifies analysis and improves reliability of assumptions"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD056"
+    },
+    {
+      "id": "IMLD057",
+      "lecture": "L11",
+      "category": "Naive Forecasts",
+      "question": {
+        "de": "When is a seasonal naive forecast more appropriate than a naive forecast?",
+        "en": "When is a seasonal naive forecast more appropriate than a naive forecast?"
+      },
+      "answer": {
+        "de": "• A naive forecast repeats the last observed value\n• A seasonal naive forecast repeats the value from the corresponding previous season\n• It is appropriate when the dominant pattern is seasonal\n• Example: predicting Monday demand from the previous Monday can be better than using Sunday\n• It is a strong baseline for seasonal time series",
+        "en": "• A naive forecast repeats the last observed value\n• A seasonal naive forecast repeats the value from the corresponding previous season\n• It is appropriate when the dominant pattern is seasonal\n• Example: predicting Monday demand from the previous Monday can be better than using Sunday\n• It is a strong baseline for seasonal time series"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD057"
+    },
+    {
+      "id": "IMLD058",
+      "lecture": "L11",
+      "category": "ARIMA Components",
+      "question": {
+        "de": "What do the p, d, and q parameters represent in ARIMA(p,d,q)?",
+        "en": "What do the p, d, and q parameters represent in ARIMA(p,d,q)?"
+      },
+      "answer": {
+        "de": "• p is the number of autoregressive lags\n• d is the order of differencing used to reduce non-stationarity\n• q is the number of moving-average error lags\n• AR terms use past values of the series\n• MA terms use past forecasting errors",
+        "en": "• p is the number of autoregressive lags\n• d is the order of differencing used to reduce non-stationarity\n• q is the number of moving-average error lags\n• AR terms use past values of the series\n• MA terms use past forecasting errors"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD058"
+    },
+    {
+      "id": "IMLD059",
+      "lecture": "L11",
+      "category": "BPTT",
+      "question": {
+        "de": "Why is backpropagation through time more resource-intensive than ordinary backpropagation?",
+        "en": "Why is backpropagation through time more resource-intensive than ordinary backpropagation?"
+      },
+      "answer": {
+        "de": "• The recurrent model is unfolded across all time steps\n• Gradients must be propagated backward through the sequence\n• Long sequences create many repeated computations\n• Memory is needed to store intermediate states\n• This increases computational cost and can create vanishing or exploding gradients",
+        "en": "• The recurrent model is unfolded across all time steps\n• Gradients must be propagated backward through the sequence\n• Long sequences create many repeated computations\n• Memory is needed to store intermediate states\n• This increases computational cost and can create vanishing or exploding gradients"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD059"
+    },
+    {
+      "id": "IMLD060",
+      "lecture": "L11",
+      "category": "LSTM Gates",
+      "question": {
+        "de": "How do the forget, update/input, and output gates of an LSTM control memory?",
+        "en": "How do the forget, update/input, and output gates of an LSTM control memory?"
+      },
+      "answer": {
+        "de": "• The forget gate decides which old cell-state information should be kept or erased\n• The update/input gate decides which new candidate information should be written into memory\n• The output gate decides how much of the cell state becomes visible as the hidden state\n• Gate values come from sigmoid activations between 0 and 1\n• This selective flow helps preserve long-term dependencies",
+        "en": "• The forget gate decides which old cell-state information should be kept or erased\n• The update/input gate decides which new candidate information should be written into memory\n• The output gate decides how much of the cell state becomes visible as the hidden state\n• Gate values come from sigmoid activations between 0 and 1\n• This selective flow helps preserve long-term dependencies"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD060"
+    },
+    {
+      "id": "IMLD061",
+      "lecture": "L11",
+      "category": "GRU Update",
+      "question": {
+        "de": "What does it mean if a GRU update gate is close to 0 or close to 1?",
+        "en": "What does it mean if a GRU update gate is close to 0 or close to 1?"
+      },
+      "answer": {
+        "de": "• The update gate controls how much the memory changes at the current step\n• A value close to 0 keeps much of the previous memory\n• A value close to 1 writes more of the new candidate information\n• This lets the GRU preserve information across many words or time steps\n• It reduces the short-term-memory limitation of standard RNNs",
+        "en": "• The update gate controls how much the memory changes at the current step\n• A value close to 0 keeps much of the previous memory\n• A value close to 1 writes more of the new candidate information\n• This lets the GRU preserve information across many words or time steps\n• It reduces the short-term-memory limitation of standard RNNs"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD061"
+    },
+    {
+      "id": "IMLD062",
+      "lecture": "L12",
+      "category": "Anomaly Threshold",
+      "question": {
+        "de": "Why is choosing an anomaly threshold not only a statistical decision?",
+        "en": "Why is choosing an anomaly threshold not only a statistical decision?"
+      },
+      "answer": {
+        "de": "• The threshold controls the trade-off between missed anomalies and false alarms\n• A low threshold detects more events but may overwhelm users with alerts\n• A high threshold reduces false alarms but may miss important failures\n• The acceptable balance depends on domain costs and actionability\n• Expert review and operational constraints are needed",
+        "en": "• The threshold controls the trade-off between missed anomalies and false alarms\n• A low threshold detects more events but may overwhelm users with alerts\n• A high threshold reduces false alarms but may miss important failures\n• The acceptable balance depends on domain costs and actionability\n• Expert review and operational constraints are needed"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD062"
+    },
+    {
+      "id": "IMLD063",
+      "lecture": "L12",
+      "category": "Gaussian Anomaly Detection",
+      "question": {
+        "de": "How do mean and standard deviation shape Gaussian anomaly detection?",
+        "en": "How do mean and standard deviation shape Gaussian anomaly detection?"
+      },
+      "answer": {
+        "de": "• The mean μ defines the center of normal behavior\n• The standard deviation σ defines the spread of normal variation\n• Points far from μ relative to σ have lower probability density\n• A wider σ makes extreme values seem less surprising\n• A narrow σ makes deviations easier to flag",
+        "en": "• The mean μ defines the center of normal behavior\n• The standard deviation σ defines the spread of normal variation\n• Points far from μ relative to σ have lower probability density\n• A wider σ makes extreme values seem less surprising\n• A narrow σ makes deviations easier to flag"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD063"
+    },
+    {
+      "id": "IMLD064",
+      "lecture": "L12",
+      "category": "Anomaly Analysis",
+      "question": {
+        "de": "Why should detected anomalies be analyzed instead of automatically removed?",
+        "en": "Why should detected anomalies be analyzed instead of automatically removed?"
+      },
+      "answer": {
+        "de": "• Some anomalies are data errors and should be corrected or removed\n• Some anomalies are rare but valid and may be the most important cases\n• Some anomalies indicate fraud, system failure, or new behavior\n• Removing them blindly can erase useful information\n• The response should depend on root cause and task objective",
+        "en": "• Some anomalies are data errors and should be corrected or removed\n• Some anomalies are rare but valid and may be the most important cases\n• Some anomalies indicate fraud, system failure, or new behavior\n• Removing them blindly can erase useful information\n• The response should depend on root cause and task objective"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD064"
+    },
+    {
+      "id": "IMLD065",
+      "lecture": "L12",
+      "category": "Ethics",
+      "question": {
+        "de": "Why can optimizing only for accuracy hide ethical problems?",
+        "en": "Why can optimizing only for accuracy hide ethical problems?"
+      },
+      "answer": {
+        "de": "• Overall accuracy can hide unequal error rates across groups\n• A model may work well for majority groups and poorly for underrepresented groups\n• Harmful false positives or false negatives may be concentrated in specific populations\n• The metric encodes what the system values\n• Fairness, accountability, transparency, and impact analysis must complement accuracy",
+        "en": "• Overall accuracy can hide unequal error rates across groups\n• A model may work well for majority groups and poorly for underrepresented groups\n• Harmful false positives or false negatives may be concentrated in specific populations\n• The metric encodes what the system values\n• Fairness, accountability, transparency, and impact analysis must complement accuracy"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD065"
+    },
+    {
+      "id": "IMLD066",
+      "lecture": "L12",
+      "category": "AI Governance",
+      "question": {
+        "de": "Why can a technically correct AI system still be socially wrong?",
+        "en": "Why can a technically correct AI system still be socially wrong?"
+      },
+      "answer": {
+        "de": "• The model may optimize the stated metric correctly\n• The problem framing itself may be harmful or incomplete\n• The data may reflect historical inequality\n• Deployment can change power, access, or opportunity for affected people\n• Responsible AI requires technical understanding plus problem-context understanding",
+        "en": "• The model may optimize the stated metric correctly\n• The problem framing itself may be harmful or incomplete\n• The data may reflect historical inequality\n• Deployment can change power, access, or opportunity for affected people\n• Responsible AI requires technical understanding plus problem-context understanding"
+      },
+      "focus": "exam",
+      "sourceId": "IMLD066"
+    }
+  ]
+}

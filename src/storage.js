@@ -1,5 +1,6 @@
 const PROGRESS_KEY = "vokabelapp_progress_v1";
 const SETTINGS_KEY = "vokabelapp_settings_v1";
+const TIME_TRACKING_KEY = "vokabelapp_time_tracking_v1";
 
 export function loadProgress() {
   try {
@@ -37,4 +38,17 @@ export function loadSettings() {
 
 export function saveSettings(settings) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+export function loadTimeTracking() {
+  try {
+    const raw = localStorage.getItem(TIME_TRACKING_KEY);
+    return raw ? JSON.parse(raw) : { totalTimeMs: 0, sessionTimeMs: 0, lastActivityAt: Date.now() };
+  } catch {
+    return { totalTimeMs: 0, sessionTimeMs: 0, lastActivityAt: Date.now() };
+  }
+}
+
+export function saveTimeTracking(timeTracking) {
+  localStorage.setItem(TIME_TRACKING_KEY, JSON.stringify(timeTracking));
 }

@@ -6,7 +6,9 @@ import {
   loadProgress,
   loadSettings,
   saveProgress,
-  saveSettings
+  saveSettings,
+  loadTimeTracking,
+  saveTimeTracking
 } from "./storage";
 import { isCardDue, rateCard } from "./scheduler";
 
@@ -107,6 +109,79 @@ function isIgnored(cardId, progress) {
   return Boolean(progress[cardId]?.ignored);
 }
 
+function getCardDueAt(cardId, progress) {
+  const cardProgress = progress[cardId];
+
+  if (!cardProgress) {
+    return 0;
+  }
+
+  return cardProgress.dueAt || 0;
+}
+
+function sortCardsByNextDue(cards, progress) {
+  return [...cards].sort((cardA, cardB) => {
+    const dueA = getCardDueAt(cardA.id, progress);
+    const dueB = getCardDueAt(cardB.id, progress);
+
+    if (dueA !== dueB) {
+      return dueA - dueB;
+    }
+
+    return cardA.id.localeCompare(cardB.id);
+  });
+}
+
+function buildReviewQueue(cards, progress, onlyDue) {
+  // Priority 1: Cards never reviewed (not seen before)
+  const unviewedCards = cards.filter((card) => {
+    const cardProgress = progress[card.id];
+    return !cardProgress || (cardProgress.reviewedCount || 0) === 0;
+  });
+
+  if (unviewedCards.length > 0) {
+    return unviewedCards;
+  }
+
+  // Priority 2: Cards that are currently due
+  const dueCards = sortCardsByNextDue(
+    cards.filter((card) => isCardDue(card.id, progress)),
+    progress
+  );
+
+  if (dueCards.length > 0) {
+    return dueCards;
+  }
+
+  // Priority 3: Cards with worst rating, sorted by due date
+  const ratingPriority = {
+    bad: 0,
+    medium: 1,
+    good: 2
+  };
+
+  const cardsWithRating = cards.map((card) => {
+    const cardProgress = progress[card.id];
+    const rating = cardProgress?.lastRating || "bad";
+    return {
+      card,
+      ratingLevel: ratingPriority[rating],
+      dueAt: getCardDueAt(card.id, progress)
+    };
+  });
+
+  return cardsWithRating
+    .sort((a, b) => {
+      // First sort by rating (worst first)
+      if (a.ratingLevel !== b.ratingLevel) {
+        return a.ratingLevel - b.ratingLevel;
+      }
+      // Then sort by due date
+      return a.dueAt - b.dueAt;
+    })
+    .map((item) => item.card);
+}
+
 function formatInterval(minutes) {
   if (!minutes) {
     return null;
@@ -123,9 +198,33 @@ function formatInterval(minutes) {
   return `${Math.round(minutes / (60 * 24))} d`;
 }
 
+function formatTime(milliseconds) {
+  if (!milliseconds || milliseconds < 0) {
+    return "0m 0s";
+  }
+
+  const totalSeconds = Math.round(milliseconds / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  }
+
+  return `${seconds}s`;
+}
+
 export default function App() {
   const [settings, setSettings] = useState(loadSettings);
   const [progress, setProgress] = useState(loadProgress);
+  const [timeTick, setTimeTick] = useState(Date.now());
+  const [timeTracking, setTimeTracking] = useState(loadTimeTracking);
+  const [sessionActive, setSessionActive] = useState(true);
 
   const [selectedDeckId, setSelectedDeckId] = useState(
     decks.length > 0 ? decks[0].id : ""
@@ -136,6 +235,7 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [currentCardId, setCurrentCardId] = useState(null);
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
+  const [showStatsDashboard, setShowStatsDashboard] = useState(true);
 
   const t = translations[settings.language] || translations.en;
 
@@ -194,32 +294,28 @@ export default function App() {
     });
   }, [activeCards, selectedLecture, selectedCategory, search]);
 
-  const navigationCards = useMemo(() => {
-    if (!settings.onlyDue) {
-      return candidateCards;
-    }
-
-    return candidateCards.filter((card) => isCardDue(card.id, progress));
-  }, [candidateCards, settings.onlyDue, progress]);
+  const reviewQueue = useMemo(() => {
+    return buildReviewQueue(candidateCards, progress, settings.onlyDue);
+  }, [candidateCards, progress, settings.onlyDue, timeTick]);
 
   const currentCard =
     candidateCards.find((card) => card.id === currentCardId) ||
-    navigationCards[0] ||
+    reviewQueue[0] ||
     candidateCards[0] ||
     null;
 
   const displayCards =
-    currentCard && navigationCards.some((card) => card.id === currentCard.id)
-      ? navigationCards
+    currentCard && reviewQueue.some((card) => card.id === currentCard.id)
+      ? reviewQueue
       : candidateCards;
 
   const safeCurrentIndex = currentCard
     ? displayCards.findIndex((card) => card.id === currentCard.id)
     : -1;
 
-  const dueCount = activeCards.filter((card) =>
-    isCardDue(card.id, progress)
-  ).length;
+  const dueCount = useMemo(() => {
+    return activeCards.filter((card) => isCardDue(card.id, progress)).length;
+  }, [activeCards, progress, timeTick]);
 
   const reviewedCount = activeCards.filter(
     (card) => progress[card.id]?.reviewedCount > 0
@@ -253,6 +349,177 @@ export default function App() {
 
   const currentIntervalText = formatInterval(currentProgress?.intervalMinutes);
 
+  // Statistics Calculations
+  const stats = useMemo(() => {
+    const now = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+
+    // Tomorrow and future dates
+    const tomorrow = now + oneDayMs;
+    const sevenDaysAhead = now + 7 * oneDayMs;
+    const thirtyDaysAhead = now + 30 * oneDayMs;
+
+    // Card categorization
+    const unviewedCards = activeCards.filter(
+      (card) => !progress[card.id]?.reviewedCount
+    );
+    const masteredCards = activeCards.filter(
+      (card) =>
+        progress[card.id]?.lastRating === "good" &&
+        getCardMastery(card.id, progress) >= 80
+    );
+    const dueToday = activeCards.filter((card) => {
+      const due = getCardDueAt(card.id, progress);
+      return due <= now && due > now - oneDayMs;
+    });
+    const dueTomorrow = activeCards.filter((card) => {
+      const due = getCardDueAt(card.id, progress);
+      return due > now && due <= tomorrow;
+    });
+    const dueIn7Days = activeCards.filter((card) => {
+      const due = getCardDueAt(card.id, progress);
+      return due > tomorrow && due <= sevenDaysAhead;
+    });
+
+    // Rating distribution
+    const ratingCounts = {
+      good: 0,
+      medium: 0,
+      bad: 0
+    };
+    activeCards.forEach((card) => {
+      const rating = progress[card.id]?.lastRating;
+      if (rating) {
+        ratingCounts[rating]++;
+      }
+    });
+
+    // Category breakdown
+    const categoryStats = {};
+    activeCards.forEach((card) => {
+      const cat = card.category || "Uncategorized";
+      if (!categoryStats[cat]) {
+        categoryStats[cat] = {
+          total: 0,
+          mastery: 0,
+          reviewed: 0
+        };
+      }
+      categoryStats[cat].total++;
+      categoryStats[cat].mastery += getCardMastery(card.id, progress);
+      if (progress[card.id]?.reviewedCount) {
+        categoryStats[cat].reviewed++;
+      }
+    });
+
+    Object.keys(categoryStats).forEach((cat) => {
+      categoryStats[cat].mastery = Math.round(
+        categoryStats[cat].mastery / categoryStats[cat].total
+      );
+    });
+
+    // Learning activity: today
+    const reviewedToday = activeCards.filter((card) => {
+      const lastReviewed = progress[card.id]?.lastReviewedAt;
+      return (
+        lastReviewed &&
+        lastReviewed > now - oneDayMs
+      );
+    });
+
+    // Weakest categories (lowest mastery)
+    const weakestCategories = Object.entries(categoryStats)
+      .sort((a, b) => a[1].mastery - b[1].mastery)
+      .slice(0, 3);
+
+    // Average reviews per day (based on reviewedCount as proxy)
+    const totalReviews = activeCards.reduce(
+      (sum, card) => sum + (progress[card.id]?.reviewedCount || 0),
+      0
+    );
+    const avgReviewsPerDay = Math.round(totalReviews / Math.max(1, reviewedCount));
+
+    // Time tracking calculations
+    const INACTIVITY_THRESHOLD = 2 * 60 * 1000; // 2 minutes
+    const now_ms = Date.now();
+    const timeSinceLastActivity = now_ms - timeTracking.lastActivityAt;
+    const isCurrentlyActive = timeSinceLastActivity < INACTIVITY_THRESHOLD;
+
+    let effectiveSessionTime = timeTracking.sessionTimeMs;
+    if (isCurrentlyActive && sessionActive) {
+      effectiveSessionTime += timeSinceLastActivity;
+    }
+
+    const totalTimeMs = timeTracking.totalTimeMs + (isCurrentlyActive ? timeSinceLastActivity : 0);
+
+    // Average time per card
+    const avgTimePerCardMs = reviewedCount > 0 ? Math.round(totalTimeMs / reviewedCount) : 0;
+
+    return {
+      totalCards: activeCards.length,
+      unviewedCards: unviewedCards.length,
+      masteredCards: masteredCards.length,
+      dueToday: dueToday.length,
+      dueTomorrow: dueTomorrow.length,
+      dueIn7Days: dueIn7Days.length,
+      ratingCounts,
+      categoryStats,
+      reviewedToday: reviewedToday.length,
+      weakestCategories,
+      avgReviewsPerDay,
+      totalReviews,
+      timeToday: formatTime(effectiveSessionTime),
+      avgTimePerCard: formatTime(avgTimePerCardMs),
+      totalTime: formatTime(totalTimeMs)
+    };
+  }, [activeCards, progress, timeTick, timeTracking, sessionActive]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setTimeTick(Date.now());
+    }, 30000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  // Time tracking effect
+  useEffect(() => {
+    const INACTIVITY_THRESHOLD = 2 * 60 * 1000; // 2 minutes
+    const now = Date.now();
+    const timeSinceLastActivity = now - timeTracking.lastActivityAt;
+
+    if (timeSinceLastActivity > INACTIVITY_THRESHOLD && sessionActive) {
+      setSessionActive(false);
+      const updatedTracking = {
+        totalTimeMs: timeTracking.totalTimeMs + timeTracking.sessionTimeMs,
+        sessionTimeMs: 0,
+        lastActivityAt: now
+      };
+      setTimeTracking(updatedTracking);
+      saveTimeTracking(updatedTracking);
+    } else if (timeSinceLastActivity <= INACTIVITY_THRESHOLD && !sessionActive) {
+      setSessionActive(true);
+      const updatedTracking = {
+        ...timeTracking,
+        lastActivityAt: now
+      };
+      setTimeTracking(updatedTracking);
+    }
+  }, [timeTick, timeTracking, sessionActive]);
+
+  // Update activity on user interaction
+  const updateActivity = () => {
+    if (sessionActive) {
+      const updatedTracking = {
+        ...timeTracking,
+        lastActivityAt: Date.now()
+      };
+      setTimeTracking(updatedTracking);
+    }
+  };
+
   useEffect(() => {
     if (candidateCards.length === 0) {
       if (currentCardId !== null) {
@@ -267,10 +534,10 @@ export default function App() {
     );
 
     if (!currentCardId || !currentCardStillExists) {
-      setCurrentCardId(candidateCards[0].id);
+      setCurrentCardId(reviewQueue[0]?.id || candidateCards[0].id);
       setIsAnswerVisible(false);
     }
-  }, [candidateCards, currentCardId]);
+  }, [candidateCards, reviewQueue, currentCardId]);
 
   function updateSetting(key, value) {
     const updatedSettings = {
@@ -310,8 +577,8 @@ export default function App() {
   }
 
   function getBestNavigationList() {
-    if (navigationCards.length > 0) {
-      return navigationCards;
+    if (reviewQueue.length > 0) {
+      return reviewQueue;
     }
 
     return candidateCards;
@@ -321,6 +588,8 @@ export default function App() {
     if (cards.length === 0 || !currentCard) {
       return;
     }
+
+    updateActivity();
 
     const currentPosition = cards.findIndex((card) => card.id === currentCard.id);
 
@@ -335,6 +604,8 @@ export default function App() {
     if (cards.length === 0 || !currentCard) {
       return;
     }
+
+    updateActivity();
 
     const currentPosition = cards.findIndex((card) => card.id === currentCard.id);
 
@@ -365,6 +636,8 @@ export default function App() {
         return;
       }
 
+      updateActivity();
+
       if (event.code === "Space" || event.key === " ") {
         event.preventDefault();
 
@@ -392,12 +665,14 @@ export default function App() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [currentCard, candidateCards, navigationCards]);
+  }, [currentCard, candidateCards, reviewQueue]);
 
   function handleRating(rating) {
     if (!currentCard) {
       return;
     }
+
+    updateActivity();
 
     const updatedProgress = rateCard(
       currentCard.id,
@@ -409,16 +684,27 @@ export default function App() {
     setProgress(updatedProgress);
     saveProgress(updatedProgress);
 
-    const nextCards =
-      navigationCards.length > 1 ? navigationCards : candidateCards;
+    if (settings.onlyDue) {
+      const updatedQueue = buildReviewQueue(
+        candidateCards,
+        updatedProgress,
+        true
+      );
 
-    moveToNext(nextCards);
+      setCurrentCardId(updatedQueue[0]?.id || null);
+      setIsAnswerVisible(false);
+      return;
+    }
+
+    moveToNext(candidateCards);
   }
 
   function handleIgnoreCard() {
     if (!currentCard) {
       return;
     }
+
+    updateActivity();
 
     const updatedProgress = {
       ...progress,
@@ -433,16 +719,17 @@ export default function App() {
       (card) => card.id !== currentCard.id
     );
 
+    const updatedQueue = buildReviewQueue(
+      remainingCards,
+      updatedProgress,
+      settings.onlyDue
+    );
+
     setProgress(updatedProgress);
     saveProgress(updatedProgress);
 
-    if (remainingCards.length > 0) {
-      const currentPosition = candidateCards.findIndex(
-        (card) => card.id === currentCard.id
-      );
-
-      const nextIndex = Math.min(currentPosition, remainingCards.length - 1);
-      setCurrentCardId(remainingCards[nextIndex].id);
+    if (updatedQueue.length > 0) {
+      setCurrentCardId(updatedQueue[0].id);
     } else {
       setCurrentCardId(null);
     }
@@ -599,97 +886,257 @@ export default function App() {
         </div>
       </section>
 
-      <section className="panel card-panel compact-card-panel">
-        {currentCard ? (
-          <>
-            <div className="card-top-actions">
-              <div className="card-strength">
-                <div
-                  className="card-strength-dot"
-                  style={{
-                    backgroundColor: getMasteryColor(currentCardMastery)
-                  }}
-                />
-                <span>{currentCardMastery}%</span>
+      <div className="main-content-wrapper">
+        <section className="panel card-panel compact-card-panel">
+          {currentCard ? (
+            <>
+              <div className="card-top-actions">
+                <div className="card-strength">
+                  <div
+                    className="card-strength-dot"
+                    style={{
+                      backgroundColor: getMasteryColor(currentCardMastery)
+                    }}
+                  />
+                  <span>{currentCardMastery}%</span>
+                </div>
+
+                <button
+                  className="ignore-icon-button"
+                  disabled={!currentCard}
+                  onClick={handleIgnoreCard}
+                  title={t.ignoreCard}
+                  aria-label={t.ignoreCard}
+                >
+                  ⊘
+                </button>
               </div>
 
-              <button
-                className="ignore-icon-button"
-                disabled={!currentCard}
-                onClick={handleIgnoreCard}
-                title={t.ignoreCard}
-                aria-label={t.ignoreCard}
-              >
-                ⊘
-              </button>
-            </div>
+              <div className="card-meta">
+                <span>{currentCard.id}</span>
+                <span>{currentCard.lecture}</span>
+                <span>{currentCard.category}</span>
+                <span>
+                  {currentProgress?.lastRating
+                    ? currentProgress.lastRating
+                    : t.newCard}
+                </span>
 
-            <div className="card-meta">
-              <span>{currentCard.id}</span>
-              <span>{currentCard.lecture}</span>
-              <span>{currentCard.category}</span>
-              <span>
-                {currentProgress?.lastRating
-                  ? currentProgress.lastRating
-                  : t.newCard}
-              </span>
-
-              {currentIntervalText && <span>{currentIntervalText}</span>}
-            </div>
-
-            <h2>{currentQuestion}</h2>
-
-            {isAnswerVisible && (
-              <div className="answer">
-                <h3>{t.answer}</h3>
-                <AnswerContent text={currentAnswer} />
+                {currentIntervalText && <span>{currentIntervalText}</span>}
               </div>
-            )}
-          </>
-        ) : (
-          <h2>{t.noCards}</h2>
-        )}
 
-        <div className="navigation compact-navigation">
-          <button onClick={() => moveToPrevious()}>{t.previous}</button>
+              <h2>{currentQuestion}</h2>
 
+              {isAnswerVisible && (
+                <div className="answer">
+                  <h3>{t.answer}</h3>
+                  <AnswerContent text={currentAnswer} />
+                </div>
+              )}
+            </>
+          ) : (
+            <h2>{t.noCards}</h2>
+          )}
+
+          <div className="navigation compact-navigation">
+            <button onClick={() => moveToPrevious()}>{t.previous}</button>
+
+            <button
+              className="primary"
+              onClick={() => {
+                updateActivity();
+                setIsAnswerVisible((visible) => !visible);
+              }}
+              disabled={!currentCard}
+            >
+              {isAnswerVisible ? t.hideAnswer : t.showAnswer}
+            </button>
+
+            <button onClick={() => moveToNext()}>{t.next}</button>
+          </div>
+
+          <div className="ratings compact-ratings">
+            <button
+              className="bad"
+              disabled={!isAnswerVisible || !currentCard}
+              onClick={() => handleRating("bad")}
+            >
+              {t.bad}
+            </button>
+
+            <button
+              className="medium"
+              disabled={!isAnswerVisible || !currentCard}
+              onClick={() => handleRating("medium")}
+            >
+              {t.medium}
+            </button>
+
+            <button
+              className="good"
+              disabled={!isAnswerVisible || !currentCard}
+              onClick={() => handleRating("good")}
+            >
+              {t.good}
+            </button>
+          </div>
+        </section>
+
+        <div className={`stats-dashboard-wrapper ${showStatsDashboard ? "open" : "closed"}`}>
           <button
-            className="primary"
-            onClick={() => setIsAnswerVisible((visible) => !visible)}
-            disabled={!currentCard}
+            className="stats-toggle-button"
+            onClick={() => setShowStatsDashboard(!showStatsDashboard)}
+            title={showStatsDashboard ? "Close stats" : "Open stats"}
           >
-            {isAnswerVisible ? t.hideAnswer : t.showAnswer}
+            {showStatsDashboard ? "▼ Stats" : "▲ Stats"}
           </button>
 
-          <button onClick={() => moveToNext()}>{t.next}</button>
+          {showStatsDashboard && (
+            <section className="stats-dashboard">
+              <div className="stats-section">
+                <h3>Overview</h3>
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <div className="stat-label">Total Cards</div>
+                    <div className="stat-value">{stats.totalCards}</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">Unviewed</div>
+                    <div className="stat-value">{stats.unviewedCards}</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">Mastered</div>
+                    <div className="stat-value">{stats.masteredCards}</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">Due Today</div>
+                    <div className="stat-value highlight-due">{stats.dueToday}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="stats-section">
+                <h3>Review Schedule</h3>
+                <div className="stats-list">
+                  <div className="stats-list-item">
+                    <span>Tomorrow</span>
+                    <strong>{stats.dueTomorrow}</strong>
+                  </div>
+                  <div className="stats-list-item">
+                    <span>Next 7 Days</span>
+                    <strong>{stats.dueIn7Days}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="stats-section">
+                <h3>Rating Distribution</h3>
+                <div className="stats-list">
+                  <div className="stats-list-item">
+                    <span className="rating-badge good">Good</span>
+                    <strong>{stats.ratingCounts.good}</strong>
+                  </div>
+                  <div className="stats-list-item">
+                    <span className="rating-badge medium">Medium</span>
+                    <strong>{stats.ratingCounts.medium}</strong>
+                  </div>
+                  <div className="stats-list-item">
+                    <span className="rating-badge bad">Bad</span>
+                    <strong>{stats.ratingCounts.bad}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="stats-section">
+                <h3>Activity</h3>
+                <div className="stats-list">
+                  <div className="stats-list-item">
+                    <span>Reviewed Today</span>
+                    <strong>{stats.reviewedToday}</strong>
+                  </div>
+                  <div className="stats-list-item">
+                    <span>Avg/Day (All Time)</span>
+                    <strong>{stats.avgReviewsPerDay}</strong>
+                  </div>
+                  <div className="stats-list-item">
+                    <span>Total Reviews</span>
+                    <strong>{stats.totalReviews}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="stats-section">
+                <h3>Learning Time</h3>
+                <div className="stats-list">
+                  <div className="stats-list-item">
+                    <span>Time Today</span>
+                    <strong>{stats.timeToday}</strong>
+                  </div>
+                  <div className="stats-list-item">
+                    <span>Avg/Card</span>
+                    <strong>{stats.avgTimePerCard}</strong>
+                  </div>
+                  <div className="stats-list-item">
+                    <span>Total Time</span>
+                    <strong>{stats.totalTime}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {stats.weakestCategories.length > 0 && (
+                <div className="stats-section">
+                  <h3>Weakest Areas</h3>
+                  <div className="stats-list">
+                    {stats.weakestCategories.map(([category, data]) => (
+                      <div key={category} className="stats-list-item">
+                        <span>{category}</span>
+                        <div className="mastery-mini-bar">
+                          <div
+                            className="mastery-mini-fill"
+                            style={{
+                              width: `${data.mastery}%`,
+                              backgroundColor: getMasteryColor(data.mastery)
+                            }}
+                          />
+                          <span className="mastery-mini-text">{data.mastery}%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {Object.keys(stats.categoryStats).length > 0 && (
+                <details className="stats-section stats-details">
+                  <summary>Category Breakdown</summary>
+                  <div className="stats-list">
+                    {Object.entries(stats.categoryStats).map(([category, data]) => (
+                      <div key={category} className="stats-list-item">
+                        <div className="category-info">
+                          <span className="category-name">{category}</span>
+                          <span className="category-count">
+                            {data.reviewed}/{data.total}
+                          </span>
+                        </div>
+                        <div className="mastery-mini-bar">
+                          <div
+                            className="mastery-mini-fill"
+                            style={{
+                              width: `${data.mastery}%`,
+                              backgroundColor: getMasteryColor(data.mastery)
+                            }}
+                          />
+                          <span className="mastery-mini-text">{data.mastery}%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              )}
+            </section>
+          )}
         </div>
-
-        <div className="ratings compact-ratings">
-          <button
-            className="bad"
-            disabled={!isAnswerVisible || !currentCard}
-            onClick={() => handleRating("bad")}
-          >
-            {t.bad}
-          </button>
-
-          <button
-            className="medium"
-            disabled={!isAnswerVisible || !currentCard}
-            onClick={() => handleRating("medium")}
-          >
-            {t.medium}
-          </button>
-
-          <button
-            className="good"
-            disabled={!isAnswerVisible || !currentCard}
-            onClick={() => handleRating("good")}
-          >
-            {t.good}
-          </button>
-        </div>
-      </section>
+      </div>
 
       <details className="panel settings-menu">
         <summary>{t.settings}</summary>
