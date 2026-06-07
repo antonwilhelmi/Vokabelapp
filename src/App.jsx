@@ -247,7 +247,7 @@ export default function App() {
     resetCardView();
   }
 
-  function updateSetting(key, value) {
+    function updateSetting(key, value) {
     const updatedSettings = {
       ...settings,
       [key]: value
@@ -255,8 +255,7 @@ export default function App() {
 
     setSettings(updatedSettings);
     saveSettings(updatedSettings);
-    resetCardView();
-  }
+    }
 
   function goNext() {
     if (filteredCards.length === 0) return;
