@@ -380,6 +380,15 @@ label {
   position: static;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.rating-scale-10 {
+  position: static;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 3px;
   margin-top: 12px;
 }
 
@@ -388,6 +397,17 @@ label {
   min-height: 34px;
   padding: 8px 10px;
   font-size: 0.82rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.rating-scale-10 button {
+  min-height: 28px;
+  padding: 4px 6px;
+  font-size: 0.7rem;
+  border-radius: 6px;
+  font-weight: 700;
+  color: white;
 }
 
 .ratings button {
@@ -445,6 +465,17 @@ label {
 .checkbox-label input {
   width: 17px;
   height: 17px;
+}
+
+.compact-settings-grid label select {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.82rem;
+  cursor: pointer;
 }
 
 .settings-actions {

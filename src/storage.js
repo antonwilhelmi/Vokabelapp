@@ -22,9 +22,20 @@ export function clearProgress() {
 export function loadSettings() {
   const defaults = {
     language: "de",
+    ratingMode: "3-tier",
     badMinutes: 5,
     mediumHours: 6,
     goodHours: 24,
+    rating1Minutes: 5,
+    rating2Minutes: 15,
+    rating3Hours: 1,
+    rating4Hours: 4,
+    rating5Hours: 12,
+    rating6Hours: 24,
+    rating7Days: 3,
+    rating8Days: 5,
+    rating9Days: 7,
+    rating10Days: 14,
     onlyDue: false
   };
 

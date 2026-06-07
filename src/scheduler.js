@@ -5,6 +5,37 @@ function clampInterval(minutes) {
 }
 
 function getBaseIntervalMinutes(rating, settings) {
+  const mode = settings.ratingMode || "3-tier";
+
+  if (mode === "1-10") {
+    const ratingNum = Number(rating);
+    if (ratingNum === 1 || ratingNum === 2) {
+      return Number(settings.rating1Minutes) || 5;
+    }
+    if (ratingNum === 3 || ratingNum === 4) {
+      return Number(settings.rating2Minutes) || 15;
+    }
+    if (ratingNum === 5) {
+      return (Number(settings.rating3Hours) || 1) * 60;
+    }
+    if (ratingNum === 6) {
+      return (Number(settings.rating4Hours) || 4) * 60;
+    }
+    if (ratingNum === 7) {
+      return (Number(settings.rating5Hours) || 12) * 60;
+    }
+    if (ratingNum === 8) {
+      return (Number(settings.rating6Hours) || 24) * 60;
+    }
+    if (ratingNum === 9) {
+      return (Number(settings.rating7Days) || 3) * 24 * 60;
+    }
+    if (ratingNum === 10) {
+      return (Number(settings.rating8Days) || 7) * 24 * 60;
+    }
+  }
+
+  // Default 3-tier mode
   if (rating === "bad") {
     return Number(settings.badMinutes) || 5;
   }
@@ -50,22 +81,54 @@ export function calculateNextReviewState(rating, previousProgress, settings) {
   let goodStreak;
   let mediumStreak;
 
-  if (rating === "bad") {
-    nextIntervalMinutes = baseInterval;
-    goodStreak = 0;
-    mediumStreak = 0;
-  } else if (rating === "medium") {
-    mediumStreak = previousMediumStreak + 1;
-    goodStreak = 0;
+  const mode = settings.ratingMode || "3-tier";
 
-    const growthFactor = 1.55 + Math.min(mediumStreak * 0.08, 0.45);
-    nextIntervalMinutes = Math.max(baseInterval, previousInterval * growthFactor);
+  if (mode === "1-10") {
+    const ratingNum = Number(rating);
+    
+    if (ratingNum <= 2) {
+      // Very bad - reset
+      nextIntervalMinutes = baseInterval;
+      goodStreak = 0;
+      mediumStreak = 0;
+    } else if (ratingNum <= 4) {
+      // Bad to okay - small growth
+      mediumStreak = previousMediumStreak + 1;
+      goodStreak = 0;
+      const growthFactor = 1.3 + Math.min(mediumStreak * 0.05, 0.2);
+      nextIntervalMinutes = Math.max(baseInterval, previousInterval * growthFactor);
+    } else if (ratingNum <= 6) {
+      // Medium - moderate growth
+      mediumStreak = previousMediumStreak + 1;
+      goodStreak = 0;
+      const growthFactor = 1.6 + Math.min(mediumStreak * 0.08, 0.35);
+      nextIntervalMinutes = Math.max(baseInterval, previousInterval * growthFactor);
+    } else {
+      // Good to excellent - strong growth
+      goodStreak = previousGoodStreak + 1;
+      mediumStreak = 0;
+      const growthFactor = 2.0 + Math.min(goodStreak * 0.15, 0.8);
+      nextIntervalMinutes = Math.max(baseInterval, previousInterval * growthFactor);
+    }
   } else {
-    goodStreak = previousGoodStreak + 1;
-    mediumStreak = 0;
+    // 3-tier mode
+    if (rating === "bad") {
+      nextIntervalMinutes = baseInterval;
+      goodStreak = 0;
+      mediumStreak = 0;
+    } else if (rating === "medium") {
+      mediumStreak = previousMediumStreak + 1;
+      goodStreak = 0;
 
-    const growthFactor = 2.25 + Math.min(goodStreak * 0.15, 0.75);
-    nextIntervalMinutes = Math.max(baseInterval, previousInterval * growthFactor);
+      const growthFactor = 1.55 + Math.min(mediumStreak * 0.08, 0.45);
+      nextIntervalMinutes = Math.max(baseInterval, previousInterval * growthFactor);
+    } else {
+      goodStreak = previousGoodStreak + 1;
+      mediumStreak = 0;
+
+      const growthFactor = 2.25 + Math.min(goodStreak * 0.15, 0.75);
+      nextIntervalMinutes = Math.max(baseInterval, previousInterval * growthFactor);
+    }
   }
 
   const roundedIntervalMinutes = Math.round(clampInterval(nextIntervalMinutes));

@@ -79,20 +79,29 @@ function AnswerContent({ text }) {
   return <p>{rawText}</p>;
 }
 
-function getCardMastery(cardId, progress) {
+function getCardMastery(cardId, progress, ratingMode = "3-tier") {
   const cardProgress = progress[cardId];
 
   if (!cardProgress || cardProgress.ignored) {
     return 0;
   }
 
-  const ratingScore = {
-    bad: 20,
-    medium: 60,
-    good: 90
-  };
+  let baseScore = 0;
 
-  const baseScore = ratingScore[cardProgress.lastRating] || 0;
+  if (ratingMode === "1-10") {
+    const ratingNum = Number(cardProgress.lastRating) || 0;
+    // Map 1-10 to 0-100 score
+    baseScore = ratingNum * 10;
+  } else {
+    // 3-tier mode
+    const ratingScore = {
+      bad: 20,
+      medium: 60,
+      good: 90
+    };
+    baseScore = ratingScore[cardProgress.lastRating] || 0;
+  }
+
   const reviewBonus = Math.min((cardProgress.reviewedCount || 0) * 3, 10);
 
   return Math.min(100, Math.round(baseScore + reviewBonus));
@@ -327,11 +336,11 @@ export default function App() {
     }
 
     const totalScore = activeCards.reduce((sum, card) => {
-      return sum + getCardMastery(card.id, progress);
+      return sum + getCardMastery(card.id, progress, settings.ratingMode);
     }, 0);
 
     return Math.round(totalScore / activeCards.length);
-  }, [activeCards, progress]);
+  }, [activeCards, progress, settings.ratingMode]);
 
   const currentQuestion = currentCard
     ? getText(currentCard.question, settings.language)
@@ -344,7 +353,7 @@ export default function App() {
   const currentProgress = currentCard ? progress[currentCard.id] : null;
 
   const currentCardMastery = currentCard
-    ? getCardMastery(currentCard.id, progress)
+    ? getCardMastery(currentCard.id, progress, settings.ratingMode)
     : 0;
 
   const currentIntervalText = formatInterval(currentProgress?.intervalMinutes);
@@ -363,11 +372,19 @@ export default function App() {
     const unviewedCards = activeCards.filter(
       (card) => !progress[card.id]?.reviewedCount
     );
-    const masteredCards = activeCards.filter(
-      (card) =>
-        progress[card.id]?.lastRating === "good" &&
-        getCardMastery(card.id, progress) >= 80
-    );
+    
+    // Mastered cards logic depends on rating mode
+    const masteredCards = activeCards.filter((card) => {
+      const rating = progress[card.id]?.lastRating;
+      const mastery = getCardMastery(card.id, progress, settings.ratingMode);
+      
+      if (settings.ratingMode === "1-10") {
+        return rating >= 8 && mastery >= 80;
+      } else {
+        return rating === "good" && mastery >= 80;
+      }
+    });
+    
     const dueToday = activeCards.filter((card) => {
       const due = getCardDueAt(card.id, progress);
       return due <= now && due > now - oneDayMs;
@@ -382,15 +399,16 @@ export default function App() {
     });
 
     // Rating distribution
-    const ratingCounts = {
-      good: 0,
-      medium: 0,
-      bad: 0
-    };
+    const ratingCounts = settings.ratingMode === "1-10"
+      ? { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0 }
+      : { good: 0, medium: 0, bad: 0 };
+    
     activeCards.forEach((card) => {
       const rating = progress[card.id]?.lastRating;
-      if (rating) {
-        ratingCounts[rating]++;
+      if (rating !== undefined && rating !== null) {
+        if (ratingCounts.hasOwnProperty(rating)) {
+          ratingCounts[rating]++;
+        }
       }
     });
 
@@ -406,7 +424,7 @@ export default function App() {
         };
       }
       categoryStats[cat].total++;
-      categoryStats[cat].mastery += getCardMastery(card.id, progress);
+      categoryStats[cat].mastery += getCardMastery(card.id, progress, settings.ratingMode);
       if (progress[card.id]?.reviewedCount) {
         categoryStats[cat].reviewed++;
       }
@@ -472,7 +490,7 @@ export default function App() {
       avgTimePerCard: formatTime(avgTimePerCardMs),
       totalTime: formatTime(totalTimeMs)
     };
-  }, [activeCards, progress, timeTick, timeTracking, sessionActive]);
+  }, [activeCards, progress, timeTick, timeTracking, sessionActive, settings.ratingMode]);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -955,31 +973,106 @@ export default function App() {
             <button onClick={() => moveToNext()}>{t.next}</button>
           </div>
 
-          <div className="ratings compact-ratings">
-            <button
-              className="bad"
-              disabled={!isAnswerVisible || !currentCard}
-              onClick={() => handleRating("bad")}
-            >
-              {t.bad}
-            </button>
+          {settings.ratingMode === "1-10" ? (
+            <div className="rating-scale-10">
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(1)}
+                style={{ backgroundColor: getMasteryColor(10) }}
+              >
+                1
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(2)}
+                style={{ backgroundColor: getMasteryColor(20) }}
+              >
+                2
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(3)}
+                style={{ backgroundColor: getMasteryColor(30) }}
+              >
+                3
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(4)}
+                style={{ backgroundColor: getMasteryColor(40) }}
+              >
+                4
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(5)}
+                style={{ backgroundColor: getMasteryColor(50) }}
+              >
+                5
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(6)}
+                style={{ backgroundColor: getMasteryColor(60) }}
+              >
+                6
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(7)}
+                style={{ backgroundColor: getMasteryColor(70) }}
+              >
+                7
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(8)}
+                style={{ backgroundColor: getMasteryColor(80) }}
+              >
+                8
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(9)}
+                style={{ backgroundColor: getMasteryColor(90) }}
+              >
+                9
+              </button>
+              <button
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating(10)}
+                style={{ backgroundColor: getMasteryColor(100) }}
+              >
+                10
+              </button>
+            </div>
+          ) : (
+            <div className="ratings compact-ratings">
+              <button
+                className="bad"
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating("bad")}
+              >
+                {t.bad}
+              </button>
 
-            <button
-              className="medium"
-              disabled={!isAnswerVisible || !currentCard}
-              onClick={() => handleRating("medium")}
-            >
-              {t.medium}
-            </button>
+              <button
+                className="medium"
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating("medium")}
+              >
+                {t.medium}
+              </button>
 
-            <button
-              className="good"
-              disabled={!isAnswerVisible || !currentCard}
-              onClick={() => handleRating("good")}
-            >
-              {t.good}
-            </button>
-          </div>
+              <button
+                className="good"
+                disabled={!isAnswerVisible || !currentCard}
+                onClick={() => handleRating("good")}
+              >
+                {t.good}
+              </button>
+            </div>
+          )}
         </section>
 
         <div className={`stats-dashboard-wrapper ${showStatsDashboard ? "open" : "closed"}`}>
@@ -1032,18 +1125,31 @@ export default function App() {
               <div className="stats-section">
                 <h3>Rating Distribution</h3>
                 <div className="stats-list">
-                  <div className="stats-list-item">
-                    <span className="rating-badge good">Good</span>
-                    <strong>{stats.ratingCounts.good}</strong>
-                  </div>
-                  <div className="stats-list-item">
-                    <span className="rating-badge medium">Medium</span>
-                    <strong>{stats.ratingCounts.medium}</strong>
-                  </div>
-                  <div className="stats-list-item">
-                    <span className="rating-badge bad">Bad</span>
-                    <strong>{stats.ratingCounts.bad}</strong>
-                  </div>
+                  {settings.ratingMode === "1-10" ? (
+                    <>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                        <div key={rating} className="stats-list-item">
+                          <span>{rating}</span>
+                          <strong>{stats.ratingCounts[rating] || 0}</strong>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <div className="stats-list-item">
+                        <span className="rating-badge good">Good</span>
+                        <strong>{stats.ratingCounts.good || 0}</strong>
+                      </div>
+                      <div className="stats-list-item">
+                        <span className="rating-badge medium">Medium</span>
+                        <strong>{stats.ratingCounts.medium || 0}</strong>
+                      </div>
+                      <div className="stats-list-item">
+                        <span className="rating-badge bad">Bad</span>
+                        <strong>{stats.ratingCounts.bad || 0}</strong>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -1143,40 +1249,155 @@ export default function App() {
 
         <div className="settings-grid compact-settings-grid">
           <label>
-            {t.badInterval}
-            <input
-              type="number"
-              min="1"
-              value={settings.badMinutes}
+            {t.ratingMode}
+            <select
+              value={settings.ratingMode || "3-tier"}
               onChange={(event) =>
-                updateSetting("badMinutes", Number(event.target.value))
+                updateSetting("ratingMode", event.target.value)
               }
-            />
+            >
+              <option value="3-tier">{t.ratingMode3Tier}</option>
+              <option value="1-10">{t.ratingMode1To10}</option>
+            </select>
           </label>
 
-          <label>
-            {t.mediumInterval}
-            <input
-              type="number"
-              min="1"
-              value={settings.mediumHours}
-              onChange={(event) =>
-                updateSetting("mediumHours", Number(event.target.value))
-              }
-            />
-          </label>
+          {(settings.ratingMode || "3-tier") === "3-tier" ? (
+            <>
+              <label>
+                {t.badInterval}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.badMinutes}
+                  onChange={(event) =>
+                    updateSetting("badMinutes", Number(event.target.value))
+                  }
+                />
+              </label>
 
-          <label>
-            {t.goodInterval}
-            <input
-              type="number"
-              min="1"
-              value={settings.goodHours}
-              onChange={(event) =>
-                updateSetting("goodHours", Number(event.target.value))
-              }
-            />
-          </label>
+              <label>
+                {t.mediumInterval}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.mediumHours}
+                  onChange={(event) =>
+                    updateSetting("mediumHours", Number(event.target.value))
+                  }
+                />
+              </label>
+
+              <label>
+                {t.goodInterval}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.goodHours}
+                  onChange={(event) =>
+                    updateSetting("goodHours", Number(event.target.value))
+                  }
+                />
+              </label>
+            </>
+          ) : (
+            <>
+              <label>
+                {t.rating1To2Minutes}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.rating1Minutes}
+                  onChange={(event) =>
+                    updateSetting("rating1Minutes", Number(event.target.value))
+                  }
+                />
+              </label>
+
+              <label>
+                {t.rating3To4Minutes}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.rating2Minutes}
+                  onChange={(event) =>
+                    updateSetting("rating2Minutes", Number(event.target.value))
+                  }
+                />
+              </label>
+
+              <label>
+                {t.rating5Hours}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.rating3Hours}
+                  onChange={(event) =>
+                    updateSetting("rating3Hours", Number(event.target.value))
+                  }
+                />
+              </label>
+
+              <label>
+                {t.rating6Hours}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.rating4Hours}
+                  onChange={(event) =>
+                    updateSetting("rating4Hours", Number(event.target.value))
+                  }
+                />
+              </label>
+
+              <label>
+                {t.rating7Hours}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.rating5Hours}
+                  onChange={(event) =>
+                    updateSetting("rating5Hours", Number(event.target.value))
+                  }
+                />
+              </label>
+
+              <label>
+                {t.rating8Hours}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.rating6Hours}
+                  onChange={(event) =>
+                    updateSetting("rating6Hours", Number(event.target.value))
+                  }
+                />
+              </label>
+
+              <label>
+                {t.rating9Days}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.rating7Days}
+                  onChange={(event) =>
+                    updateSetting("rating7Days", Number(event.target.value))
+                  }
+                />
+              </label>
+
+              <label>
+                {t.rating10Days}
+                <input
+                  type="number"
+                  min="1"
+                  value={settings.rating8Days}
+                  onChange={(event) =>
+                    updateSetting("rating8Days", Number(event.target.value))
+                  }
+                />
+              </label>
+            </>
+          )}
 
           <label className="checkbox-label">
             <input
