@@ -79,6 +79,30 @@ function AnswerContent({ text }) {
   return <p>{rawText}</p>;
 }
 
+function getRatingScoreFromValue(rating, ratingMode = "3-tier") {
+  if (rating === undefined || rating === null) {
+    return null;
+  }
+
+  if (ratingMode === "1-10") {
+    const ratingNumber = Number(rating);
+
+    if (!Number.isFinite(ratingNumber)) {
+      return null;
+    }
+
+    return Math.max(0, Math.min(100, ratingNumber * 10));
+  }
+
+  const ratingScore = {
+    bad: 20,
+    medium: 60,
+    good: 90
+  };
+
+  return ratingScore[rating] ?? null;
+}
+
 function getCardMastery(cardId, progress, ratingMode = "3-tier") {
   const cardProgress = progress[cardId];
 
@@ -86,21 +110,8 @@ function getCardMastery(cardId, progress, ratingMode = "3-tier") {
     return 0;
   }
 
-  let baseScore = 0;
-
-  if (ratingMode === "1-10") {
-    const ratingNum = Number(cardProgress.lastRating) || 0;
-    // Map 1-10 to 0-100 score
-    baseScore = ratingNum * 10;
-  } else {
-    // 3-tier mode
-    const ratingScore = {
-      bad: 20,
-      medium: 60,
-      good: 90
-    };
-    baseScore = ratingScore[cardProgress.lastRating] || 0;
-  }
+  const baseScore =
+    getRatingScoreFromValue(cardProgress.lastRating, ratingMode) || 0;
 
   const reviewBonus = Math.min((cardProgress.reviewedCount || 0) * 3, 10);
 
@@ -142,7 +153,10 @@ function sortCardsByNextDue(cards, progress) {
 }
 
 function buildReviewQueue(cards, progress, onlyDue) {
-  // Priority 1: Cards never reviewed (not seen before)
+  if (!onlyDue) {
+    return cards;
+  }
+
   const unviewedCards = cards.filter((card) => {
     const cardProgress = progress[card.id];
     return !cardProgress || (cardProgress.reviewedCount || 0) === 0;
@@ -152,7 +166,6 @@ function buildReviewQueue(cards, progress, onlyDue) {
     return unviewedCards;
   }
 
-  // Priority 2: Cards that are currently due
   const dueCards = sortCardsByNextDue(
     cards.filter((card) => isCardDue(card.id, progress)),
     progress
@@ -162,33 +175,7 @@ function buildReviewQueue(cards, progress, onlyDue) {
     return dueCards;
   }
 
-  // Priority 3: Cards with worst rating, sorted by due date
-  const ratingPriority = {
-    bad: 0,
-    medium: 1,
-    good: 2
-  };
-
-  const cardsWithRating = cards.map((card) => {
-    const cardProgress = progress[card.id];
-    const rating = cardProgress?.lastRating || "bad";
-    return {
-      card,
-      ratingLevel: ratingPriority[rating],
-      dueAt: getCardDueAt(card.id, progress)
-    };
-  });
-
-  return cardsWithRating
-    .sort((a, b) => {
-      // First sort by rating (worst first)
-      if (a.ratingLevel !== b.ratingLevel) {
-        return a.ratingLevel - b.ratingLevel;
-      }
-      // Then sort by due date
-      return a.dueAt - b.dueAt;
-    })
-    .map((item) => item.card);
+  return sortCardsByNextDue(cards, progress);
 }
 
 function formatInterval(minutes) {
@@ -228,12 +215,54 @@ function formatTime(milliseconds) {
   return `${seconds}s`;
 }
 
+function getLocalDateKey(timestamp = Date.now()) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function normalizeTimeTracking(timeTracking) {
+  const todayKey = getLocalDateKey();
+  const storedDayKey = timeTracking?.dayKey || todayKey;
+
+  return {
+    totalTimeMs: Number(timeTracking?.totalTimeMs) || 0,
+    todayTimeMs:
+      storedDayKey === todayKey ? Number(timeTracking?.todayTimeMs) || 0 : 0,
+    dayKey: todayKey,
+    lastActivityAt: Number(timeTracking?.lastActivityAt) || null
+  };
+}
+
+function copyTextFallback(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.left = "-9999px";
+  document.body.appendChild(textArea);
+  textArea.select();
+
+  try {
+    document.execCommand("copy");
+    return true;
+  } catch {
+    return false;
+  } finally {
+    document.body.removeChild(textArea);
+  }
+}
+
 export default function App() {
   const [settings, setSettings] = useState(loadSettings);
   const [progress, setProgress] = useState(loadProgress);
   const [timeTick, setTimeTick] = useState(Date.now());
-  const [timeTracking, setTimeTracking] = useState(loadTimeTracking);
-  const [sessionActive, setSessionActive] = useState(true);
+  const [timeTracking, setTimeTracking] = useState(() =>
+    normalizeTimeTracking(loadTimeTracking())
+  );
 
   const [selectedDeckId, setSelectedDeckId] = useState(
     decks.length > 0 ? decks[0].id : ""
@@ -245,6 +274,7 @@ export default function App() {
   const [currentCardId, setCurrentCardId] = useState(null);
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
   const [showStatsDashboard, setShowStatsDashboard] = useState(true);
+  const [copyStatus, setCopyStatus] = useState("idle");
 
   const t = translations[settings.language] || translations.en;
 
@@ -358,120 +388,164 @@ export default function App() {
 
   const currentIntervalText = formatInterval(currentProgress?.intervalMinutes);
 
-  // Statistics Calculations
   const stats = useMemo(() => {
     const now = Date.now();
     const oneDayMs = 24 * 60 * 60 * 1000;
 
-    // Tomorrow and future dates
     const tomorrow = now + oneDayMs;
     const sevenDaysAhead = now + 7 * oneDayMs;
-    const thirtyDaysAhead = now + 30 * oneDayMs;
 
-    // Card categorization
     const unviewedCards = activeCards.filter(
       (card) => !progress[card.id]?.reviewedCount
     );
-    
-    // Mastered cards logic depends on rating mode
+
     const masteredCards = activeCards.filter((card) => {
       const rating = progress[card.id]?.lastRating;
       const mastery = getCardMastery(card.id, progress, settings.ratingMode);
-      
+
       if (settings.ratingMode === "1-10") {
-        return rating >= 8 && mastery >= 80;
-      } else {
-        return rating === "good" && mastery >= 80;
+        return Number(rating) >= 8 && mastery >= 80;
       }
+
+      return rating === "good" && mastery >= 80;
     });
-    
+
     const dueToday = activeCards.filter((card) => {
       const due = getCardDueAt(card.id, progress);
       return due <= now && due > now - oneDayMs;
     });
+
     const dueTomorrow = activeCards.filter((card) => {
       const due = getCardDueAt(card.id, progress);
       return due > now && due <= tomorrow;
     });
+
     const dueIn7Days = activeCards.filter((card) => {
       const due = getCardDueAt(card.id, progress);
       return due > tomorrow && due <= sevenDaysAhead;
     });
 
-    // Rating distribution
-    const ratingCounts = settings.ratingMode === "1-10"
-      ? { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0 }
-      : { good: 0, medium: 0, bad: 0 };
-    
+    const ratingOrder =
+      settings.ratingMode === "1-10"
+        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        : ["bad", "medium", "good"];
+
+    const ratingCounts = Object.fromEntries(
+      ratingOrder.map((rating) => [rating, 0])
+    );
+
     activeCards.forEach((card) => {
       const rating = progress[card.id]?.lastRating;
-      if (rating !== undefined && rating !== null) {
-        if (ratingCounts.hasOwnProperty(rating)) {
-          ratingCounts[rating]++;
-        }
+
+      if (
+        rating !== undefined &&
+        rating !== null &&
+        ratingCounts[rating] !== undefined
+      ) {
+        ratingCounts[rating] += 1;
       }
     });
 
-    // Category breakdown
+    const ratingDistribution = ratingOrder.map((rating) => {
+      const value = ratingCounts[rating] || 0;
+      const score = getRatingScoreFromValue(rating, settings.ratingMode) || 0;
+
+      return {
+        label:
+          settings.ratingMode === "1-10"
+            ? String(rating)
+            : String(rating).charAt(0).toUpperCase() + String(rating).slice(1),
+        value,
+        color: getMasteryColor(score)
+      };
+    });
+
+    const maxRatingCount = Math.max(
+      1,
+      ...ratingDistribution.map((item) => item.value)
+    );
+
     const categoryStats = {};
+
     activeCards.forEach((card) => {
-      const cat = card.category || "Uncategorized";
-      if (!categoryStats[cat]) {
-        categoryStats[cat] = {
+      const category = card.category || "Uncategorized";
+      const cardProgress = progress[card.id];
+      const ratingScore = getRatingScoreFromValue(
+        cardProgress?.lastRating,
+        settings.ratingMode
+      );
+
+      if (!categoryStats[category]) {
+        categoryStats[category] = {
           total: 0,
+          reviewed: 0,
+          ratingScoreSum: 0,
+          ratingAverage: null,
           mastery: 0,
-          reviewed: 0
+          reviewedShare: 0
         };
       }
-      categoryStats[cat].total++;
-      categoryStats[cat].mastery += getCardMastery(card.id, progress, settings.ratingMode);
-      if (progress[card.id]?.reviewedCount) {
-        categoryStats[cat].reviewed++;
+
+      categoryStats[category].total += 1;
+
+      if (cardProgress?.reviewedCount && ratingScore !== null) {
+        categoryStats[category].reviewed += 1;
+        categoryStats[category].ratingScoreSum += ratingScore;
       }
     });
 
-    Object.keys(categoryStats).forEach((cat) => {
-      categoryStats[cat].mastery = Math.round(
-        categoryStats[cat].mastery / categoryStats[cat].total
+    Object.keys(categoryStats).forEach((category) => {
+      const data = categoryStats[category];
+
+      data.ratingAverage =
+        data.reviewed > 0
+          ? Math.round(data.ratingScoreSum / data.reviewed)
+          : null;
+
+      data.mastery = data.ratingAverage ?? 0;
+      data.reviewedShare = Math.round(
+        (data.reviewed / Math.max(1, data.total)) * 100
       );
     });
 
-    // Learning activity: today
-    const reviewedToday = activeCards.filter((card) => {
-      const lastReviewed = progress[card.id]?.lastReviewedAt;
-      return (
-        lastReviewed &&
-        lastReviewed > now - oneDayMs
-      );
-    });
-
-    // Weakest categories (lowest mastery)
     const weakestCategories = Object.entries(categoryStats)
-      .sort((a, b) => a[1].mastery - b[1].mastery)
+      .filter(([, data]) => data.reviewed > 0)
+      .sort((a, b) => {
+        if (a[1].ratingAverage !== b[1].ratingAverage) {
+          return a[1].ratingAverage - b[1].ratingAverage;
+        }
+
+        return b[1].reviewed - a[1].reviewed;
+      })
       .slice(0, 3);
 
-    // Average reviews per day (based on reviewedCount as proxy)
+    const reviewedToday = activeCards.filter((card) => {
+      const lastReviewed = progress[card.id]?.lastReviewedAt;
+      return lastReviewed && lastReviewed > now - oneDayMs;
+    });
+
+    const reviewedTimestamps = activeCards
+      .map((card) => progress[card.id]?.lastReviewedAt)
+      .filter(Boolean);
+
     const totalReviews = activeCards.reduce(
       (sum, card) => sum + (progress[card.id]?.reviewedCount || 0),
       0
     );
-    const avgReviewsPerDay = Math.round(totalReviews / Math.max(1, reviewedCount));
 
-    // Time tracking calculations
-    const INACTIVITY_THRESHOLD = 2 * 60 * 1000; // 2 minutes
-    const now_ms = Date.now();
-    const timeSinceLastActivity = now_ms - timeTracking.lastActivityAt;
-    const isCurrentlyActive = timeSinceLastActivity < INACTIVITY_THRESHOLD;
+    const firstReviewAt = reviewedTimestamps.length
+      ? Math.min(...reviewedTimestamps)
+      : now;
 
-    let effectiveSessionTime = timeTracking.sessionTimeMs;
-    if (isCurrentlyActive && sessionActive) {
-      effectiveSessionTime += timeSinceLastActivity;
-    }
+    const activeDays = Math.max(1, Math.ceil((now - firstReviewAt) / oneDayMs));
+    const avgReviewsPerDay = Math.round(totalReviews / activeDays);
 
-    const totalTimeMs = timeTracking.totalTimeMs + (isCurrentlyActive ? timeSinceLastActivity : 0);
+    const normalizedTracking = normalizeTimeTracking(timeTracking);
+    const totalTimeMs = normalizedTracking.totalTimeMs;
+    const todayTimeMs = normalizedTracking.todayTimeMs;
 
-    // Average time per card
-    const avgTimePerCardMs = reviewedCount > 0 ? Math.round(totalTimeMs / reviewedCount) : 0;
+    const avgTimePerCardMs =
+      totalReviews > 0 ? Math.round(totalTimeMs / totalReviews) : 0;
 
     return {
       totalCards: activeCards.length,
@@ -481,16 +555,18 @@ export default function App() {
       dueTomorrow: dueTomorrow.length,
       dueIn7Days: dueIn7Days.length,
       ratingCounts,
+      ratingDistribution,
+      maxRatingCount,
       categoryStats,
       reviewedToday: reviewedToday.length,
       weakestCategories,
       avgReviewsPerDay,
       totalReviews,
-      timeToday: formatTime(effectiveSessionTime),
+      timeToday: formatTime(todayTimeMs),
       avgTimePerCard: formatTime(avgTimePerCardMs),
       totalTime: formatTime(totalTimeMs)
     };
-  }, [activeCards, progress, timeTick, timeTracking, sessionActive, settings.ratingMode]);
+  }, [activeCards, progress, timeTick, timeTracking, settings.ratingMode]);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -502,41 +578,36 @@ export default function App() {
     };
   }, []);
 
-  // Time tracking effect
   useEffect(() => {
-    const INACTIVITY_THRESHOLD = 2 * 60 * 1000; // 2 minutes
+    const normalizedTracking = normalizeTimeTracking(timeTracking);
+
+    if (normalizedTracking.dayKey !== timeTracking.dayKey) {
+      setTimeTracking(normalizedTracking);
+      saveTimeTracking(normalizedTracking);
+    }
+  }, [timeTick, timeTracking]);
+
+  function registerLearningActivity() {
     const now = Date.now();
-    const timeSinceLastActivity = now - timeTracking.lastActivityAt;
+    const normalizedTracking = normalizeTimeTracking(timeTracking);
+    const previousActivityAt = normalizedTracking.lastActivityAt;
 
-    if (timeSinceLastActivity > INACTIVITY_THRESHOLD && sessionActive) {
-      setSessionActive(false);
-      const updatedTracking = {
-        totalTimeMs: timeTracking.totalTimeMs + timeTracking.sessionTimeMs,
-        sessionTimeMs: 0,
-        lastActivityAt: now
-      };
-      setTimeTracking(updatedTracking);
-      saveTimeTracking(updatedTracking);
-    } else if (timeSinceLastActivity <= INACTIVITY_THRESHOLD && !sessionActive) {
-      setSessionActive(true);
-      const updatedTracking = {
-        ...timeTracking,
-        lastActivityAt: now
-      };
-      setTimeTracking(updatedTracking);
-    }
-  }, [timeTick, timeTracking, sessionActive]);
+    const maxCountedGapMs = 90 * 1000;
+    const elapsedMs = previousActivityAt ? now - previousActivityAt : 0;
 
-  // Update activity on user interaction
-  const updateActivity = () => {
-    if (sessionActive) {
-      const updatedTracking = {
-        ...timeTracking,
-        lastActivityAt: Date.now()
-      };
-      setTimeTracking(updatedTracking);
-    }
-  };
+    const countedMs =
+      elapsedMs > 0 && elapsedMs <= maxCountedGapMs ? elapsedMs : 0;
+
+    const updatedTracking = {
+      totalTimeMs: normalizedTracking.totalTimeMs + countedMs,
+      todayTimeMs: normalizedTracking.todayTimeMs + countedMs,
+      dayKey: getLocalDateKey(now),
+      lastActivityAt: now
+    };
+
+    setTimeTracking(updatedTracking);
+    saveTimeTracking(updatedTracking);
+  }
 
   useEffect(() => {
     if (candidateCards.length === 0) {
@@ -602,12 +673,14 @@ export default function App() {
     return candidateCards;
   }
 
-  function moveToNext(cards = getBestNavigationList()) {
+  function moveToNext(cards = getBestNavigationList(), shouldRegister = true) {
     if (cards.length === 0 || !currentCard) {
       return;
     }
 
-    updateActivity();
+    if (shouldRegister) {
+      registerLearningActivity();
+    }
 
     const currentPosition = cards.findIndex((card) => card.id === currentCard.id);
 
@@ -618,12 +691,14 @@ export default function App() {
     setIsAnswerVisible(false);
   }
 
-  function moveToPrevious(cards = getBestNavigationList()) {
+  function moveToPrevious(cards = getBestNavigationList(), shouldRegister = true) {
     if (cards.length === 0 || !currentCard) {
       return;
     }
 
-    updateActivity();
+    if (shouldRegister) {
+      registerLearningActivity();
+    }
 
     const currentPosition = cards.findIndex((card) => card.id === currentCard.id);
 
@@ -646,20 +721,15 @@ export default function App() {
         activeElement?.tagName === "SELECT" ||
         activeElement?.isContentEditable;
 
-      if (isTyping) {
+      if (isTyping || event.repeat) {
         return;
       }
-
-      if (event.repeat) {
-        return;
-      }
-
-      updateActivity();
 
       if (event.code === "Space" || event.key === " ") {
         event.preventDefault();
 
         if (currentCard) {
+          registerLearningActivity();
           setIsAnswerVisible((visible) => !visible);
         }
 
@@ -683,14 +753,14 @@ export default function App() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [currentCard, candidateCards, reviewQueue]);
+  }, [currentCard, candidateCards, reviewQueue, timeTracking]);
 
   function handleRating(rating) {
     if (!currentCard) {
       return;
     }
 
-    updateActivity();
+    registerLearningActivity();
 
     const updatedProgress = rateCard(
       currentCard.id,
@@ -714,7 +784,43 @@ export default function App() {
       return;
     }
 
-    moveToNext(candidateCards);
+    moveToNext(candidateCards, false);
+  }
+
+  async function handleCopyForChatty() {
+    if (!currentCard) {
+      return;
+    }
+
+    registerLearningActivity();
+
+    const textToCopy = [
+      "Erkläre mir diese Frage ausführlich.",
+      "",
+      "Frage:",
+      currentQuestion,
+      "",
+      "Antwort:",
+      currentAnswer
+    ].join("\n");
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        const copied = copyTextFallback(textToCopy);
+
+        if (!copied) {
+          throw new Error("Fallback copy failed");
+        }
+      }
+
+      setCopyStatus("success");
+      window.setTimeout(() => setCopyStatus("idle"), 1200);
+    } catch {
+      setCopyStatus("error");
+      window.setTimeout(() => setCopyStatus("idle"), 1600);
+    }
   }
 
   function handleIgnoreCard() {
@@ -722,7 +828,7 @@ export default function App() {
       return;
     }
 
-    updateActivity();
+    registerLearningActivity();
 
     const updatedProgress = {
       ...progress,
@@ -920,6 +1026,20 @@ export default function App() {
                 </div>
 
                 <button
+                  className="chatty-copy-button"
+                  disabled={!currentCard}
+                  onClick={handleCopyForChatty}
+                  title={t.copyForChatty || "Für Chatty kopieren"}
+                  aria-label={t.copyForChatty || "Für Chatty kopieren"}
+                >
+                  {copyStatus === "success"
+                    ? "✓"
+                    : copyStatus === "error"
+                      ? "!"
+                      : "⧉"}
+                </button>
+
+                <button
                   className="ignore-icon-button"
                   disabled={!currentCard}
                   onClick={handleIgnoreCard}
@@ -962,7 +1082,7 @@ export default function App() {
             <button
               className="primary"
               onClick={() => {
-                updateActivity();
+                registerLearningActivity();
                 setIsAnswerVisible((visible) => !visible);
               }}
               disabled={!currentCard}
@@ -975,76 +1095,16 @@ export default function App() {
 
           {settings.ratingMode === "1-10" ? (
             <div className="rating-scale-10">
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(1)}
-                style={{ backgroundColor: getMasteryColor(10) }}
-              >
-                1
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(2)}
-                style={{ backgroundColor: getMasteryColor(20) }}
-              >
-                2
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(3)}
-                style={{ backgroundColor: getMasteryColor(30) }}
-              >
-                3
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(4)}
-                style={{ backgroundColor: getMasteryColor(40) }}
-              >
-                4
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(5)}
-                style={{ backgroundColor: getMasteryColor(50) }}
-              >
-                5
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(6)}
-                style={{ backgroundColor: getMasteryColor(60) }}
-              >
-                6
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(7)}
-                style={{ backgroundColor: getMasteryColor(70) }}
-              >
-                7
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(8)}
-                style={{ backgroundColor: getMasteryColor(80) }}
-              >
-                8
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(9)}
-                style={{ backgroundColor: getMasteryColor(90) }}
-              >
-                9
-              </button>
-              <button
-                disabled={!isAnswerVisible || !currentCard}
-                onClick={() => handleRating(10)}
-                style={{ backgroundColor: getMasteryColor(100) }}
-              >
-                10
-              </button>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                <button
+                  key={rating}
+                  disabled={!isAnswerVisible || !currentCard}
+                  onClick={() => handleRating(rating)}
+                  style={{ backgroundColor: getMasteryColor(rating * 10) }}
+                >
+                  {rating}
+                </button>
+              ))}
             </div>
           ) : (
             <div className="ratings compact-ratings">
@@ -1075,7 +1135,11 @@ export default function App() {
           )}
         </section>
 
-        <div className={`stats-dashboard-wrapper ${showStatsDashboard ? "open" : "closed"}`}>
+        <div
+          className={`stats-dashboard-wrapper ${
+            showStatsDashboard ? "open" : "closed"
+          }`}
+        >
           <button
             className="stats-toggle-button"
             onClick={() => setShowStatsDashboard(!showStatsDashboard)}
@@ -1093,17 +1157,22 @@ export default function App() {
                     <div className="stat-label">Total Cards</div>
                     <div className="stat-value">{stats.totalCards}</div>
                   </div>
+
                   <div className="stat-item">
                     <div className="stat-label">Unviewed</div>
                     <div className="stat-value">{stats.unviewedCards}</div>
                   </div>
+
                   <div className="stat-item">
                     <div className="stat-label">Mastered</div>
                     <div className="stat-value">{stats.masteredCards}</div>
                   </div>
+
                   <div className="stat-item">
                     <div className="stat-label">Due Today</div>
-                    <div className="stat-value highlight-due">{stats.dueToday}</div>
+                    <div className="stat-value highlight-due">
+                      {stats.dueToday}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1115,6 +1184,7 @@ export default function App() {
                     <span>Tomorrow</span>
                     <strong>{stats.dueTomorrow}</strong>
                   </div>
+
                   <div className="stats-list-item">
                     <span>Next 7 Days</span>
                     <strong>{stats.dueIn7Days}</strong>
@@ -1124,32 +1194,30 @@ export default function App() {
 
               <div className="stats-section">
                 <h3>Rating Distribution</h3>
-                <div className="stats-list">
-                  {settings.ratingMode === "1-10" ? (
-                    <>
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
-                        <div key={rating} className="stats-list-item">
-                          <span>{rating}</span>
-                          <strong>{stats.ratingCounts[rating] || 0}</strong>
-                        </div>
-                      ))}
-                    </>
-                  ) : (
-                    <>
-                      <div className="stats-list-item">
-                        <span className="rating-badge good">Good</span>
-                        <strong>{stats.ratingCounts.good || 0}</strong>
+                <div className="rating-bar-chart">
+                  {stats.ratingDistribution.map((item) => (
+                    <div key={item.label} className="rating-bar-row">
+                      <span className="rating-bar-label">{item.label}</span>
+
+                      <div className="rating-bar-track">
+                        <div
+                          className="rating-bar-fill"
+                          style={{
+                            width:
+                              item.value === 0
+                                ? "0%"
+                                : `${Math.max(
+                                    4,
+                                    (item.value / stats.maxRatingCount) * 100
+                                  )}%`,
+                            backgroundColor: item.color
+                          }}
+                        />
                       </div>
-                      <div className="stats-list-item">
-                        <span className="rating-badge medium">Medium</span>
-                        <strong>{stats.ratingCounts.medium || 0}</strong>
-                      </div>
-                      <div className="stats-list-item">
-                        <span className="rating-badge bad">Bad</span>
-                        <strong>{stats.ratingCounts.bad || 0}</strong>
-                      </div>
-                    </>
-                  )}
+
+                      <strong className="rating-bar-value">{item.value}</strong>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -1160,10 +1228,12 @@ export default function App() {
                     <span>Reviewed Today</span>
                     <strong>{stats.reviewedToday}</strong>
                   </div>
+
                   <div className="stats-list-item">
-                    <span>Avg/Day (All Time)</span>
+                    <span>Avg/Day</span>
                     <strong>{stats.avgReviewsPerDay}</strong>
                   </div>
+
                   <div className="stats-list-item">
                     <span>Total Reviews</span>
                     <strong>{stats.totalReviews}</strong>
@@ -1178,10 +1248,12 @@ export default function App() {
                     <span>Time Today</span>
                     <strong>{stats.timeToday}</strong>
                   </div>
+
                   <div className="stats-list-item">
-                    <span>Avg/Card</span>
+                    <span>Avg/Review</span>
                     <strong>{stats.avgTimePerCard}</strong>
                   </div>
+
                   <div className="stats-list-item">
                     <span>Total Time</span>
                     <strong>{stats.totalTime}</strong>
@@ -1189,53 +1261,83 @@ export default function App() {
                 </div>
               </div>
 
-              {stats.weakestCategories.length > 0 && (
-                <div className="stats-section">
-                  <h3>Weakest Areas</h3>
-                  <div className="stats-list">
+              <div className="stats-section">
+                <h3>Weakest Areas</h3>
+
+                {stats.weakestCategories.length > 0 ? (
+                  <div className="weakest-area-list">
                     {stats.weakestCategories.map(([category, data]) => (
-                      <div key={category} className="stats-list-item">
-                        <span>{category}</span>
-                        <div className="mastery-mini-bar">
+                      <div key={category} className="weakest-area-card">
+                        <div className="weakest-area-header">
+                          <span className="weakest-area-title weakest-area-name">
+                            {category}
+                          </span>
+                          <strong>{data.ratingAverage}%</strong>
+                        </div>
+
+                        <div className="weakest-area-track">
                           <div
-                            className="mastery-mini-fill"
+                            className="weakest-area-fill"
                             style={{
-                              width: `${data.mastery}%`,
-                              backgroundColor: getMasteryColor(data.mastery)
+                              width: `${data.ratingAverage}%`,
+                              backgroundColor: getMasteryColor(
+                                data.ratingAverage
+                              )
                             }}
                           />
-                          <span className="mastery-mini-text">{data.mastery}%</span>
+                        </div>
+
+                        <div className="weakest-area-meta">
+                          <span>
+                            {data.reviewed}/{data.total} reviewed
+                          </span>
+                          <span>{data.reviewedShare}% coverage</span>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <p className="stats-empty-text">
+                    No reviewed categories yet.
+                  </p>
+                )}
+              </div>
 
               {Object.keys(stats.categoryStats).length > 0 && (
                 <details className="stats-section stats-details">
                   <summary>Category Breakdown</summary>
+
                   <div className="stats-list">
-                    {Object.entries(stats.categoryStats).map(([category, data]) => (
-                      <div key={category} className="stats-list-item">
-                        <div className="category-info">
-                          <span className="category-name">{category}</span>
-                          <span className="category-count">
-                            {data.reviewed}/{data.total}
-                          </span>
+                    {Object.entries(stats.categoryStats).map(
+                      ([category, data]) => (
+                        <div key={category} className="stats-list-item">
+                          <div className="category-info">
+                            <span className="category-name">{category}</span>
+                            <span className="category-count">
+                              {data.reviewed}/{data.total}
+                            </span>
+                          </div>
+
+                          <div className="category-mastery">
+                            <div className="category-mastery-track">
+                              <div
+                                className="category-mastery-fill"
+                                style={{
+                                  width: `${data.mastery}%`,
+                                  backgroundColor: getMasteryColor(data.mastery)
+                                }}
+                              />
+                            </div>
+
+                            <span className="category-mastery-text">
+                              {data.reviewed > 0
+                                ? `${data.mastery}%`
+                                : "new"}
+                            </span>
+                          </div>
                         </div>
-                        <div className="mastery-mini-bar">
-                          <div
-                            className="mastery-mini-fill"
-                            style={{
-                              width: `${data.mastery}%`,
-                              backgroundColor: getMasteryColor(data.mastery)
-                            }}
-                          />
-                          <span className="mastery-mini-text">{data.mastery}%</span>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
                 </details>
               )}
@@ -1261,144 +1363,6 @@ export default function App() {
             </select>
           </label>
 
-          {(settings.ratingMode || "3-tier") === "3-tier" ? (
-            <>
-              <label>
-                {t.badInterval}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.badMinutes}
-                  onChange={(event) =>
-                    updateSetting("badMinutes", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.mediumInterval}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.mediumHours}
-                  onChange={(event) =>
-                    updateSetting("mediumHours", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.goodInterval}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.goodHours}
-                  onChange={(event) =>
-                    updateSetting("goodHours", Number(event.target.value))
-                  }
-                />
-              </label>
-            </>
-          ) : (
-            <>
-              <label>
-                {t.rating1To2Minutes}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.rating1Minutes}
-                  onChange={(event) =>
-                    updateSetting("rating1Minutes", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.rating3To4Minutes}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.rating2Minutes}
-                  onChange={(event) =>
-                    updateSetting("rating2Minutes", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.rating5Hours}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.rating3Hours}
-                  onChange={(event) =>
-                    updateSetting("rating3Hours", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.rating6Hours}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.rating4Hours}
-                  onChange={(event) =>
-                    updateSetting("rating4Hours", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.rating7Hours}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.rating5Hours}
-                  onChange={(event) =>
-                    updateSetting("rating5Hours", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.rating8Hours}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.rating6Hours}
-                  onChange={(event) =>
-                    updateSetting("rating6Hours", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.rating9Days}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.rating7Days}
-                  onChange={(event) =>
-                    updateSetting("rating7Days", Number(event.target.value))
-                  }
-                />
-              </label>
-
-              <label>
-                {t.rating10Days}
-                <input
-                  type="number"
-                  min="1"
-                  value={settings.rating8Days}
-                  onChange={(event) =>
-                    updateSetting("rating8Days", Number(event.target.value))
-                  }
-                />
-              </label>
-            </>
-          )}
-
           <label className="checkbox-label">
             <input
               type="checkbox"
@@ -1409,6 +1373,11 @@ export default function App() {
             />
             {t.onlyDue}
           </label>
+
+          <p className="automatic-intervals-note">
+            {t.automaticIntervalsNote ||
+              "Review intervals are calculated automatically."}
+          </p>
         </div>
 
         <div className="settings-actions">

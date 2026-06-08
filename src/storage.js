@@ -51,12 +51,37 @@ export function saveSettings(settings) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
+function getLocalDateKey(timestamp = Date.now()) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 export function loadTimeTracking() {
+  const todayKey = getLocalDateKey();
+
   try {
     const raw = localStorage.getItem(TIME_TRACKING_KEY);
-    return raw ? JSON.parse(raw) : { totalTimeMs: 0, sessionTimeMs: 0, lastActivityAt: Date.now() };
+    const parsed = raw ? JSON.parse(raw) : {};
+    const storedDayKey = parsed.dayKey || todayKey;
+
+    return {
+      totalTimeMs: Number(parsed.totalTimeMs) || 0,
+      todayTimeMs:
+        storedDayKey === todayKey ? Number(parsed.todayTimeMs) || 0 : 0,
+      dayKey: todayKey,
+      lastActivityAt: Number(parsed.lastActivityAt) || null
+    };
   } catch {
-    return { totalTimeMs: 0, sessionTimeMs: 0, lastActivityAt: Date.now() };
+    return {
+      totalTimeMs: 0,
+      todayTimeMs: 0,
+      dayKey: todayKey,
+      lastActivityAt: null
+    };
   }
 }
 

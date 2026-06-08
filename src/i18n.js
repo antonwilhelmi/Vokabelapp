@@ -22,6 +22,10 @@ export const translations = {
     medium: "Mittel",
     good: "Gut",
     ignoreCard: "Karte ignorieren",
+    copyForChatty: "Für Chatty kopieren",
+    copyForChattySuccess: "Für Chatty kopiert",
+    automaticIntervalsNote:
+      "Die Wiederholungszeiten werden automatisch berechnet. Du musst keine Intervalle manuell einstellen.",
     restoreIgnored: "Ignorierte Karten wiederherstellen",
     settings: "Einstellungen",
     intervals: "Wiederholungsintervalle",
@@ -69,6 +73,10 @@ export const translations = {
     medium: "Medium",
     good: "Good",
     ignoreCard: "Ignore card",
+    copyForChatty: "Copy for Chatty",
+    copyForChattySuccess: "Copied for Chatty",
+    automaticIntervalsNote:
+      "Review times are calculated automatically. You do not need to set intervals manually.",
     restoreIgnored: "Restore ignored cards",
     settings: "Settings",
     intervals: "Review intervals",

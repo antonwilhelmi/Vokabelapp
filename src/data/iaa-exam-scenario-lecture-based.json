@@ -1,0 +1,609 @@
+{
+  "id": "iaa-exam-scenario-lecture-based",
+  "title": {
+    "de": "IAA Exam Scenario Flashcards — Lecture-Based Understanding",
+    "en": "IAA Exam Scenario Flashcards — Lecture-Based Understanding"
+  },
+  "cards": [
+    {
+      "id": "IMLC001",
+      "lecture": "L1",
+      "category": "Data Cleaning",
+      "question": {
+        "de": "A dataset contains purchase amounts with values like 0, -999, and very large numbers. How should you approach this before training a model?",
+        "en": "A dataset contains purchase amounts with values like 0, -999, and very large numbers. How should you approach this before training a model?"
+      },
+      "answer": {
+        "de": "• Do not treat all numeric values as automatically valid\n• Check whether 0 or -999 are real values, missing-value codes, or recording errors\n• Use domain knowledge to decide which values are impossible or suspicious\n• Visualize the distribution and inspect outliers\n• Document whether values are corrected, removed, imputed, or kept as meaningful anomalies",
+        "en": "• Do not treat all numeric values as automatically valid\n• Check whether 0 or -999 are real values, missing-value codes, or recording errors\n• Use domain knowledge to decide which values are impossible or suspicious\n• Visualize the distribution and inspect outliers\n• Document whether values are corrected, removed, imputed, or kept as meaningful anomalies"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC001"
+    },
+    {
+      "id": "IMLC002",
+      "lecture": "L1",
+      "category": "Missing Values",
+      "question": {
+        "de": "In a time series dataset, some sensor measurements are missing for short intervals. Why might estimation be preferred over deleting those rows?",
+        "en": "In a time series dataset, some sensor measurements are missing for short intervals. Why might estimation be preferred over deleting those rows?"
+      },
+      "answer": {
+        "de": "• Time series data has temporal dependency\n• Deleting rows can break the regular sampling structure\n• Nearby observations may contain useful information for estimating missing values\n• Removing intervals may distort trend, seasonality, or sequential patterns\n• The chosen estimation method should respect the time order and be documented",
+        "en": "• Time series data has temporal dependency\n• Deleting rows can break the regular sampling structure\n• Nearby observations may contain useful information for estimating missing values\n• Removing intervals may distort trend, seasonality, or sequential patterns\n• The chosen estimation method should respect the time order and be documented"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC002"
+    },
+    {
+      "id": "IMLC003",
+      "lecture": "L1",
+      "category": "Feature Selection",
+      "question": {
+        "de": "A model uses 200 predictors, but many are almost constant across all examples. What problem can this cause?",
+        "en": "A model uses 200 predictors, but many are almost constant across all examples. What problem can this cause?"
+      },
+      "answer": {
+        "de": "• Almost constant predictors usually contain little information\n• They increase dimensionality without adding useful signal\n• They can slow down training and make analysis less clear\n• They may contribute noise or instability in some models\n• Low-variance feature filtering can be considered before modeling",
+        "en": "• Almost constant predictors usually contain little information\n• They increase dimensionality without adding useful signal\n• They can slow down training and make analysis less clear\n• They may contribute noise or instability in some models\n• Low-variance feature filtering can be considered before modeling"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC003"
+    },
+    {
+      "id": "IMLC004",
+      "lecture": "L1",
+      "category": "Feature Selection",
+      "question": {
+        "de": "Two predictors are strongly correlated and both appear important. Why should you be careful when interpreting them?",
+        "en": "Two predictors are strongly correlated and both appear important. Why should you be careful when interpreting them?"
+      },
+      "answer": {
+        "de": "• They may carry almost the same information\n• Their individual importance can be misleading\n• Some models become unstable when predictors are highly correlated\n• Removing or combining redundant predictors can simplify the model\n• Interpretation should consider relationships among predictors, not only each predictor alone",
+        "en": "• They may carry almost the same information\n• Their individual importance can be misleading\n• Some models become unstable when predictors are highly correlated\n• Removing or combining redundant predictors can simplify the model\n• Interpretation should consider relationships among predictors, not only each predictor alone"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC004"
+    },
+    {
+      "id": "IMLC005",
+      "lecture": "L2",
+      "category": "K-means",
+      "question": {
+        "de": "You run K-means several times and get different clusters each time. What does this tell you, and what should you do?",
+        "en": "You run K-means several times and get different clusters each time. What does this tell you, and what should you do?"
+      },
+      "answer": {
+        "de": "• K-means can depend strongly on centroid initialization\n• Different runs may converge to different local solutions\n• Run the algorithm multiple times with different initializations\n• Compare cluster quality and stability\n• Do not interpret one random run as definitive",
+        "en": "• K-means can depend strongly on centroid initialization\n• Different runs may converge to different local solutions\n• Run the algorithm multiple times with different initializations\n• Compare cluster quality and stability\n• Do not interpret one random run as definitive"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC005"
+    },
+    {
+      "id": "IMLC006",
+      "lecture": "L2",
+      "category": "K-means",
+      "question": {
+        "de": "A domain expert says there should be three anomaly types, but the elbow method suggests four clusters. How should you decide?",
+        "en": "A domain expert says there should be three anomaly types, but the elbow method suggests four clusters. How should you decide?"
+      },
+      "answer": {
+        "de": "• Do not rely only on the elbow method\n• Compare whether the four clusters have meaningful interpretation\n• Ask whether the extra cluster reflects a real subtype, noise, or preprocessing artifact\n• Use domain knowledge as an important decision criterion\n• The chosen K should be useful for the task, not only numerically convenient",
+        "en": "• Do not rely only on the elbow method\n• Compare whether the four clusters have meaningful interpretation\n• Ask whether the extra cluster reflects a real subtype, noise, or preprocessing artifact\n• Use domain knowledge as an important decision criterion\n• The chosen K should be useful for the task, not only numerically convenient"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC006"
+    },
+    {
+      "id": "IMLC007",
+      "lecture": "L2",
+      "category": "PCA",
+      "question": {
+        "de": "You reduce a dataset with PCA and the first two components explain much of the variance, but the plot does not separate the classes. What does this mean?",
+        "en": "You reduce a dataset with PCA and the first two components explain much of the variance, but the plot does not separate the classes. What does this mean?"
+      },
+      "answer": {
+        "de": "• PCA is unsupervised and does not use class labels\n• High variance does not necessarily mean high class separability\n• Class information may lie in lower-variance directions\n• PCA can be useful for visualization but not guaranteed for classification\n• Evaluate the final model performance instead of relying only on the PCA plot",
+        "en": "• PCA is unsupervised and does not use class labels\n• High variance does not necessarily mean high class separability\n• Class information may lie in lower-variance directions\n• PCA can be useful for visualization but not guaranteed for classification\n• Evaluate the final model performance instead of relying only on the PCA plot"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC007"
+    },
+    {
+      "id": "IMLC008",
+      "lecture": "L3",
+      "category": "Regression",
+      "question": {
+        "de": "A housing-price model predicts poorly for very expensive houses, but reasonably well for average houses. What should you inspect?",
+        "en": "A housing-price model predicts poorly for very expensive houses, but reasonably well for average houses. What should you inspect?"
+      },
+      "answer": {
+        "de": "• Check whether expensive houses are underrepresented in training data\n• Inspect residuals for systematic errors at high target values\n• Check whether important luxury-related features are missing\n• Consider whether the relationship is nonlinear\n• Evaluate whether outliers are valid rare cases rather than errors",
+        "en": "• Check whether expensive houses are underrepresented in training data\n• Inspect residuals for systematic errors at high target values\n• Check whether important luxury-related features are missing\n• Consider whether the relationship is nonlinear\n• Evaluate whether outliers are valid rare cases rather than errors"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC008"
+    },
+    {
+      "id": "IMLC009",
+      "lecture": "L3",
+      "category": "Gradient Descent",
+      "question": {
+        "de": "A student says the model is bad because training is slow. What should you check before changing the model type?",
+        "en": "A student says the model is bad because training is slow. What should you check before changing the model type?"
+      },
+      "answer": {
+        "de": "• Check whether the learning rate is too small\n• Check whether features have very different scales\n• Inspect whether the cost function is decreasing steadily\n• Consider mini-batch or stochastic learning for large datasets\n• Slow optimization does not automatically mean the model class is inappropriate",
+        "en": "• Check whether the learning rate is too small\n• Check whether features have very different scales\n• Inspect whether the cost function is decreasing steadily\n• Consider mini-batch or stochastic learning for large datasets\n• Slow optimization does not automatically mean the model class is inappropriate"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC009"
+    },
+    {
+      "id": "IMLC010",
+      "lecture": "L4",
+      "category": "Logistic Regression",
+      "question": {
+        "de": "A logistic regression model gives many probabilities close to 0.5. What does this suggest about the classification problem?",
+        "en": "A logistic regression model gives many probabilities close to 0.5. What does this suggest about the classification problem?"
+      },
+      "answer": {
+        "de": "• The model is uncertain for many examples\n• The classes may overlap in the current feature space\n• Important features or nonlinear transformations may be missing\n• The decision boundary may not fit the true structure well\n• Inspect data representation, feature quality, and model complexity",
+        "en": "• The model is uncertain for many examples\n• The classes may overlap in the current feature space\n• Important features or nonlinear transformations may be missing\n• The decision boundary may not fit the true structure well\n• Inspect data representation, feature quality, and model complexity"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC010"
+    },
+    {
+      "id": "IMLC011",
+      "lecture": "L4",
+      "category": "Classification",
+      "question": {
+        "de": "A model for fraud detection has high accuracy but almost never predicts fraud. What is the main issue?",
+        "en": "A model for fraud detection has high accuracy but almost never predicts fraud. What is the main issue?"
+      },
+      "answer": {
+        "de": "• The dataset is likely imbalanced\n• Accuracy is dominated by the majority non-fraud class\n• The model may be useless for the minority class\n• Inspect recall, precision, F1-score, and the confusion matrix\n• Consider resampling, class weighting, threshold adjustment, or anomaly-oriented methods",
+        "en": "• The dataset is likely imbalanced\n• Accuracy is dominated by the majority non-fraud class\n• The model may be useless for the minority class\n• Inspect recall, precision, F1-score, and the confusion matrix\n• Consider resampling, class weighting, threshold adjustment, or anomaly-oriented methods"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC011"
+    },
+    {
+      "id": "IMLC012",
+      "lecture": "L5",
+      "category": "Naive Bayes",
+      "question": {
+        "de": "A Naive Bayes spam classifier sees a word in the test email that never appeared in spam emails during training. What can go wrong?",
+        "en": "A Naive Bayes spam classifier sees a word in the test email that never appeared in spam emails during training. What can go wrong?"
+      },
+      "answer": {
+        "de": "• The model may assign zero probability to that word for the spam class\n• A zero probability can dominate the class probability calculation\n• This is the zero-frequency problem\n• The classifier may reject a class too strongly because of limited training data\n• Smoothing is commonly used to reduce this issue",
+        "en": "• The model may assign zero probability to that word for the spam class\n• A zero probability can dominate the class probability calculation\n• This is the zero-frequency problem\n• The classifier may reject a class too strongly because of limited training data\n• Smoothing is commonly used to reduce this issue"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC012"
+    },
+    {
+      "id": "IMLC013",
+      "lecture": "L5",
+      "category": "Decision Trees",
+      "question": {
+        "de": "A decision tree is very easy to explain to managers but performs worse than a Random Forest. How should you discuss the trade-off?",
+        "en": "A decision tree is very easy to explain to managers but performs worse than a Random Forest. How should you discuss the trade-off?"
+      },
+      "answer": {
+        "de": "• A single tree is more interpretable\n• A Random Forest often generalizes better because it reduces variance\n• The best choice depends on whether interpretability or predictive performance is more important\n• For high-stakes decisions, interpretability may be essential\n• For prediction-focused tasks, an ensemble may be justified if properly evaluated",
+        "en": "• A single tree is more interpretable\n• A Random Forest often generalizes better because it reduces variance\n• The best choice depends on whether interpretability or predictive performance is more important\n• For high-stakes decisions, interpretability may be essential\n• For prediction-focused tasks, an ensemble may be justified if properly evaluated"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC013"
+    },
+    {
+      "id": "IMLC014",
+      "lecture": "L5",
+      "category": "SVM",
+      "question": {
+        "de": "A linear SVM performs poorly on a dataset where classes form circular regions. What should you consider?",
+        "en": "A linear SVM performs poorly on a dataset where classes form circular regions. What should you consider?"
+      },
+      "answer": {
+        "de": "• The classes are probably not linearly separable in the original feature space\n• A nonlinear kernel such as RBF may be more appropriate\n• Feature transformations could also help\n• Hyperparameters should be tuned using validation data\n• Feature scaling is important before using distance-based kernels",
+        "en": "• The classes are probably not linearly separable in the original feature space\n• A nonlinear kernel such as RBF may be more appropriate\n• Feature transformations could also help\n• Hyperparameters should be tuned using validation data\n• Feature scaling is important before using distance-based kernels"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC014"
+    },
+    {
+      "id": "IMLC015",
+      "lecture": "L6",
+      "category": "k-NN",
+      "question": {
+        "de": "A k-NN classifier performs badly after adding many irrelevant features. Why can this happen?",
+        "en": "A k-NN classifier performs badly after adding many irrelevant features. Why can this happen?"
+      },
+      "answer": {
+        "de": "• k-NN depends directly on distances between examples\n• Irrelevant features can distort distances\n• Truly similar examples may appear far apart\n• This is especially problematic in high-dimensional spaces\n• Feature selection and scaling are important preprocessing steps for k-NN",
+        "en": "• k-NN depends directly on distances between examples\n• Irrelevant features can distort distances\n• Truly similar examples may appear far apart\n• This is especially problematic in high-dimensional spaces\n• Feature selection and scaling are important preprocessing steps for k-NN"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC015"
+    },
+    {
+      "id": "IMLC016",
+      "lecture": "L6",
+      "category": "Evaluation Metrics",
+      "question": {
+        "de": "A classifier for cancer screening has many false positives but very few false negatives. Is this necessarily bad?",
+        "en": "A classifier for cancer screening has many false positives but very few false negatives. Is this necessarily bad?"
+      },
+      "answer": {
+        "de": "• Not necessarily\n• In screening, missing a sick patient can be much worse than sending a healthy patient for further testing\n• High recall may be more important than high precision\n• The acceptability depends on follow-up cost, patient risk, and clinical context\n• The confusion matrix must be interpreted with domain consequences",
+        "en": "• Not necessarily\n• In screening, missing a sick patient can be much worse than sending a healthy patient for further testing\n• High recall may be more important than high precision\n• The acceptability depends on follow-up cost, patient risk, and clinical context\n• The confusion matrix must be interpreted with domain consequences"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC016"
+    },
+    {
+      "id": "IMLC017",
+      "lecture": "L6",
+      "category": "Class Imbalance",
+      "question": {
+        "de": "You oversample the minority class by duplicating the same rare examples many times. What risk does this create?",
+        "en": "You oversample the minority class by duplicating the same rare examples many times. What risk does this create?"
+      },
+      "answer": {
+        "de": "• The model may memorize duplicated examples\n• Minority-class overfitting can increase\n• Validation performance may look better than real generalization\n• More diverse synthetic examples or careful resampling may be preferable\n• The final test set should reflect the real data distribution",
+        "en": "• The model may memorize duplicated examples\n• Minority-class overfitting can increase\n• Validation performance may look better than real generalization\n• More diverse synthetic examples or careful resampling may be preferable\n• The final test set should reflect the real data distribution"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC017"
+    },
+    {
+      "id": "IMLC018",
+      "lecture": "L7",
+      "category": "Cross Validation",
+      "question": {
+        "de": "A student chooses the best hyperparameters using the test set because it gives the most reliable estimate. What is wrong with this reasoning?",
+        "en": "A student chooses the best hyperparameters using the test set because it gives the most reliable estimate. What is wrong with this reasoning?"
+      },
+      "answer": {
+        "de": "• The test set must remain untouched until final evaluation\n• Using it for hyperparameter selection leaks information into model choice\n• The final test performance becomes overly optimistic\n• Hyperparameters should be selected using validation data or cross-validation\n• The test set answers only the final question: how well does the selected model generalize?",
+        "en": "• The test set must remain untouched until final evaluation\n• Using it for hyperparameter selection leaks information into model choice\n• The final test performance becomes overly optimistic\n• Hyperparameters should be selected using validation data or cross-validation\n• The test set answers only the final question: how well does the selected model generalize?"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC018"
+    },
+    {
+      "id": "IMLC019",
+      "lecture": "L7",
+      "category": "Bias Variance",
+      "question": {
+        "de": "A model has high training error and high validation error. Your colleague suggests collecting more data. Is that the first fix?",
+        "en": "A model has high training error and high validation error. Your colleague suggests collecting more data. Is that the first fix?"
+      },
+      "answer": {
+        "de": "• Probably not the first fix\n• High training and validation error suggest high bias or underfitting\n• More data usually does not help much if the model is too simple\n• Try more relevant features, greater model complexity, or less regularization\n• Learning curves can confirm whether more data is likely to help",
+        "en": "• Probably not the first fix\n• High training and validation error suggest high bias or underfitting\n• More data usually does not help much if the model is too simple\n• Try more relevant features, greater model complexity, or less regularization\n• Learning curves can confirm whether more data is likely to help"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC019"
+    },
+    {
+      "id": "IMLC020",
+      "lecture": "L7",
+      "category": "Bias Variance",
+      "question": {
+        "de": "A model has very low training error but much higher validation error. What actions are reasonable?",
+        "en": "A model has very low training error but much higher validation error. What actions are reasonable?"
+      },
+      "answer": {
+        "de": "• The model likely has high variance or overfitting\n• Collecting more representative training data may help\n• Stronger regularization can help\n• Reducing model complexity or noisy features can help\n• Bagging methods may also reduce variance",
+        "en": "• The model likely has high variance or overfitting\n• Collecting more representative training data may help\n• Stronger regularization can help\n• Reducing model complexity or noisy features can help\n• Bagging methods may also reduce variance"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC020"
+    },
+    {
+      "id": "IMLC021",
+      "lecture": "L8",
+      "category": "Bagging",
+      "question": {
+        "de": "You train many deep decision trees on bootstrap samples and average their predictions. What problem are you mainly trying to reduce?",
+        "en": "You train many deep decision trees on bootstrap samples and average their predictions. What problem are you mainly trying to reduce?"
+      },
+      "answer": {
+        "de": "• You are mainly trying to reduce variance\n• Deep trees are flexible and unstable\n• Bootstrap sampling creates different versions of the training data\n• Averaging or voting reduces dependence on one particular tree\n• This is the core idea behind bagging-style ensembles",
+        "en": "• You are mainly trying to reduce variance\n• Deep trees are flexible and unstable\n• Bootstrap sampling creates different versions of the training data\n• Averaging or voting reduces dependence on one particular tree\n• This is the core idea behind bagging-style ensembles"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC021"
+    },
+    {
+      "id": "IMLC022",
+      "lecture": "L8",
+      "category": "Boosting",
+      "question": {
+        "de": "A boosting model performs very well on training data but poorly on validation data, especially with noisy labels. Why?",
+        "en": "A boosting model performs very well on training data but poorly on validation data, especially with noisy labels. Why?"
+      },
+      "answer": {
+        "de": "• Boosting focuses more on examples that previous models misclassified\n• Noisy or wrongly labeled examples may receive too much attention\n• The model can start fitting label noise\n• This increases overfitting risk\n• Better label quality, regularization, or fewer boosting iterations may be needed",
+        "en": "• Boosting focuses more on examples that previous models misclassified\n• Noisy or wrongly labeled examples may receive too much attention\n• The model can start fitting label noise\n• This increases overfitting risk\n• Better label quality, regularization, or fewer boosting iterations may be needed"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC022"
+    },
+    {
+      "id": "IMLC023",
+      "lecture": "L8",
+      "category": "Stacking",
+      "question": {
+        "de": "In stacking, why should the meta-classifier not be trained on predictions from base models evaluated on their own training data?",
+        "en": "In stacking, why should the meta-classifier not be trained on predictions from base models evaluated on their own training data?"
+      },
+      "answer": {
+        "de": "• The base-model predictions would be overly optimistic\n• The meta-classifier would learn from leaked training performance\n• It may overestimate how reliable each base model is\n• Out-of-fold predictions are safer for training the meta-classifier\n• This prevents the stacking system from learning unrealistic patterns",
+        "en": "• The base-model predictions would be overly optimistic\n• The meta-classifier would learn from leaked training performance\n• It may overestimate how reliable each base model is\n• Out-of-fold predictions are safer for training the meta-classifier\n• This prevents the stacking system from learning unrealistic patterns"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC023"
+    },
+    {
+      "id": "IMLC024",
+      "lecture": "L8",
+      "category": "Data-centric AI",
+      "question": {
+        "de": "A speech-recognition model fails mostly when there is car noise in the background. What would a data-centric response be?",
+        "en": "A speech-recognition model fails mostly when there is car noise in the background. What would a data-centric response be?"
+      },
+      "answer": {
+        "de": "• Collect or improve examples with car-noise background\n• Check whether labels are consistent for noisy speech\n• Ensure that this condition is sufficiently represented in training and validation data\n• Improve the dataset rather than only tuning the architecture\n• Use error analysis to guide targeted data improvement",
+        "en": "• Collect or improve examples with car-noise background\n• Check whether labels are consistent for noisy speech\n• Ensure that this condition is sufficiently represented in training and validation data\n• Improve the dataset rather than only tuning the architecture\n• Use error analysis to guide targeted data improvement"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC024"
+    },
+    {
+      "id": "IMLC025",
+      "lecture": "L8",
+      "category": "Drift",
+      "question": {
+        "de": "A customer-churn model worked well last year, but customer behavior changed after a new competitor entered the market. What type of problem may this be?",
+        "en": "A customer-churn model worked well last year, but customer behavior changed after a new competitor entered the market. What type of problem may this be?"
+      },
+      "answer": {
+        "de": "• This may be concept drift\n• The relationship between input features and churn may have changed\n• The old patterns learned by the model may no longer hold\n• Monitoring should detect performance degradation\n• Retraining or redesigning features may be necessary",
+        "en": "• This may be concept drift\n• The relationship between input features and churn may have changed\n• The old patterns learned by the model may no longer hold\n• Monitoring should detect performance degradation\n• Retraining or redesigning features may be necessary"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC025"
+    },
+    {
+      "id": "IMLC026",
+      "lecture": "L9",
+      "category": "Neural Networks",
+      "question": {
+        "de": "A shallow neural network performs poorly on image data. Why might simply adding more raw pixels not solve the problem?",
+        "en": "A shallow neural network performs poorly on image data. Why might simply adding more raw pixels not solve the problem?"
+      },
+      "answer": {
+        "de": "• Raw images are high-dimensional\n• More pixels increase the number of parameters and overfitting risk\n• A shallow network may not learn hierarchical visual features effectively\n• Image structure such as locality is not explicitly exploited\n• CNNs are often more appropriate for image data",
+        "en": "• Raw images are high-dimensional\n• More pixels increase the number of parameters and overfitting risk\n• A shallow network may not learn hierarchical visual features effectively\n• Image structure such as locality is not explicitly exploited\n• CNNs are often more appropriate for image data"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC026"
+    },
+    {
+      "id": "IMLC027",
+      "lecture": "L9",
+      "category": "Neural Networks",
+      "question": {
+        "de": "During neural network training, all hidden neurons in a layer learn the same thing. What initialization mistake may have caused this?",
+        "en": "During neural network training, all hidden neurons in a layer learn the same thing. What initialization mistake may have caused this?"
+      },
+      "answer": {
+        "de": "• The weights may have been initialized identically, for example all zeros\n• Identical neurons receive identical gradients\n• They update in the same way and fail to specialize\n• Random initialization breaks symmetry\n• Proper initialization helps different neurons learn different features",
+        "en": "• The weights may have been initialized identically, for example all zeros\n• Identical neurons receive identical gradients\n• They update in the same way and fail to specialize\n• Random initialization breaks symmetry\n• Proper initialization helps different neurons learn different features"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC027"
+    },
+    {
+      "id": "IMLC028",
+      "lecture": "L9",
+      "category": "Activation Functions",
+      "question": {
+        "de": "A network with ReLU units stops improving, and many neurons output zero for all examples. What problem may have occurred?",
+        "en": "A network with ReLU units stops improving, and many neurons output zero for all examples. What problem may have occurred?"
+      },
+      "answer": {
+        "de": "• This may be the dying ReLU problem\n• ReLU has zero gradient for negative inputs\n• Some neurons may stop receiving useful updates\n• A smaller learning rate or better initialization may help\n• Leaky ReLU can reduce this risk by allowing a small negative-side signal",
+        "en": "• This may be the dying ReLU problem\n• ReLU has zero gradient for negative inputs\n• Some neurons may stop receiving useful updates\n• A smaller learning rate or better initialization may help\n• Leaky ReLU can reduce this risk by allowing a small negative-side signal"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC028"
+    },
+    {
+      "id": "IMLC029",
+      "lecture": "L10",
+      "category": "CNN",
+      "question": {
+        "de": "Why is a CNN usually better suited than a fully connected network for classifying images?",
+        "en": "Why is a CNN usually better suited than a fully connected network for classifying images?"
+      },
+      "answer": {
+        "de": "• CNNs exploit local spatial structure in images\n• Filters are shared across locations\n• This greatly reduces the number of parameters\n• CNNs can detect the same feature in different positions\n• They learn hierarchical visual features from edges to object parts",
+        "en": "• CNNs exploit local spatial structure in images\n• Filters are shared across locations\n• This greatly reduces the number of parameters\n• CNNs can detect the same feature in different positions\n• They learn hierarchical visual features from edges to object parts"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC029"
+    },
+    {
+      "id": "IMLC030",
+      "lecture": "L10",
+      "category": "CNN",
+      "question": {
+        "de": "A CNN detects edges in early layers and object parts in deeper layers. Why is this expected?",
+        "en": "A CNN detects edges in early layers and object parts in deeper layers. Why is this expected?"
+      },
+      "answer": {
+        "de": "• Early layers see small local regions\n• They learn simple visual patterns such as edges, colors, and textures\n• Deeper layers combine earlier features into more complex structures\n• Later layers can respond to object parts or semantic patterns\n• This is hierarchical feature learning",
+        "en": "• Early layers see small local regions\n• They learn simple visual patterns such as edges, colors, and textures\n• Deeper layers combine earlier features into more complex structures\n• Later layers can respond to object parts or semantic patterns\n• This is hierarchical feature learning"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC030"
+    },
+    {
+      "id": "IMLC031",
+      "lecture": "L10",
+      "category": "Transfer Learning",
+      "question": {
+        "de": "You have only 300 labeled medical images. Why might training a CNN from scratch be a poor idea?",
+        "en": "You have only 300 labeled medical images. Why might training a CNN from scratch be a poor idea?"
+      },
+      "answer": {
+        "de": "• CNNs usually need large datasets\n• Training from scratch may overfit quickly\n• Computational cost can be high\n• Transfer learning can reuse features from a pretrained model\n• However, domain mismatch must be checked because medical images may differ strongly from natural images",
+        "en": "• CNNs usually need large datasets\n• Training from scratch may overfit quickly\n• Computational cost can be high\n• Transfer learning can reuse features from a pretrained model\n• However, domain mismatch must be checked because medical images may differ strongly from natural images"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC031"
+    },
+    {
+      "id": "IMLC032",
+      "lecture": "L10",
+      "category": "Data Augmentation",
+      "question": {
+        "de": "You augment digit images by rotating them strongly, but performance drops. What might be wrong?",
+        "en": "You augment digit images by rotating them strongly, but performance drops. What might be wrong?"
+      },
+      "answer": {
+        "de": "• The augmentation may change the label meaning\n• A strongly rotated digit can become ambiguous or resemble another class\n• Augmentation must preserve the true class\n• More data is not useful if it introduces wrong or unrealistic examples\n• Choose transformations that match expected real-world variation",
+        "en": "• The augmentation may change the label meaning\n• A strongly rotated digit can become ambiguous or resemble another class\n• Augmentation must preserve the true class\n• More data is not useful if it introduces wrong or unrealistic examples\n• Choose transformations that match expected real-world variation"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC032"
+    },
+    {
+      "id": "IMLC033",
+      "lecture": "L11",
+      "category": "Sequence Models",
+      "question": {
+        "de": "A standard feedforward neural network is used for sentences by treating each word position as a separate feature. What problems can occur?",
+        "en": "A standard feedforward neural network is used for sentences by treating each word position as a separate feature. What problems can occur?"
+      },
+      "answer": {
+        "de": "• Sentences can have different lengths\n• The model does not naturally share features across positions\n• A word learned at one position may not generalize to another position\n• Input dimensionality can become very large\n• Sequence models are designed to handle ordered dependencies more naturally",
+        "en": "• Sentences can have different lengths\n• The model does not naturally share features across positions\n• A word learned at one position may not generalize to another position\n• Input dimensionality can become very large\n• Sequence models are designed to handle ordered dependencies more naturally"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC033"
+    },
+    {
+      "id": "IMLC034",
+      "lecture": "L11",
+      "category": "RNN",
+      "question": {
+        "de": "An RNN correctly handles short phrases but fails when important words are far apart. What is the likely limitation?",
+        "en": "An RNN correctly handles short phrases but fails when important words are far apart. What is the likely limitation?"
+      },
+      "answer": {
+        "de": "• Standard RNNs struggle with long-range dependencies\n• Gradients can vanish through many time steps\n• Earlier information may be forgotten\n• LSTM or GRU units can help preserve information longer\n• The model architecture should match the dependency length of the task",
+        "en": "• Standard RNNs struggle with long-range dependencies\n• Gradients can vanish through many time steps\n• Earlier information may be forgotten\n• LSTM or GRU units can help preserve information longer\n• The model architecture should match the dependency length of the task"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC034"
+    },
+    {
+      "id": "IMLC035",
+      "lecture": "L11",
+      "category": "Forecasting",
+      "question": {
+        "de": "You forecast electricity demand with random train-test splitting and get excellent results. Why should you be suspicious?",
+        "en": "You forecast electricity demand with random train-test splitting and get excellent results. Why should you be suspicious?"
+      },
+      "answer": {
+        "de": "• Random splitting can mix future observations into training\n• Time series validation must respect chronological order\n• The model may indirectly learn from future patterns\n• Performance can become unrealistically optimistic\n• Train on past data and test on later periods",
+        "en": "• Random splitting can mix future observations into training\n• Time series validation must respect chronological order\n• The model may indirectly learn from future patterns\n• Performance can become unrealistically optimistic\n• Train on past data and test on later periods"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC035"
+    },
+    {
+      "id": "IMLC036",
+      "lecture": "L11",
+      "category": "Time Series Decomposition",
+      "question": {
+        "de": "After removing trend and seasonality, the residuals still show a clear repeating pattern. What does this imply?",
+        "en": "After removing trend and seasonality, the residuals still show a clear repeating pattern. What does this imply?"
+      },
+      "answer": {
+        "de": "• The model did not capture all systematic structure\n• The decomposition or forecasting model may be incomplete\n• Another seasonal component or external factor may exist\n• Residuals should ideally look random and uncorrelated\n• Patterned residuals indicate room for model improvement",
+        "en": "• The model did not capture all systematic structure\n• The decomposition or forecasting model may be incomplete\n• Another seasonal component or external factor may exist\n• Residuals should ideally look random and uncorrelated\n• Patterned residuals indicate room for model improvement"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC036"
+    },
+    {
+      "id": "IMLC037",
+      "lecture": "L11",
+      "category": "GRU and LSTM",
+      "question": {
+        "de": "For a small sequence dataset, why might a GRU be preferred over an LSTM?",
+        "en": "For a small sequence dataset, why might a GRU be preferred over an LSTM?"
+      },
+      "answer": {
+        "de": "• GRUs have a simpler architecture\n• They usually have fewer parameters\n• They can train faster and may overfit less on small datasets\n• Their performance is often comparable for many sequence tasks\n• LSTMs may be preferred when very long-term memory control is needed",
+        "en": "• GRUs have a simpler architecture\n• They usually have fewer parameters\n• They can train faster and may overfit less on small datasets\n• Their performance is often comparable for many sequence tasks\n• LSTMs may be preferred when very long-term memory control is needed"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC037"
+    },
+    {
+      "id": "IMLC038",
+      "lecture": "L12",
+      "category": "Anomaly Detection",
+      "question": {
+        "de": "A manufacturing sensor suddenly reports values far outside the normal range. What questions should be asked before calling it a real anomaly?",
+        "en": "A manufacturing sensor suddenly reports values far outside the normal range. What questions should be asked before calling it a real anomaly?"
+      },
+      "answer": {
+        "de": "• Could it be a sensor malfunction or pipeline error?\n• Is the value physically possible?\n• Did operating conditions change?\n• Do other related sensors confirm the event?\n• Anomaly detection should be followed by anomaly analysis and interpretation",
+        "en": "• Could it be a sensor malfunction or pipeline error?\n• Is the value physically possible?\n• Did operating conditions change?\n• Do other related sensors confirm the event?\n• Anomaly detection should be followed by anomaly analysis and interpretation"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC038"
+    },
+    {
+      "id": "IMLC039",
+      "lecture": "L12",
+      "category": "Anomaly Types",
+      "question": {
+        "de": "A single login at 3 a.m. is normal for night-shift workers but suspicious for office employees. What anomaly type does this illustrate?",
+        "en": "A single login at 3 a.m. is normal for night-shift workers but suspicious for office employees. What anomaly type does this illustrate?"
+      },
+      "answer": {
+        "de": "• This illustrates a contextual anomaly\n• The same data point can be normal or abnormal depending on context\n• Relevant context may include time, role, location, or user behavior\n• A context-free detector may produce misleading alerts\n• Anomaly detection must consider domain-specific normal behavior",
+        "en": "• This illustrates a contextual anomaly\n• The same data point can be normal or abnormal depending on context\n• Relevant context may include time, role, location, or user behavior\n• A context-free detector may produce misleading alerts\n• Anomaly detection must consider domain-specific normal behavior"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC039"
+    },
+    {
+      "id": "IMLC040",
+      "lecture": "L12",
+      "category": "Responsible AI",
+      "question": {
+        "de": "A loan model has high overall accuracy but rejects one demographic group much more often. What should be investigated?",
+        "en": "A loan model has high overall accuracy but rejects one demographic group much more often. What should be investigated?"
+      },
+      "answer": {
+        "de": "• Check representativeness of the training data\n• Compare error rates across demographic groups\n• Investigate whether historical bias is encoded in labels or features\n• Check whether the optimization metric hides unequal harm\n• Responsible AI requires fairness, transparency, and accountability analysis",
+        "en": "• Check representativeness of the training data\n• Compare error rates across demographic groups\n• Investigate whether historical bias is encoded in labels or features\n• Check whether the optimization metric hides unequal harm\n• Responsible AI requires fairness, transparency, and accountability analysis"
+      },
+      "focus": "exam",
+      "sourceId": "IMLC040"
+    }
+  ]
+}
