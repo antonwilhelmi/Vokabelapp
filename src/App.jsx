@@ -129,6 +129,10 @@ function isIgnored(cardId, progress) {
   return Boolean(progress[cardId]?.ignored);
 }
 
+function isUnreviewed(cardId, progress) {
+  return !progress[cardId] || (progress[cardId]?.reviewedCount || 0) === 0;
+}
+
 function getCardDueAt(cardId, progress) {
   const cardProgress = progress[cardId];
 
@@ -137,6 +141,27 @@ function getCardDueAt(cardId, progress) {
   }
 
   return cardProgress.dueAt || 0;
+}
+
+function getWeaknessScore(card, progress, ratingMode = "3-tier") {
+  const cardProgress = progress[card.id];
+
+  if (!cardProgress || !cardProgress.reviewedCount) {
+    return -1;
+  }
+
+  const ratingScore = getRatingScoreFromValue(
+    cardProgress.lastRating,
+    ratingMode
+  );
+
+  const masteryScore = getCardMastery(card.id, progress, ratingMode);
+
+  if (ratingScore === null) {
+    return masteryScore;
+  }
+
+  return Math.min(ratingScore, masteryScore);
 }
 
 function sortCardsByNextDue(cards, progress) {
@@ -152,30 +177,71 @@ function sortCardsByNextDue(cards, progress) {
   });
 }
 
-function buildReviewQueue(cards, progress, onlyDue) {
-  if (!onlyDue) {
-    return cards;
-  }
+function sortCardsByWeakness(cards, progress, ratingMode = "3-tier") {
+  return [...cards].sort((cardA, cardB) => {
+    const weaknessA = getWeaknessScore(cardA, progress, ratingMode);
+    const weaknessB = getWeaknessScore(cardB, progress, ratingMode);
 
-  const unviewedCards = cards.filter((card) => {
-    const cardProgress = progress[card.id];
-    return !cardProgress || (cardProgress.reviewedCount || 0) === 0;
+    if (weaknessA !== weaknessB) {
+      return weaknessA - weaknessB;
+    }
+
+    const dueA = getCardDueAt(cardA.id, progress);
+    const dueB = getCardDueAt(cardB.id, progress);
+
+    if (dueA !== dueB) {
+      return dueA - dueB;
+    }
+
+    const reviewedA = progress[cardA.id]?.reviewedCount || 0;
+    const reviewedB = progress[cardB.id]?.reviewedCount || 0;
+
+    if (reviewedA !== reviewedB) {
+      return reviewedA - reviewedB;
+    }
+
+    return cardA.id.localeCompare(cardB.id);
   });
+}
+
+function buildReviewQueue(cards, progress, onlyDue, ratingMode = "3-tier") {
+  const unviewedCards = cards.filter((card) => isUnreviewed(card.id, progress));
 
   if (unviewedCards.length > 0) {
     return unviewedCards;
   }
 
-  const dueCards = sortCardsByNextDue(
-    cards.filter((card) => isCardDue(card.id, progress)),
-    progress
-  );
+  const reviewedCards = cards.filter((card) => !isUnreviewed(card.id, progress));
 
-  if (dueCards.length > 0) {
-    return dueCards;
+  if (reviewedCards.length === 0) {
+    return cards;
   }
 
-  return sortCardsByNextDue(cards, progress);
+  if (onlyDue) {
+    const dueCards = reviewedCards.filter((card) =>
+      isCardDue(card.id, progress)
+    );
+
+    if (dueCards.length > 0) {
+      return sortCardsByWeakness(dueCards, progress, ratingMode);
+    }
+  }
+
+  return sortCardsByWeakness(reviewedCards, progress, ratingMode);
+}
+
+function getNextCardIdFromQueue(queue, currentCardId) {
+  if (queue.length === 0) {
+    return null;
+  }
+
+  if (queue.length === 1) {
+    return queue[0].id;
+  }
+
+  const nextDifferentCard = queue.find((card) => card.id !== currentCardId);
+
+  return nextDifferentCard?.id || queue[0].id;
 }
 
 function formatInterval(minutes) {
@@ -334,8 +400,19 @@ export default function App() {
   }, [activeCards, selectedLecture, selectedCategory, search]);
 
   const reviewQueue = useMemo(() => {
-    return buildReviewQueue(candidateCards, progress, settings.onlyDue);
-  }, [candidateCards, progress, settings.onlyDue, timeTick]);
+    return buildReviewQueue(
+      candidateCards,
+      progress,
+      settings.onlyDue,
+      settings.ratingMode
+    );
+  }, [
+    candidateCards,
+    progress,
+    settings.onlyDue,
+    settings.ratingMode,
+    timeTick
+  ]);
 
   const currentCard =
     candidateCards.find((card) => card.id === currentCardId) ||
@@ -395,8 +472,8 @@ export default function App() {
     const tomorrow = now + oneDayMs;
     const sevenDaysAhead = now + 7 * oneDayMs;
 
-    const unviewedCards = activeCards.filter(
-      (card) => !progress[card.id]?.reviewedCount
+    const unviewedCards = activeCards.filter((card) =>
+      isUnreviewed(card.id, progress)
     );
 
     const masteredCards = activeCards.filter((card) => {
@@ -772,19 +849,17 @@ export default function App() {
     setProgress(updatedProgress);
     saveProgress(updatedProgress);
 
-    if (settings.onlyDue) {
-      const updatedQueue = buildReviewQueue(
-        candidateCards,
-        updatedProgress,
-        true
-      );
+    const updatedQueue = buildReviewQueue(
+      candidateCards,
+      updatedProgress,
+      settings.onlyDue,
+      settings.ratingMode
+    );
 
-      setCurrentCardId(updatedQueue[0]?.id || null);
-      setIsAnswerVisible(false);
-      return;
-    }
+    const nextCardId = getNextCardIdFromQueue(updatedQueue, currentCard.id);
 
-    moveToNext(candidateCards, false);
+    setCurrentCardId(nextCardId);
+    setIsAnswerVisible(false);
   }
 
   async function handleCopyForChatty() {
@@ -846,18 +921,14 @@ export default function App() {
     const updatedQueue = buildReviewQueue(
       remainingCards,
       updatedProgress,
-      settings.onlyDue
+      settings.onlyDue,
+      settings.ratingMode
     );
 
     setProgress(updatedProgress);
     saveProgress(updatedProgress);
 
-    if (updatedQueue.length > 0) {
-      setCurrentCardId(updatedQueue[0].id);
-    } else {
-      setCurrentCardId(null);
-    }
-
+    setCurrentCardId(updatedQueue[0]?.id || null);
     setIsAnswerVisible(false);
   }
 
