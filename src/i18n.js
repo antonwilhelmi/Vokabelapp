@@ -1,6 +1,6 @@
 export const translations = {
   de: {
-    appTitle: "Vokabelapp",
+    appTitle: "Karteikarten App",
     appSubtitle: "Karteikarten, Wiederholung und Fortschritt.",
     deck: "Deck",
     lecture: "Vorlesung",
@@ -51,7 +51,7 @@ export const translations = {
     cardMastery: "Kartenstärke"
   },
   en: {
-    appTitle: "Vocabulary App",
+    appTitle: "Flashcard App",
     appSubtitle: "Flashcards, repetition, and progress.",
     deck: "Deck",
     lecture: "Lecture",
